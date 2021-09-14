@@ -1,0 +1,354 @@
+#include "Game.h"
+#include"FPS.h"
+#include"OBJLoader.h"
+#include"PtrDelete.h"
+#include"Audio.h"
+#include"ParticleEmitter.h"
+#include"DebugText.h"
+#include"FbxLoader.h"
+#include"Object3D.h"
+#include<d3dx12.h>
+#include"Create3DObject.h"
+#include"Texture.h"
+#include"Scene.h"
+#include"Title.h"
+#include"Play.h"
+#include"Alpha.h"
+#include"Ending.h"
+#include <ctime>
+#include"PipelineState.h"
+#include"FBXManager.h"
+#include"DrawMode.h"
+#include "ComputeShade.h"
+#include "TestScene.h"
+DrawMode::MODE DrawMode::mode = DrawMode::NormalMap;
+
+Game::Game()
+{
+	win = new Window(1920,1080);
+	directX = DirectXLib::GetInstance();
+}
+
+
+
+Game * Game::GetInstance()
+{
+	if (instance == nullptr)
+	{
+		instance = new Game();
+	}
+	return instance;
+}
+
+Game::~Game()
+{
+}
+
+void Game::RoadAsset()
+{
+	switch (loadAssetLevel)
+	{
+	case 0:
+		//テクスチャの初期化
+		Texture::Initialize();
+		//テクスチャの読み込み
+		Texture::LoadTexture("LoadDot", "LoadDot.png");
+		Texture::LoadTexture("LoadPicture", "LoadPicture.png");
+		break;
+	case 1:
+		Texture::LoadTexture("Debug", "ASCII.png");
+		Texture::LoadTexture("particle", "particle1.png");
+		Texture::LoadTexture("shock", "shock.png");
+		Texture::LoadTexture("dust", "dust.png");
+		Texture::LoadTexture("white1x1", "white1x1.png");
+		Texture::LoadTexture("SampleNormalMap", "SampleNormalMap.png");
+		Texture::LoadTexture("StainedGlass", "StainedGlass.png");
+		Texture::LoadTexture("StainedGlassNormal", "StainedGlassNormal.png");
+
+		break;
+	case 2:
+		//Objモデルの読み込み
+		OBJLoader::LoadModelFile("box", "box.obj", false);
+		OBJLoader::LoadModelFile("sphere", "sphere.obj", true);
+		OBJLoader::LoadModelFile("ground", "ground.obj", false);
+		OBJLoader::LoadModelFile("plain", "plain.obj", false);
+		OBJLoader::LoadModelFile("chr_sword", "chr_sword.obj", true);
+
+		break;
+	case 3:
+
+		break;
+
+	case 4:
+		//FBXファイルの読み込み
+		FBXManager::LoadModelFile("cube", "cube", true);
+		FBXManager::LoadModelFile("boneTest", "boneTest", true);
+		//FBXManager::LoadModelFile("cleaningToolStorage", "cleaningToolStorage", true);
+
+		break;
+
+	default:
+		loadAssetFinish = true;
+		break;
+	}
+	
+	loadAssetLevel++;
+}
+
+void Game::CreatePipeline()
+{
+	switch (createPipelineLevel)
+	{
+	case 0:
+		PipelineState::CreatePipeline("Sprite", SPRITE);
+		break;
+	case 1:
+		PipelineState::CreatePipeline("FBX", FBX);
+		PipelineState::CreatePipeline("BasicObj", BasicObj);
+		break;
+	case 2:
+		PipelineState::CreatePipeline("Particle", PARTICLE, ADD);
+		PipelineState::CreatePipeline("PostEffect", BasePostEffect);
+		break;
+	case 3:
+		PipelineState::CreatePipeline("Bloom", Bloom);
+		PipelineState::CreatePipeline("NoShade", NoShade);
+		break;
+	case 4:
+		PipelineState::CreatePipeline("NormalMap", NormalMap);
+		break;
+	case 5:
+		PipelineState::CreatePipeline("PolygonBreak", PolygonBreak);
+		break;
+	case 6:
+		PipelineState::CreatePipeline("FBXShadowMap", FBXShadowMap);
+		break;
+	case 7:
+		PipelineState::CreatePipeline("GrassShadowMap", GrassShadowMap);
+		break;
+	case 8:
+		PipelineState::CreatePipeline("Grass", GRASS);
+		break;
+	case 9:
+		PipelineState::CreatePipeline("ShadowMap", NormalShadowMap);
+		break;
+	case 10:
+		PipelineState::CreatePipeline("PBShadowMap", PBShadowMap);
+		break;
+	case 11:
+		PipelineState::CreatePipeline("DrawShadowOBJ", DrawShadowOBJ);
+		break;
+	//case 12:
+	//	break;
+	default:
+		createPipelineFinish = true;
+
+		break;
+	}
+
+	createPipelineLevel++;
+}
+
+void Game::LoadFinish()
+{
+	//DirectInputオブジェクトの生成
+	Input::Initialize(win->GetHwnd());
+
+	CollisionManager::GetInstance()->Initialize({ -50.0f,-50.0f,-50.0f }, { 50.0f,50.0f,50.0f });
+	
+	sceneManeger = SceneManager::GetInstance();
+	sceneManeger->Add(Scene::SCENE::Title, new Title());
+	sceneManeger->Add(Scene::SCENE::Play, new Play());
+	sceneManeger->Add(Scene::SCENE::Ending, new Ending());
+	//sceneManeger->Add(Scene::SCENE::Test, new TestScene());
+	sceneManeger->Change(Scene::SCENE::Play);
+
+	postEffect = new PostEffect();
+
+	lightCamera = new LightCamera();
+	lightCamera->SetLightDir({ dir[0],dir[1],dir[2] });
+	lightCamera->SetDistance(100);
+	Object3D::SetLightCamera(lightCamera);
+	Player::SetLightCamera(lightCamera);
+
+	shadowMap = new ShadowMap();
+	shadowMap->SetWindow(win);
+
+	nowLoading = false;
+}
+
+void Game::DrawLoadTex()
+{
+	loadDot->SpriteSetTextureRect("LoadDot", 0, 0, 42 * (createPipelineLevel % 8), 25);
+	loadDot->DrawSprite("LoadDot", { 1560,1010 }, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
+	loadTex->DrawSprite("LoadPicture", { 0,0 }, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
+}
+
+void Game::Initialize()
+{
+	win->CreateWidow(Window::WINDOW);
+
+	// DirectX 初期化処理 ここから
+	directX->Initialize(win);
+	//ComputeWrapper::GetInstance()->Initialize();
+
+	// DirectX 初期化処理 ここまで
+	FPS::SetWindow(win);
+	FbxLoader::GetInstance()->Initialize();
+	PostEffect::SetWindow(win);
+	Sprite::StaticInitialize(win);
+	Audio::Initialize();
+	//ShowCursor(false);
+	nowLoading = true;
+
+	ComputeShade::StaticInitialize();
+	
+	FPS::Initialize();
+	
+#ifdef _DEBUG
+	DebugText::Initialize();
+#endif // _DEBUG
+	camera = new DebugCamera();
+	//camera->SetMatrixView({320,300,320}, { 320, 0, 320 }, { 0,1,0 });
+	//camera->SetDistance(500);
+	//PipelineState::Cre3tePipeline();
+	Object3D::SetCamera(camera);
+	ParticleEmitter::Initialize(camera);
+	Player::SetDebugCamera(camera);
+
+	loadTex = new Sprite();
+	loadDot = new Sprite();
+
+}
+
+void Game::Run()
+{
+	MSG msg{}; // メッセージ
+	while (true)
+	{
+
+		FPS::StartMeasure();
+		// メッセージがある?
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+			TranslateMessage(&msg); // キー入力メッセージの処理
+			DispatchMessage(&msg); // プロシージャにメッセージを送る
+		}
+
+		// 終了メッセージが来たらループを抜ける
+		if (msg.message == WM_QUIT) {
+			break;
+		}
+
+		if (nowLoading)
+		{
+			//アセットロード
+			RoadAsset();
+			//パイプラインの生成
+			CreatePipeline();
+			if (createPipelineFinish && loadAssetFinish)
+				LoadFinish();
+			camera->Update();
+			directX->BeginDraw();
+			directX->ImguiDraw();
+			directX->Depth();
+			DrawLoadTex();
+
+		}
+
+		else if (!nowLoading)
+		{
+			Input::Update();
+			Alpha::Update();
+			if (Input::TriggerKey(DIK_1))
+			{
+				DrawMode::SetMode(DrawMode::NormalMap);
+			}
+			else if (Input::TriggerKey(DIK_2))
+			{
+				DrawMode::SetMode(DrawMode::Bloom);
+			}
+			//lightCamera->SetDistance(distance);
+			//lightCamera->SetLightDir({ dir[0],dir[1],dir[2] });
+			lightCamera->Update();
+			sceneManeger->Update();
+			camera->Update();
+			ParticleEmitter::Update();
+			//2.画面クリアコマンドここまで
+			//Object3D::SetDrawShadow(true);
+			//shadowMap->PreDraw();
+			//directX->ImguiDraw();
+			//sceneManeger->PreDraw();
+			//directX->Depth();
+			//shadowMap->PostDraw();
+			//Object3D::SetDrawShadow(false);
+
+			directX->ImguiDraw();
+			if (DrawMode::GetMode() == DrawMode::NormalMap)
+			{
+				directX->BeginDraw();
+			}
+			else
+			{
+				postEffect->PreDraw();
+			}
+			//directX->ImguiDraw();
+
+			//ImGui::Begin("LightCamera");
+			//ImGui::SliderFloat3("dir", dir, -1.0f, 1.0f);
+			//ImGui::SliderFloat("Distance", &distance, 0.0f, 100.0f);
+			//ImGui::End();
+			//3.描画コマンドここから
+			sceneManeger->PreDraw();
+			//背面描画ここまで
+#ifdef _DEBUG
+			DebugText::Draw();
+#endif // _DEBUG
+			directX->Depth();
+
+			sceneManeger->PostDraw();
+			ParticleEmitter::Draw();
+			if (DrawMode::GetMode() == DrawMode::Bloom)
+			{
+				postEffect->PostDraw();
+				//3.描画コマンドここまで
+				directX->BeginDraw();
+				postEffect->Draw();
+			}
+		}
+		directX->EndDraw();
+
+		//ComputeWrapper::GetInstance()->MoveToNextFrame();
+
+		FPS::FPSFixed();
+
+	}
+
+}
+
+void Game::End()
+{
+	while (1)
+	{
+		if (ShowCursor(true) >= 0)
+			break;
+	}
+	PtrDelete(shadowMap);
+	PtrDelete(postEffect);
+	PtrDelete(loadTex);
+	PtrDelete(loadDot);
+
+	ParticleEmitter::End();
+	OBJLoader::DeleteModels();
+#ifdef _DEBUG
+	DebugText::End();
+#endif // _DEBUG
+	FbxLoader::GetInstance()->Finalize();
+	FBXManager::DeleteModels();
+	PtrDelete(camera);
+	sceneManeger->End();
+	//デリートはここまでに終わらせる
+	//ComputeWrapper::GetInstance()->End();
+	directX->End();
+	win->End();
+	PtrDelete(win);
+}
