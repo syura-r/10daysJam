@@ -70,6 +70,241 @@ public://メンバ関数
 	}
 };
 
+/////////////////////////////////////
+// 線形4分木空間管理クラス
+//////////////////////////////////
+#define CLINER4TREEMANAGER_MAXLEVEL		9
+template <class T>
+class CLiner4TreeManager
+{
+protected:
+	unsigned int m_uiDim;
+	TreeSpace<T>** ppCellAry;	// 線形空間ポインタ配列
+	unsigned int m_iPow[CLINER4TREEMANAGER_MAXLEVEL + 1];	// べき乗数値配列
+	float m_fW;		// 領域のX軸幅
+	float m_fH;		// 領域のY軸幅
+	float m_fLeft;	// 領域の左側（X軸最小値）
+	float m_fTop;	// 領域の上側（Y軸最小値）
+	float m_fUnit_W;		// 最小レベル空間の幅単位
+	float m_fUnit_H;		// 最小レベル空間の高単位
+	DWORD m_dwCellNum;		// 空間の数
+	unsigned int m_uiLevel;			// 最下位レベル
+
+public:
+	// コンストラクタ
+	CLiner4TreeManager()
+	{
+		m_uiLevel = 0;
+		m_fW = 0.0f;
+		m_fH = 0.0f;
+		m_fLeft = 0.0f;
+		m_fTop = 0.0f;
+		m_fUnit_W = 0.0f;
+		m_fUnit_H = 0.0f;
+		m_dwCellNum = 0;
+		ppCellAry = NULL;
+		m_uiDim = 0;
+	}
+
+	// デストラクタ
+	virtual ~CLiner4TreeManager()
+	{
+		DWORD i;
+		for (i = 0; i < m_dwCellNum; i++) {
+			if (ppCellAry[i] != NULL)
+				delete ppCellAry[i];
+		}
+		delete[] ppCellAry;
+	}
+
+	// 線形4分木配列を構築する
+	bool Init(unsigned int Level, float left, float top, float right, float bottom)
+	{
+		// 設定最高レベル以上の空間は作れない
+		if (Level >= CLINER4TREEMANAGER_MAXLEVEL)
+			return false;
+
+		// 各レベルでの空間数を算出
+		int i;
+		m_iPow[0] = 1;
+		for (i = 1; i < CLINER4TREEMANAGER_MAXLEVEL + 1; i++)
+			m_iPow[i] = m_iPow[i - 1] * 4;
+
+		// Levelレベル（0基点）の配列作成
+		m_dwCellNum = (m_iPow[Level + 1] - 1) / 3;
+		ppCellAry = new TreeSpace<T>*[m_dwCellNum];
+		ZeroMemory(ppCellAry, sizeof(TreeSpace<T>*) * m_dwCellNum);
+
+		// 領域を登録
+		m_fLeft = left;
+		m_fTop = top;
+		m_fW = right - left;
+		m_fH = bottom - top;
+		m_fUnit_W = m_fW / (1 << Level);
+		m_fUnit_H = m_fH / (1 << Level);
+
+		m_uiLevel = Level;
+
+		return true;
+	}
+
+	// オブジェクトを登録する
+	bool Regist(float left, float top, float right, float bottom, SmartPtr<TreeObject<T> >& spOFT)
+	{
+		// オブジェクトの境界範囲から登録モートン番号を算出
+		DWORD Elem = GetMortonNumber(left, top, right, bottom);
+		if (Elem < m_dwCellNum) {
+			// 空間が無い場合は新規作成
+			if (!ppCellAry[Elem])
+				CreateNewCell(Elem);
+			return ppCellAry[Elem]->Push(spOFT);
+		}
+		return false;	// 登録失敗
+	}
+
+	// 衝突判定リストを作成する
+	DWORD GetAllCollisionList(std::vector<T*>& ColVect)
+	{
+		// リスト（配列）は必ず初期化します
+		ColVect.clear();
+
+		// ルート空間の存在をチェック
+		if (ppCellAry[0] == NULL)
+			return 0;	// 空間が存在していない
+
+		// ルート空間を処理
+		std::list<T*> ColStac;
+		GetCollisionList(0, ColVect, ColStac);
+
+		return (DWORD)ColVect.size();
+	}
+
+
+
+protected:
+	// 空間内で衝突リストを作成する
+	bool GetCollisionList(DWORD Elem, std::vector<T*>& ColVect, std::list<T*>& ColStac)
+	{
+		std::list<T*>::iterator it;
+		// ① 空間内のオブジェクト同士の衝突リスト作成
+		SmartPtr<TreeObject<T> > spOFT1 = ppCellAry[Elem]->GetFirstObj();
+		while (spOFT1.GetPtr() != NULL)
+		{
+			SmartPtr<TreeObject<T> > spOFT2 = spOFT1->spNext;
+			while (spOFT2 != NULL) {
+				// 衝突リスト作成
+				ColVect.push_back(spOFT1->pObject);
+				ColVect.push_back(spOFT2->pObject);
+				spOFT2 = spOFT2->spNext;
+			}
+			// ② 衝突スタックとの衝突リスト作成
+			for (it = ColStac.begin(); it != ColStac.end(); it++) {
+				ColVect.push_back(spOFT1->pObject);
+				ColVect.push_back(*it);
+			}
+			spOFT1 = spOFT1->spNext;
+		}
+
+		bool ChildFlag = false;
+		// ③ 子空間に移動
+		DWORD ObjNum = 0;
+		DWORD i, NextElem;
+		for (i = 0; i < 4; i++) {
+			NextElem = Elem * 4 + 1 + i;
+			if (NextElem < m_dwCellNum && ppCellAry[Elem * 4 + 1 + i]) {
+				if (!ChildFlag) {
+					// ④ 登録オブジェクトをスタックに追加
+					spOFT1 = ppCellAry[Elem]->GetFirstObj();
+					while (spOFT1.GetPtr()) {
+						ColStac.push_back(spOFT1->pObject);
+						ObjNum++;
+						spOFT1 = spOFT1->spNext;
+					}
+				}
+				ChildFlag = true;
+				GetCollisionList(Elem * 4 + 1 + i, ColVect, ColStac);	// 子空間へ
+			}
+		}
+
+		// ⑤ スタックからオブジェクトを外す
+		if (ChildFlag) {
+			for (i = 0; i < ObjNum; i++)
+				ColStac.pop_back();
+		}
+
+		return true;
+	}
+
+
+	// 空間を生成
+	bool CreateNewCell(DWORD Elem)
+	{
+		// 引数の要素番号
+		while (!ppCellAry[Elem])
+		{
+			// 指定の要素番号に空間を新規作成
+			ppCellAry[Elem] = new TreeSpace<T>;
+
+			// 親空間にジャンプ
+			Elem = (Elem - 1) >> 2;
+			if (Elem >= m_dwCellNum) break;
+		}
+		return true;
+	}
+
+	// 座標から空間番号を算出
+	DWORD GetMortonNumber(float left, float top, float right, float bottom)
+	{
+		// 最小レベルにおける各軸位置を算出
+		DWORD LT = GetPointElem(left, top);
+		DWORD RB = GetPointElem(right, bottom);
+
+		// 空間番号を引き算して
+		// 最上位区切りから所属レベルを算出
+		DWORD Def = RB - LT;
+		unsigned int HiLevel = 0;
+		unsigned int i;
+		for (i = 0; i < m_uiLevel; i++)
+		{
+			DWORD Check = (Def >> (i * 2)) & 0x3;
+			if (Check != 0)
+				HiLevel = i + 1;
+		}
+		DWORD SpaceNum = RB >> (HiLevel * 2);
+		DWORD AddNum = (m_iPow[m_uiLevel - HiLevel] - 1) / 3;
+		SpaceNum += AddNum;
+
+		if (SpaceNum > m_dwCellNum)
+			return 0xffffffff;
+
+		return SpaceNum;
+	}
+
+	// ビット分割関数
+	DWORD BitSeparate32(DWORD n)
+	{
+		n = (n | (n << 8)) & 0x00ff00ff;
+		n = (n | (n << 4)) & 0x0f0f0f0f;
+		n = (n | (n << 2)) & 0x33333333;
+		return (n | (n << 1)) & 0x55555555;
+	}
+
+	// 2Dモートン空間番号算出関数
+	WORD Get2DMortonNumber(WORD x, WORD y)
+	{
+		return (WORD)(BitSeparate32(x) | (BitSeparate32(y) << 1));
+	}
+
+	// 座標→線形4分木要素番号変換関数
+	DWORD GetPointElem(float pos_x, float pos_y)
+	{
+		return Get2DMortonNumber((WORD)((pos_x - m_fLeft) / m_fUnit_W), (WORD)((pos_y - m_fTop) / m_fUnit_H));
+	}
+};
+
+
+
+	
 // 線形8分木空間管理クラス
 #define CLINER8TREEMANAGER_MAXLEVEL		7//最大空間分割数
 template <class T>

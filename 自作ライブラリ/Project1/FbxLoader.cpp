@@ -362,7 +362,7 @@ void FbxLoader::ParseMeshFaces(FBXModel* model, FbxMesh* fbxMesh)
 				if(fbxMesh->GetPolygonVertexUV(i,j,uvNames[0],uvs,lUnmappedUV))
 				{
                     vertex.uv.x = (float)uvs[0];
-                    vertex.uv.y = (float)uvs[1];
+                    vertex.uv.y = 1 - (float)uvs[1]; //Mayaにあわせて反転
 
 				}
 			}

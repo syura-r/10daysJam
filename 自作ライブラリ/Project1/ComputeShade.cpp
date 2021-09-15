@@ -1,7 +1,6 @@
 #include "ComputeShade.h"
 #include <d3dcompiler.h>
 
-#include "ComputeWrapper.h"
 #include "DirectXLib.h"
 #include "Object3D.h"
 #include "PipelineState.h"

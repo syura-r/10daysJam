@@ -33,11 +33,13 @@ public://メンバ関数
 
 	void CheckAllCollisions();
 	/// <summary>
-	/// 8分木の領域を決定する
+	/// 4分木の領域を決定する
 	/// </summary>
-	/// <param name="minLine"></param>領域の最低位置
-	/// <param name="maxLine"></param>領域の最高位置
-	void Initialize(const Vector3& minLine, const Vector3& maxLine);
+	/// <param name="left"></param>領域の左端
+	/// <param name="top"></param>領域の上端
+	/// <param name="right"></param>領域の右端
+	/// <param name="bottom"></param>領域の下端
+	void Initialize(float left, float top, float right, float bottom);
 	bool Raycast(const Ray& ray, RaycastHit* hitinfo = nullptr, float maxDistance = D3D12_FLOAT32_MAX);
 	bool Raycast(const Ray& ray,unsigned short attribute, RaycastHit* hitinfo = nullptr, float maxDistance = D3D12_FLOAT32_MAX);
 	//球による衝突全検索
@@ -48,7 +50,7 @@ private:
 	~CollisionManager() = default;
 	CollisionManager& operator=(const CollisionManager&) = default;
 	std::vector<BaseCollider*> colliders;
-	Tree::CLiner8TreeManager<BaseCollider> L8Tree;
+	Tree::CLiner4TreeManager<BaseCollider> L4Tree;
 	std::vector<BaseCollider*> ColVect;	// 衝突対象リスト
 	std::vector < SmartPtr<Tree::TreeObject<BaseCollider>>> spSOFTAry;
 

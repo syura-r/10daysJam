@@ -230,10 +230,10 @@ void Input::Update()
 	//	if (mousePos.y > y)
 	//		mousePos.y = (float)y;
 	//}
-	if(!mouseMove)
-	{
-		SetCursorPos(screenWidth/2,screenHeight/2);
-	}
+	//if(!mouseMove)
+	//{
+	//	SetCursorPos(screenWidth/2,screenHeight/2);
+	//}
 
 	//パッド情報の取得開始
 	//result = devPad->Acquire();

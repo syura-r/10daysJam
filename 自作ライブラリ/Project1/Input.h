@@ -84,27 +84,27 @@ public:
 	static void RightVibration(unsigned int power, int setTime);
 	static void Vibration(unsigned int power, int setTime);
 
-	static void ChangeMouseMove()
-	{
-		if (mouseMove == true)
-		{
-			while (1)
-			{
-				if (ShowCursor(false) < 0)
-					break;
-			}
-			mouseMove = false;
-		}
-		else
-		{
-			while (1)
-			{
-				if (ShowCursor(true) >= 0)
-					break;
-			}
-			mouseMove = true;
-		}
-	}
+	//static void ChangeMouseMove()
+	//{
+	//	if (mouseMove == true)
+	//	{
+	//		while (1)
+	//		{
+	//			if (ShowCursor(false) < 0)
+	//				break;
+	//		}
+	//		mouseMove = false;
+	//	}
+	//	else
+	//	{
+	//		while (1)
+	//		{
+	//			if (ShowCursor(true) >= 0)
+	//				break;
+	//		}
+	//		mouseMove = true;
+	//	}
+	//}
 private:
 	static ComPtr<IDirectInputDevice8> devkeyboard;
 	static ComPtr<IDirectInputDevice8> devPad;

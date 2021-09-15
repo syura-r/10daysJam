@@ -20,7 +20,7 @@ void CollisionManager::AddCollider(BaseCollider* collider)
 	const Vector3 min = collider->GetMin();
 	const Vector3 max = collider->GetMax();
 	spSOFTAry.push_back(s);
-	L8Tree.Regist(min, max, s);
+	L4Tree.Regist(min.x, max.y,max.x,min.y, s);
 }
 
 void CollisionManager::CheckAllCollisions()
@@ -33,11 +33,11 @@ void CollisionManager::CheckAllCollisions()
 			(*it)->Remove();
 			const Vector3 min = (*it)->pObject->GetMin();
 			const Vector3 max = (*it)->pObject->GetMax();
-			L8Tree.Regist(min, max, *it);
+			L4Tree.Regist(min.x, max.y, max.x, min.y, *it);
 		}
 	}
 	
-	DWORD collisionCount = L8Tree.GetAllCollisionList(ColVect);
+	DWORD collisionCount = L4Tree.GetAllCollisionList(ColVect);
 	DWORD c;
 	auto colCount = collisionCount / 2;	// 2‚ÅŠ„‚é‚Ì‚ÍƒyƒA‚É‚È‚Á‚Ä‚¢‚é‚Ì‚Å
 	for (c = 0; c < colCount; c++) {
@@ -129,7 +129,6 @@ void CollisionManager::CheckAllCollisions()
 
 	//std::vector<BaseCollider*>::iterator itA;
 	//std::vector<BaseCollider*>::iterator itB;
-
 	//itA = colliders.begin();
 	//for (; itA != colliders.end(); ++itA)
 	//{
@@ -139,7 +138,6 @@ void CollisionManager::CheckAllCollisions()
 	//	{
 	//		BaseCollider* colA = *itA;
 	//		BaseCollider* colB = *itB;
-
 	//		//‚Ç‚¿‚ç‚à‹…‚Ìê‡
 	//		if (colA->GetShapeType() == COLLISIONSHAPE_SPHERE &&
 	//			colB->GetShapeType() == COLLISIONSHAPE_SPHERE)
@@ -221,12 +219,11 @@ void CollisionManager::CheckAllCollisions()
 	//}
 }
 
-void CollisionManager::Initialize(const Vector3& minLine,const Vector3& maxLine)
+void CollisionManager::Initialize(float left, float top, float right, float bottom)
 {
-	if (!L8Tree.Initialize(
-		6,
-		minLine,
-		maxLine))
+	if (!L4Tree.Init(
+		7,
+		left, top, right, bottom))
 		assert(0);
 
 }

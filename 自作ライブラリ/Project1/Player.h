@@ -14,24 +14,31 @@ public:
 	static void SetLightCamera(LightCamera* cameraPtr) { lightCamera = cameraPtr; }
 
 private:
+	//攻撃処理
+	void Attack();
 	//移動処理
 	void Move();
 	//接地フラグ
 	bool onGround = true;
 	//落下ベクトル
 	XMVECTOR fallV;
-	//現在向いてる方向
-	Vector3 direction;
 	//移動速度
 	float speed = 0.3f;
-	//回転速度
-	float rotateSpeed = 7.0f;
 	Vector3 prePos;
-	//カメラ回転中
-	bool rotCamera;
-	//カメラの回転度合い
-	float radY;
-	int cameraRotCount;
+	//ナのオブジェクト
+	Object* naObject = nullptr;
+
+	//攻撃状態の種類
+	enum ATTACKSTATE
+	{
+		NONE,//攻撃してない
+		MeleeAttack,//近接攻撃
+		JumpAttack,//空中攻撃
+		Boomerang,//ブーメラン
+		ULT//左斬り
+	};
+	//現在の攻撃状態
+	ATTACKSTATE nowAttackState;
 private://静的メンバ変数
 	static DebugCamera* camera;
 	static LightCamera* lightCamera;

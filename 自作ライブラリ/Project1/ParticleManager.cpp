@@ -1,6 +1,5 @@
 #include "ParticleManager.h"
 
-#include "ComputeWrapper.h"
 #include"DirectXLib.h"
 #include"PipelineState.h"
 #include"Texture.h"

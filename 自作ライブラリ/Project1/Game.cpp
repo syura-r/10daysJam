@@ -15,12 +15,11 @@
 #include"Play.h"
 #include"Alpha.h"
 #include"Ending.h"
-#include <ctime>
 #include"PipelineState.h"
 #include"FBXManager.h"
 #include"DrawMode.h"
 #include "ComputeShade.h"
-#include "TestScene.h"
+#include "Player.h"
 DrawMode::MODE DrawMode::mode = DrawMode::NormalMap;
 
 Game::Game()
@@ -83,6 +82,9 @@ void Game::RoadAsset()
 		//FBXファイルの読み込み
 		FBXManager::LoadModelFile("cube", "cube", true);
 		FBXManager::LoadModelFile("boneTest", "boneTest", true);
+		FBXManager::LoadModelFile("Hidari1", "Hidari1", true);
+		FBXManager::LoadModelFile("Hidari2", "Hidari2", true);
+
 		//FBXManager::LoadModelFile("cleaningToolStorage", "cleaningToolStorage", true);
 
 		break;
@@ -154,22 +156,23 @@ void Game::LoadFinish()
 	//DirectInputオブジェクトの生成
 	Input::Initialize(win->GetHwnd());
 
-	CollisionManager::GetInstance()->Initialize({ -50.0f,-50.0f,-50.0f }, { 50.0f,50.0f,50.0f });
-	
-	sceneManeger = SceneManager::GetInstance();
-	sceneManeger->Add(Scene::SCENE::Title, new Title());
-	sceneManeger->Add(Scene::SCENE::Play, new Play());
-	sceneManeger->Add(Scene::SCENE::Ending, new Ending());
-	//sceneManeger->Add(Scene::SCENE::Test, new TestScene());
-	sceneManeger->Change(Scene::SCENE::Play);
-
-	postEffect = new PostEffect();
-
 	lightCamera = new LightCamera();
 	lightCamera->SetLightDir({ dir[0],dir[1],dir[2] });
 	lightCamera->SetDistance(100);
 	Object3D::SetLightCamera(lightCamera);
 	Player::SetLightCamera(lightCamera);
+
+	
+	CollisionManager::GetInstance()->Initialize(0,20,500,0);
+	
+	sceneManeger = SceneManager::GetInstance();
+	sceneManeger->Add(Scene::SCENE::Title, new Title());
+	sceneManeger->Add(Scene::SCENE::Play, new Play());
+	sceneManeger->Add(Scene::SCENE::Ending, new Ending());
+	sceneManeger->Change(Scene::SCENE::Play);
+
+	postEffect = new PostEffect();
+
 
 	shadowMap = new ShadowMap();
 	shadowMap->SetWindow(win);
@@ -259,16 +262,6 @@ void Game::Run()
 		{
 			Input::Update();
 			Alpha::Update();
-			if (Input::TriggerKey(DIK_1))
-			{
-				DrawMode::SetMode(DrawMode::NormalMap);
-			}
-			else if (Input::TriggerKey(DIK_2))
-			{
-				DrawMode::SetMode(DrawMode::Bloom);
-			}
-			//lightCamera->SetDistance(distance);
-			//lightCamera->SetLightDir({ dir[0],dir[1],dir[2] });
 			lightCamera->Update();
 			sceneManeger->Update();
 			camera->Update();
@@ -283,20 +276,14 @@ void Game::Run()
 			//Object3D::SetDrawShadow(false);
 
 			directX->ImguiDraw();
-			if (DrawMode::GetMode() == DrawMode::NormalMap)
-			{
-				directX->BeginDraw();
-			}
-			else
-			{
-				postEffect->PreDraw();
-			}
-			//directX->ImguiDraw();
-
-			//ImGui::Begin("LightCamera");
-			//ImGui::SliderFloat3("dir", dir, -1.0f, 1.0f);
-			//ImGui::SliderFloat("Distance", &distance, 0.0f, 100.0f);
-			//ImGui::End();
+			//if (DrawMode::GetMode() == DrawMode::NormalMap)
+			//{
+			directX->BeginDraw();
+			//}
+			//else
+			//{
+			//	postEffect->PreDraw();
+			//}
 			//3.描画コマンドここから
 			sceneManeger->PreDraw();
 			//背面描画ここまで
@@ -307,18 +294,15 @@ void Game::Run()
 
 			sceneManeger->PostDraw();
 			ParticleEmitter::Draw();
-			if (DrawMode::GetMode() == DrawMode::Bloom)
-			{
-				postEffect->PostDraw();
-				//3.描画コマンドここまで
-				directX->BeginDraw();
-				postEffect->Draw();
-			}
+			//if (DrawMode::GetMode() == DrawMode::Bloom)
+			//{
+			//	postEffect->PostDraw();
+			//	//3.描画コマンドここまで
+			//	directX->BeginDraw();
+			//	postEffect->Draw();
+			//}
 		}
 		directX->EndDraw();
-
-		//ComputeWrapper::GetInstance()->MoveToNextFrame();
-
 		FPS::FPSFixed();
 
 	}
@@ -327,11 +311,11 @@ void Game::Run()
 
 void Game::End()
 {
-	while (1)
-	{
-		if (ShowCursor(true) >= 0)
-			break;
-	}
+	//while (1)
+	//{
+	//	if (ShowCursor(true) >= 0)
+	//		break;
+	//}
 	PtrDelete(shadowMap);
 	PtrDelete(postEffect);
 	PtrDelete(loadTex);
@@ -347,7 +331,6 @@ void Game::End()
 	PtrDelete(camera);
 	sceneManeger->End();
 	//デリートはここまでに終わらせる
-	//ComputeWrapper::GetInstance()->End();
 	directX->End();
 	win->End();
 	PtrDelete(win);
