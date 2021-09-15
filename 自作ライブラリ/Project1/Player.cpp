@@ -7,6 +7,7 @@
 #include"CollisionAttribute.h"
 #include "Easing.h"
 #include"FBXManager.h"
+#include "PtrDelete.h"
 DebugCamera* Player::camera = nullptr;
 LightCamera* Player::lightCamera = nullptr;
 
@@ -16,6 +17,11 @@ Player::Player()
 	naObject = new Object();
 	naObject->Create(FBXManager::GetModel("Hidari1"));
 	Initialize();
+}
+
+Player::~Player()
+{
+	PtrDelete(naObject);
 }
 
 void Player::Initialize()
@@ -49,13 +55,13 @@ void Player::Update()
 		position.y += fallV.m128_f32[1];
 		position.z += fallV.m128_f32[2];
 	}
-	//ジャンプ動作
-	else if (Input::TriggerKey(DIK_SPACE))
-	{
-		onGround = false;
-		const float jumpVYFist = 0.5f;//ジャンプ時上向き初速
-		fallV = { 0,jumpVYFist,0,0 };
-	}
+	//ジャンプ動作(地面作るまでコメントアウト)
+	//else if (Input::TriggerKey(DIK_SPACE))
+	//{
+	//	onGround = false;
+	//	const float jumpVYFist = 0.5f;//ジャンプ時上向き初速
+	//	fallV = { 0,jumpVYFist,0,0 };
+	//}
 	
 	//コライダー更新	
 	Object::Update();

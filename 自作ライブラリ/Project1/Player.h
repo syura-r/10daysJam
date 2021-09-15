@@ -6,6 +6,7 @@ class Player :
 {
 public:
 	Player();
+	~Player();
 	void Initialize()override;
 	void Update()override;
 	void OnCollision(const CollisionInfo& info)override;
