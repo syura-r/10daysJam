@@ -7,6 +7,7 @@
 #include"imgui.h"
 #include"FBXManager.h"
 #include "Input.h"
+#include "OBJLoader.h"
 #include "Player.h"
 
 Play::Play()
@@ -24,6 +25,7 @@ Play::Play()
 	objectManager = ObjectManager::GetInstance();
 
 	objectManager->Add(new Player());
+	CreateStage();
 }
 
 
@@ -54,12 +56,10 @@ void Play::Update()
 
 void Play::PreDraw()
 {
-	if (Object3D::GetDrawShadow())
+	if (!Object3D::GetDrawShadow())
 	{
 		ImGui::Begin("Light");
 		ImGui::SliderFloat3("LightDir", lightDir, -1.0f, 1.0f);
-		ImGui::Text("NormalMap : 1");
-		ImGui::Text("Bloom     : 2");
 		ImGui::Text("Camera Rotation : RightMouseButton + Drag");
 		ImGui::Text("Camera Zoom     : MouseWheel");
 		ImGui::Text("Camera Reset    : R");
@@ -72,4 +72,34 @@ void Play::PreDraw()
 void Play::PostDraw()
 {
 	objectManager->PostDraw();
+}
+
+void Play::CreateStage()
+{
+	int map[10][40] = {
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+	};
+
+	for(int y = 0;y<10;y++)
+	{
+		for(int x = 0;x<40;x++)
+		{
+			if(map[y][x] == 1)
+			{
+				TouchAbleObject* object = new TouchAbleObject();
+				object->Initialize(OBJLoader::GetModel("box"), { (float)x, 5.0f - y, 0 },{2.0f,2.0f,2.0f});
+				objectManager->Add(object);
+			}
+		}
+	}
+	
 }

@@ -28,7 +28,10 @@ private:
 	Vector3 prePos;
 	//ナのオブジェクト
 	Object* naObject = nullptr;
-
+	//進行方向(右向きかどうか)
+	bool moveRight;
+	//進行方向が変わった時にペラペラさせるフラグ
+	bool moveShift;
 	//攻撃状態の種類
 	enum ATTACKSTATE
 	{

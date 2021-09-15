@@ -28,15 +28,19 @@ void Player::Initialize()
 {
 	name = typeid(*this).name();
 	//scale = { 0.3f,1,0.5f };
-	position = { 5,2,5 };
+	position = { 0,0,0 };
 	rotation = { 90,0,0 };
+	scale = { 0.5f, 0.5f, 0.5f };
 	naObject->SetPosition(position);
 	naObject->SetRotation(rotation);
+	naObject->SetScale(scale);
+
 	prePos = position;
 	nowAttackState = NONE;
 	lightCamera->SetTarget(position + Vector3{ 0,1,0 });
 	camera->SetTarget(position + Vector3{ 0, 1, 0 });
-
+	moveRight = true;
+	moveShift = false;
 }
 
 void Player::Update()
@@ -139,18 +143,58 @@ void Player::Attack()
 void Player::Move()
 {
 	prePos = position;
+//----------------------ˆÚ“®ˆ—-------------------------------
 	if (Input::DownKey(DIK_D) || Input::DownKey(DIK_A))
 	{
 		if (Input::DownKey(DIK_D))
 		{
+			if (!moveRight)
+			{
+				moveRight = true;
+				moveShift = true;
+			}
 			position.x += speed;
 		}
 		if (Input::DownKey(DIK_A))
 		{
+			if (moveRight)
+			{
+				moveRight = false;
+				moveShift = true;
+			}
 			position.x -= speed;
 		}
 
 		if (nowAttackState == NONE)
 			naObject->SetPosition(position);
 	}
+//--------------------------------------------------------------
+	
+//------------•ûŒü“]Š·Žž‚Ì‰ñ“]ˆ—------------
+	if(moveShift)
+	{
+		if(moveRight)
+		{
+			if (rotation.y > 0)
+				rotation.y -= 15;
+			else
+			{
+				moveShift = false;
+				rotation.y = 0;
+			}
+		}
+		else
+		{
+			if (rotation.y < 180)
+				rotation.y += 15;
+			else
+			{
+				moveShift = false;
+				rotation.y = 180;
+			}
+		}
+
+		naObject->SetRotation(rotation);
+	}
+//--------------------------------------------
 }
