@@ -10,7 +10,6 @@
 #include <d3dx12.h>
 
 #include "Camera.h"
-#include "ComputeShade.h"
 
 class ParticleManager
 {
@@ -23,17 +22,15 @@ private: // エイリアス
 	using XMFLOAT4 = DirectX::XMFLOAT4;
 	using XMMATRIX = DirectX::XMMATRIX;
 public://構造体
-	////頂点データ
-	//struct VertexPos
-	//{
-	//	float frame;
-	//	//死亡フラグ
-	//	float isDead;
-	//	float pad;		
-	//	//ビルボードするかどうか
-	//	int billboardActive;
-
-	//};
+	//頂点データ
+	struct VertexPos
+	{
+		XMFLOAT3 pos; // xyz座標
+		float scale; // スケール
+		XMFLOAT4 color;//カラー
+		XMFLOAT3 rotation;//回転
+		unsigned int billboradActive;//ビルボードするかどうか
+	};
 	//定数バッファ
 	struct ConstBufferData
 	{
@@ -43,41 +40,28 @@ public://構造体
 
 public://メンバ関数
 	static ParticleManager* GetInstance();
-	void Add(Particle* newParticle,const std::string& TexName);
+	void Add(Particle* newParticle, const std::string& TexName);
 	void Initialize();
 	void Update();
 	void Draw();
 	inline void SetCamera(Camera* camera) { this->camera = camera; }
 	void CreateConstBuff();
 	void CreateModel();
-	void End();
 private://メンバ関数
 	ParticleManager() = default;
 	ParticleManager(const ParticleManager&) = delete;
 	~ParticleManager() = default;
 	ParticleManager& operator=(const ParticleManager&) = delete;
-	int activParticleCount = 0;
-	//更新時に変更されないデータ
-	std::vector<ParticleParameter> paramData;
-	//更新時に変更され、VSに送られるデータ
-	std::vector<OutputData> vertData;
+
 private://メンバ変数
-	//std::unordered_map<std::string,std::vector<OutputData>> particles;
-	//std::unordered_map<std::string, std::vector<ParticleParameter>> particleParams;
-	//void* vertData = nullptr;
-	//void* paramData = nullptr;
-
-	ComPtr<ID3D12Resource> constBuff;
+	std::unordered_map<std::string, std::forward_list<Particle*>> particles;
 	Camera* camera = nullptr;
+	ComPtr<ID3D12Resource> constBuff;
 	ComPtr<ID3D12Resource> vertBuff;
-	//ComPtr<ID3D12Resource> matBuff;
-	//ComPtr<ID3D12Resource> indexBuff;
-
 	D3D12_VERTEX_BUFFER_VIEW vbView;
-	//D3D12_INDEX_BUFFER_VIEW ibView = {};
-	//D3D12_VERTEX_BUFFER_VIEW matView{};//頂点バッファビュー
+	BLENDTYPE nowBlendType = ADD;
 
-	ComputeShade* computeShade = nullptr;
+	bool playerAddGauge = false;
 private: // 静的メンバ定数
 	static const int vertexCount = 65536;		// 頂点数
 private:

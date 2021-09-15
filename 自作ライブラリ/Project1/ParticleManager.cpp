@@ -1,145 +1,243 @@
 #include "ParticleManager.h"
-
 #include"DirectXLib.h"
 #include"PipelineState.h"
 #include"Texture.h"
 #include"PtrDelete.h"
-ParticleManager * ParticleManager::GetInstance()
+#include"Easing.h"
+#include"Player.h"
+ParticleManager* ParticleManager::GetInstance()
 {
 	static ParticleManager instance;
 	return &instance;
 }
 
-void ParticleManager::Add(Particle * newParticle,const std::string& TexName)
+void ParticleManager::Add(Particle* newParticle, const std::string& TexName)
 {
-	//particles[TexName].push_back(newParticle->vsParam);
-	//particleParams[TexName].push_back(newParticle->parameter);
-
-	paramData.push_back(newParticle->parameter);
-	vertData.push_back(newParticle->vsParam);
-	activParticleCount++;
+	particles[TexName].push_front(newParticle);
 }
 
 void ParticleManager::Initialize()
 {
 	CreateConstBuff();
 	CreateModel();
-	computeShade = new ComputeShade(vertexCount);
-	//ComputeWrapper::GetInstance()->AddShade(computeShade);
 }
 
 void ParticleManager::Update()
 {
 	HRESULT result;
-	//size_t offset  = NULL;
-	//for(auto it = particles.begin();it!= particles.end();++it )
-	//{
-	//	memcpy(&vertData + offset, it->second.data(), sizeof(OutputData) * (UINT)std::distance(it->second.begin(), it->second.end()));
-	//	offset += sizeof(OutputData) * (UINT)std::distance(it->second.begin(), it->second.end());
-	//}
-	//size_t offset2 = NULL;
-	//for (auto it = particleParams.begin(); it != particleParams.end(); ++it)
-	//{
-	//	memcpy(&paramData + offset2, it->second.data(), sizeof(ParticleParameter) * (UINT)std::distance(it->second.begin(), it->second.end()));
-	//	offset2 = sizeof(ParticleParameter) * (UINT)std::distance(it->second.begin(), it->second.end());
-	//}
-	
-	//コンピュートシェーダーにデータを転送
-	computeShade->Update(paramData.data(), vertData.data(),activParticleCount);
+
+	for (auto itr = particles.begin();
+		itr != particles.end();
+		itr++) {
+		if (itr->second.empty())
+			continue;
+		for (auto it = itr->second.begin(); it != itr->second.end(); it++)
+		{
+			// 経過フレーム数をカウント
+			(*it)->parameter.frame++;
+			// 進行度を0～1の範囲に換算
+			float f = (float)(*it)->parameter.frame / (*it)->parameter.num_frame;
+
+			if ((*it)->parameter.type != FEVER)
+			{
+				// 速度に加速度を加算
+				(*it)->parameter.velocity += (*it)->parameter.accel;
+				(*it)->parameter.velocity.Normalize();
+			}
+			// 速度による移動
+
+			switch ((*it)->parameter.type)
+			{
+			case DEFAULT:
+				(*it)->parameter.position += (*it)->parameter.velocity * 0.1f;
+				break;
+			case MOVE:
+				if ((*it)->parameter.frame < 20)
+				{
+					(*it)->parameter.position += (*it)->parameter.velocity * 0.1f;
+				}
+				if ((*it)->parameter.frame > 20 && (*it)->parameter.frame < 45)
+				{
+					(*it)->parameter.position += (*it)->parameter.velocity * 0.05f;
+				}
+				if ((*it)->parameter.frame > 35)
+				{
+					//(*it)->parameter.easeFrame++;
+					Vector3 vel = ((*it)->parameter.player->GetPosition() - (*it)->parameter.position) / ((*it)->parameter.num_frame - (*it)->parameter.frame);
+					(*it)->parameter.velocity = vel;
+					(*it)->parameter.position += (*it)->parameter.velocity;
+
+					//(*it)->parameter.position.x = Easing::EaseInOutQuart((*it)->parameter.position.x, (*it)->parameter.endPos.x, (*it)->parameter.maxFrame, (*it)->parameter.easeFrame);
+					//(*it)->parameter.position.y = Easing::EaseInOutQuart((*it)->parameter.position.y, (*it)->parameter.endPos.y, (*it)->parameter.maxFrame, (*it)->parameter.easeFrame);
+					//(*it)->parameter.position.z = Easing::EaseInOutQuart((*it)->parameter.position.z, (*it)->parameter.endPos.z, (*it)->parameter.maxFrame, (*it)->parameter.easeFrame);
+				}
+				break;
+			case HOMING:
+			{
+				if ((*it)->parameter.targetObj->IsDead())
+				{
+					PtrDelete(*it);
+					continue;
+				}
+				Vector3 vel = ((*it)->parameter.targetObj->GetPosition() + (*it)->parameter.gap - (*it)->parameter.position) / ((*it)->parameter.num_frame - (*it)->parameter.frame);
+				(*it)->parameter.velocity = vel;
+				(*it)->parameter.position += (*it)->parameter.velocity;
+				break;
+			}
+			case TIMEPLUS:
+			{
+				if ((*it)->parameter.frame <= 30)
+					(*it)->parameter.position.y = Easing::EaseInOutQuint((*it)->parameter.startPos.y, (*it)->parameter.startPos.y + 0.2f, 30, (*it)->parameter.frame);
+				else
+					(*it)->parameter.alpha -= 1.0f / 30;
+				break;
+			}
+			case FEVER:
+				if ((*it)->parameter.accel.y > 0)
+				{
+					if ((*it)->parameter.velocity.y < 0)
+						(*it)->parameter.velocity += (*it)->parameter.accel;
+					else
+						(*it)->parameter.velocity = {};
+				}
+				else
+				{
+					if ((*it)->parameter.velocity.y > 0)
+						(*it)->parameter.velocity += (*it)->parameter.accel;
+					else
+						(*it)->parameter.velocity = {};
+				}
+				(*it)->parameter.position += (*it)->parameter.velocity;
+
+				break;
+			default:
+				(*it)->parameter.position += (*it)->parameter.velocity * 0.1f;
+				break;
+			}
+
+			// カラーの線形補間
+			(*it)->parameter.color = (*it)->parameter.s_color + ((*it)->parameter.e_color - (*it)->parameter.s_color) * f;
+
+			//アルファ値の線形補間
+			//(*it)->parameter.alpha = (*it)->parameter.s_alpha + (((*it)->parameter.e_alpha - (*it)->parameter.s_alpha) * f);
+
+			//スケール速度に加速度を加算
+			(*it)->parameter.scaleVel += (*it)->parameter.scaleAce;
+
+			// スケールに速度を加算
+			(*it)->parameter.scale += (*it)->parameter.scaleVel;
+
+			// 回転の線形補間
+			(*it)->parameter.rotation = (*it)->parameter.s_rotation + ((*it)->parameter.e_rotation - (*it)->parameter.s_rotation) * f;
+
+			if ((*it)->parameter.frame >= (*it)->parameter.num_frame)
+			{
+				PtrDelete(*it);
+			}
+		}
+		itr->second.remove_if([](Particle* x) {return x == nullptr; });
+	}
+
+	// 頂点バッファへデータ転送
+	int vertCount = 0;
+	VertexPos* vertMap = nullptr;
+	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
+	if (SUCCEEDED(result)) {
+		// パーティクルの情報を1つずつ反映
+		for (auto itr = particles.begin();
+			itr != particles.end();
+			itr++) {
+			if (itr->second.empty())
+				continue;
+			for (auto it = itr->second.begin(); it != itr->second.end(); it++)
+			{
+				// 座標
+				vertMap->pos = (*it)->parameter.position;
+				// スケール
+				vertMap->scale = (*it)->parameter.scale;
+				//カラー
+				vertMap->color = { (*it)->parameter.color.x,(*it)->parameter.color.y,(*it)->parameter.color.z,(*it)->parameter.alpha };
+				//回転
+				Vector3 rotation = (*it)->parameter.rotation * 3.1415f / 180;
+				vertMap->rotation = rotation;
+				//ビルボードするかどうか
+				vertMap->billboradActive = (*it)->parameter.billboradActive;
+				// 次の頂点へ
+				vertMap++;
+				if (++vertCount >= vertexCount) {
+					break;
+				}
+			}
+		}
+		vertBuff->Unmap(0, nullptr);
+	}
+
 	// 定数バッファへデータ転送
 	ConstBufferData* constMap = nullptr;
 	result = constBuff->Map(0, nullptr, (void**)&constMap);
-	assert(SUCCEEDED(result));
 	constMap->mat = camera->GetMatViewProjection();
 	constMap->matBillboard = camera->GetMatBillboard();
 	constBuff->Unmap(0, nullptr);
+	if (playerAddGauge)
+		playerAddGauge = false;
 }
 
 void ParticleManager::Draw()
 {
-	auto cmdList = DirectXLib::GetInstance()->GetCommandList();
-	//computeShade->Dispatch(activParticleCount);
-	//size_t offset = 0;
-	memcpy(vertData.data(), computeShade->GetOutputData(), sizeof(OutputData) * activParticleCount);
-
-	for (auto it = vertData.begin(); it != vertData.end();)
-	{
-		if ((*it).isDead == 0)
-		{
-			++it;
-			continue;
-		}
-		it = vertData.erase(it);
-		//particleParams[it->first].erase(particleParams[it->first].begin() + (int)std::distance(it->second.begin(), itr));
-		paramData.erase(paramData.begin() + (int)std::distance(vertData.begin(), it));
-		if (activParticleCount > 0)
-			activParticleCount--;
-		if (activParticleCount <= 0)
-		{
-			vertData.clear();
-			paramData.clear();
-			break;
-		}
-	}
-	//std::vector<OutputData> sendData3;
-	//for (auto it = particles.begin(); it != particles.end(); ++it)
-	//{
-	//	memcpy(sendData3.data() + offset, it->second.data(), sizeof(OutputData) * (UINT)std::distance(it->second.begin(), it->second.end()));
-	//	offset = sizeof(OutputData) * (UINT)std::distance(it->second.begin(), it->second.end());
-	//}
-
-	const auto outPutPtr = vertData.data();
-	//if (outPutPtr != nullptr)
-	//{
-		// 頂点バッファへデータ転送
-	OutputData* vertMap = nullptr;
-	auto result = vertBuff->Map(0, nullptr, (void**)&vertMap);
-	if (SUCCEEDED(result)) {
-		memcpy(vertMap, outPutPtr, sizeof(OutputData) * activParticleCount);
-		vertBuff->Unmap(0, nullptr);
-	}
-	//}
-	PipelineState::SetPipeline("Particle", ADD);
-
-	//// パイプラインステートの設定
-	//DirectXLib::GetCommandList()->SetPipelineState(PipelineState::GetPipelinestateParticle(ADD).Get());
-	//// ルートシグネチャの設定
-	//DirectXLib::GetCommandList()->SetGraphicsRootSignature(PipelineState::GetRootsugnatureParticle().Get());
-	
+	auto cmdlist = DirectXLib::GetInstance()->GetCommandList();
+	// パイプラインステートの設定
+	PipelineState::SetPipeline("Particle", nowBlendType);
 	// プリミティブ形状を設定
-	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
-	//const D3D12_VERTEX_BUFFER_VIEW  buf[2] = { vbView,matView };
+	cmdlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+
 	// 頂点バッファの設定
-	cmdList->IASetVertexBuffers(0, 1, &vbView);
-	//cmdList->IASetIndexBuffer(&ibView);
+	cmdlist->IASetVertexBuffers(0, 1, &vbView);
 
 	// デスクリプタヒープの配列
 	ID3D12DescriptorHeap* ppHeaps[] = { Texture::GetBasicDescHeap().Get() };
-	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	cmdlist->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
 	// 定数バッファビューをセット
-	cmdList->SetGraphicsRootConstantBufferView(0, constBuff->GetGPUVirtualAddress());
+	cmdlist->SetGraphicsRootConstantBufferView(0, constBuff->GetGPUVirtualAddress());
 	int count = 0;
-	//for (auto itr = vertData.begin(); itr != vertData.end(); ++itr)
-	//{
-		//// パーティクルが1つもない場合
-		//if (itr.empty())
+	for (auto itr = particles.begin(); itr != particles.end(); itr++)
+	{
+		// パーティクルが1つもない場合
+		if (itr->second.empty())
+			continue;
+		UINT drawNum = (UINT)std::distance(itr->second.begin(), itr->second.end());
+		if (drawNum > vertexCount) {
+			drawNum = vertexCount;
+		}
+		//if (drawNum == 0) {
 		//	continue;
-	UINT drawNum = (UINT)std::distance(vertData.begin(), vertData.end());
-	if (drawNum > vertexCount) {
-		drawNum = vertexCount;
+		//}
+		auto particleIt = itr->second.begin();
+		if (nowBlendType != (*particleIt)->parameter.blendType)
+		{
+			nowBlendType = (*particleIt)->parameter.blendType;
+			PipelineState::SetPipeline("Particle", nowBlendType);
+			// プリミティブ形状を設定
+			cmdlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+			// 頂点バッファの設定
+			cmdlist->IASetVertexBuffers(0, 1, &vbView);
+
+			// デスクリプタヒープの配列
+			ID3D12DescriptorHeap* ppHeaps[] = { Texture::GetBasicDescHeap().Get() };
+			cmdlist->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+
+			// 定数バッファビューをセット
+			cmdlist->SetGraphicsRootConstantBufferView(0, constBuff->GetGPUVirtualAddress());
+
+		}
+
+		// シェーダリソースビューをセット
+		cmdlist->SetGraphicsRootDescriptorTable(1, Texture::GetGpuDescHandleSRV(itr->first));
+		// 描画コマンド
+		cmdlist->DrawInstanced(drawNum, 1, count, 0);
+		count += drawNum;
 	}
-	//if (drawNum == 0) {
-	//	continue;
-	//}
-
-	// シェーダリソースビューをセット
-	cmdList->SetGraphicsRootDescriptorTable(1, Texture::GetGpuDescHandleSRV("particle"));
-	// 描画コマンド
-	cmdList->DrawInstanced(drawNum, 1, count, 0);
-	count += drawNum;
-	//}
-
 }
 
 void ParticleManager::CreateConstBuff()
@@ -148,7 +246,7 @@ void ParticleManager::CreateConstBuff()
 	result = DirectXLib::GetInstance()->GetDevice()->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), 	// アップロード可能
 		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferData) + 0xff)&~0xff),
+		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferData) + 0xff) & ~0xff),
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(&constBuff));
@@ -161,12 +259,12 @@ void ParticleManager::CreateConstBuff()
 void ParticleManager::CreateModel()
 {
 	HRESULT result = S_FALSE;
-	auto dev = DirectXLib::GetInstance()->GetDevice();
+
 	// 頂点バッファ生成
-	result = dev->CreateCommittedResource(
+	result = DirectXLib::GetInstance()->GetDevice()->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(sizeof(OutputData)*vertexCount),
+		&CD3DX12_RESOURCE_DESC::Buffer(sizeof(VertexPos) * vertexCount),
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(&vertBuff));
@@ -177,58 +275,6 @@ void ParticleManager::CreateModel()
 
 	// 頂点バッファビューの作成
 	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
-	vbView.SizeInBytes = sizeof(OutputData)*vertexCount;
-	vbView.StrideInBytes = sizeof(OutputData);
-
-
-	//result = dev->CreateCommittedResource(
-	//	&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-	//	D3D12_HEAP_FLAG_NONE,
-	//	&CD3DX12_RESOURCE_DESC::Buffer(sizeof(XMMATRIX) * vertexCount),
-	//	D3D12_RESOURCE_STATE_GENERIC_READ,
-	//	nullptr,
-	//	IID_PPV_ARGS(&matBuff));
-	//if (FAILED(result)) {
-	//	assert(0);
-	//	return;
-	//}
-
-	//// 頂点バッファビューの作成
-	//matView.BufferLocation = matBuff->GetGPUVirtualAddress();
-	//matView.SizeInBytes = sizeof(XMMATRIX) * vertexCount;
-	//matView.StrideInBytes = sizeof(XMMATRIX);
-
-	
-	//UINT sizeIB = static_cast<UINT>(sizeof(unsigned short));
-	//// インデックスバッファ生成
-	//result = dev->CreateCommittedResource(
-	//	&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-	//	D3D12_HEAP_FLAG_NONE,
-	//	&CD3DX12_RESOURCE_DESC::Buffer(sizeIB),
-	//	D3D12_RESOURCE_STATE_GENERIC_READ,
-	//	nullptr,
-	//	IID_PPV_ARGS(&indexBuff));
-	//if (FAILED(result)) {
-	//	assert(0);
-	//	return;
-	//}
-
-	//// インデックスバッファへのデータ転送
-	//unsigned short* indexMap = nullptr;
-	//result = indexBuff->Map(0, nullptr, (void**)&indexMap);
-	//if (SUCCEEDED(result)) {
-	//	indexMap[0] = 0;
-	//	indexBuff->Unmap(0, nullptr);
-	//}
-
-	//// インデックスバッファビューの作成
-	//ibView.BufferLocation = indexBuff->GetGPUVirtualAddress();
-	//ibView.Format = DXGI_FORMAT_R16_UINT;
-	//ibView.SizeInBytes = sizeIB;
-
-}
-
-void ParticleManager::End()
-{
-	PtrDelete(computeShade);
+	vbView.SizeInBytes = sizeof(VertexPos) * vertexCount;
+	vbView.StrideInBytes = sizeof(VertexPos);
 }

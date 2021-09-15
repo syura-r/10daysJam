@@ -204,7 +204,7 @@ void Game::Initialize()
 	//ShowCursor(false);
 	nowLoading = true;
 
-	ComputeShade::StaticInitialize();
+	//ComputeShade::StaticInitialize();
 	
 	FPS::Initialize();
 	
