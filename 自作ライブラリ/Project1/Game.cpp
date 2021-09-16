@@ -84,6 +84,11 @@ void Game::RoadAsset()
 		FBXManager::LoadModelFile("boneTest", "boneTest", true);
 		FBXManager::LoadModelFile("Hidari1", "Hidari1", true);
 		FBXManager::LoadModelFile("Hidari2", "Hidari2", true);
+		FBXManager::LoadModelFile("Hidari1_1", "Hidari1_1", true);
+		FBXManager::LoadModelFile("Hidari1_2", "Hidari1_2", true);
+		FBXManager::LoadModelFile("Hidari2_1", "Hidari2_1", true);
+		FBXManager::LoadModelFile("Hidari2_2", "Hidari2_2", true);
+		FBXManager::LoadModelFile("Hidari2_3", "Hidari2_3", true);
 
 		//FBXManager::LoadModelFile("cleaningToolStorage", "cleaningToolStorage", true);
 
@@ -169,7 +174,7 @@ void Game::LoadFinish()
 	sceneManeger->Add(Scene::SCENE::Title, new Title());
 	sceneManeger->Add(Scene::SCENE::Play, new Play());
 	sceneManeger->Add(Scene::SCENE::Ending, new Ending());
-	sceneManeger->Change(Scene::SCENE::Play);
+	sceneManeger->Change(Scene::SCENE::Title);
 
 	postEffect = new PostEffect();
 
@@ -218,6 +223,7 @@ void Game::Initialize()
 	Object3D::SetCamera(camera);
 	ParticleEmitter::Initialize(camera);
 	Player::SetDebugCamera(camera);
+	Title::SetCamera(camera);
 
 	loadTex = new Sprite();
 	loadDot = new Sprite();
@@ -320,6 +326,7 @@ void Game::End()
 	PtrDelete(postEffect);
 	PtrDelete(loadTex);
 	PtrDelete(loadDot);
+	PtrDelete(lightCamera);
 
 	ParticleEmitter::End();
 	OBJLoader::DeleteModels();
