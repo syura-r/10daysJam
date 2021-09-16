@@ -34,8 +34,8 @@ void Title::Initialize()
 	//カメラリセット
 	camera->SetMatrixView({ 0, 0, -10 }, { 0, 0, 1 }, { 0, 1, 0 });
 
-	parts_array.at(0)->Initialize(Vector3{ -6,-2,0 }, Vector3{ 90,0,0 });
-	parts_array.at(1)->Initialize(Vector3{ -3,-2,0 }, Vector3{ 90,0,0 });
+	parts_array.at(0)->Initialize(Vector3{ -6,-2,0 }, Vector3{ 0,0,0 });
+	parts_array.at(1)->Initialize(Vector3{ -3,-2,0 }, Vector3{ 0,0,0 });
 	parts_array.at(2)->Initialize(Vector3{ 0,-2,0 }, Vector3{ 0,0,0 });
 	parts_array.at(3)->Initialize(Vector3{ 3,-2,0 }, Vector3{ 0,0,0 });
 	parts_array.at(4)->Initialize(Vector3{ 6,-2,0 }, Vector3{ 0,0,0 });
@@ -160,11 +160,7 @@ bool Title::RiseObjects()
 		for (int i = 0; i < parts_array.size(); i++)
 		{
 			parts_array.at(i)->easingCounter = 0.0f;
-			parts_array.at(i)->obj->SetRotation(Vector3{ 90.0f, 0.0f, 0.0f });
-			if (i >= 2)
-			{
-				parts_array.at(i)->obj->SetRotation(Vector3{ 0.0f, 0.0f, 0.0f });
-			}
+			parts_array.at(i)->obj->SetRotation(Vector3{ 0.0f, 0.0f, 0.0f });
 		}
 		return true;
 	}
@@ -173,7 +169,7 @@ bool Title::RiseObjects()
 
 bool Title::UnionObjects()
 {
-	Vector3 unionTargetPositionA, unionTargetPositionB;
+	Vector3 unionTargetPosition;
 	Vector3 posA, posB;
 	const float easingMax = 30.0f;
 	const int aftertime = 30;
@@ -189,22 +185,21 @@ bool Title::UnionObjects()
 
 	case 1://0-1
 		//合体目標地点
-		unionTargetPositionA = Vector3{ 0, 100, 0 };
-		//カメラ調整
-		camera->SetTarget(unionTargetPositionA);
+		unionTargetPosition = Vector3{ 0, 100, 0 };
+		camera->SetTarget(unionTargetPosition + Vector3{ 0, 2, 0 });
 
-		posA.x = Easing::EaseInQuint(parts_array.at(0)->startPosition.x, unionTargetPositionA.x, easingMax, parts_array.at(0)->easingCounter);
-		posA.y = Easing::EaseInQuint(parts_array.at(0)->startPosition.y, unionTargetPositionA.y, easingMax, parts_array.at(0)->easingCounter);
-		posA.z = Easing::EaseInQuint(parts_array.at(0)->startPosition.z, unionTargetPositionA.z, easingMax, parts_array.at(0)->easingCounter);
+		posA.x = Easing::EaseInQuint(parts_array.at(0)->startPosition.x, unionTargetPosition.x, easingMax, parts_array.at(0)->easingCounter);
+		posA.y = Easing::EaseInQuint(parts_array.at(0)->startPosition.y, unionTargetPosition.y, easingMax, parts_array.at(0)->easingCounter);
+		posA.z = Easing::EaseInQuint(parts_array.at(0)->startPosition.z, unionTargetPosition.z, easingMax, parts_array.at(0)->easingCounter);
 		if (parts_array.at(0)->easingCounter < easingMax)
 		{
 			parts_array.at(0)->easingCounter++;
 		}
 		parts_array.at(0)->obj->SetPosition(posA);
 
-		posB.x = Easing::EaseInQuint(parts_array.at(1)->startPosition.x, unionTargetPositionA.x, easingMax, parts_array.at(1)->easingCounter);
-		posB.y = Easing::EaseInQuint(parts_array.at(1)->startPosition.y, unionTargetPositionA.y, easingMax, parts_array.at(1)->easingCounter);
-		posB.z = Easing::EaseInQuint(parts_array.at(1)->startPosition.z, unionTargetPositionA.z, easingMax, parts_array.at(1)->easingCounter);
+		posB.x = Easing::EaseInQuint(parts_array.at(1)->startPosition.x, unionTargetPosition.x, easingMax, parts_array.at(1)->easingCounter);
+		posB.y = Easing::EaseInQuint(parts_array.at(1)->startPosition.y, unionTargetPosition.y, easingMax, parts_array.at(1)->easingCounter);
+		posB.z = Easing::EaseInQuint(parts_array.at(1)->startPosition.z, unionTargetPosition.z, easingMax, parts_array.at(1)->easingCounter);
 		if (parts_array.at(1)->easingCounter < easingMax)
 		{
 			parts_array.at(1)->easingCounter++;
@@ -233,39 +228,37 @@ bool Title::UnionObjects()
 		parts_array.at(0)->obj->SetPosition(Vector3(0, 0, 0));
 		parts_array.at(1)->obj->SetPosition(Vector3(0, 0, 0));
 		//合体準備地点
-		parts_array.at(2)->startPosition = Vector3{ 0, 110 - AtoB_distance, 0 };
-		parts_array.at(3)->startPosition = Vector3{ 0, 100 - AtoB_distance, 0 };
-		parts_array.at(4)->startPosition = Vector3{ 0, 90 - AtoB_distance, 0 };
+		parts_array.at(2)->startPosition = Vector3{ 0, 110, 0 };
+		parts_array.at(3)->startPosition = Vector3{ 0, 100, 0 };
+		parts_array.at(4)->startPosition = Vector3{ 0, 90, 0 };
 		unionNum++;
 		break;
 
 	case 3://2-3-4
 		//合体目標地点
-		unionTargetPositionA = Vector3{ 0, 100 - AtoB_distance, 0 };
-		//カメラ調整
-		camera->SetTarget(unionTargetPositionA + Vector3{ 0, AtoB_distance, 0 });
+		unionTargetPosition = Vector3{ 0, 100, 0 };
 
-		posA.x = Easing::EaseInQuint(parts_array.at(2)->startPosition.x, unionTargetPositionA.x, easingMax, parts_array.at(2)->easingCounter);
-		posA.y = Easing::EaseInQuint(parts_array.at(2)->startPosition.y, unionTargetPositionA.y, easingMax, parts_array.at(2)->easingCounter);
-		posA.z = Easing::EaseInQuint(parts_array.at(2)->startPosition.z, unionTargetPositionA.z, easingMax, parts_array.at(2)->easingCounter);
+		posA.x = Easing::EaseInQuint(parts_array.at(2)->startPosition.x, unionTargetPosition.x, easingMax, parts_array.at(2)->easingCounter);
+		posA.y = Easing::EaseInQuint(parts_array.at(2)->startPosition.y, unionTargetPosition.y, easingMax, parts_array.at(2)->easingCounter);
+		posA.z = Easing::EaseInQuint(parts_array.at(2)->startPosition.z, unionTargetPosition.z, easingMax, parts_array.at(2)->easingCounter);
 		if (parts_array.at(2)->easingCounter < easingMax)
 		{
 			parts_array.at(2)->easingCounter++;
 		}
 		parts_array.at(2)->obj->SetPosition(posA);
 
-		posB.x = Easing::EaseInQuint(parts_array.at(3)->startPosition.x, unionTargetPositionA.x, easingMax, parts_array.at(3)->easingCounter);
-		posB.y = Easing::EaseInQuint(parts_array.at(3)->startPosition.y, unionTargetPositionA.y, easingMax, parts_array.at(3)->easingCounter);
-		posB.z = Easing::EaseInQuint(parts_array.at(3)->startPosition.z, unionTargetPositionA.z, easingMax, parts_array.at(3)->easingCounter);
+		posB.x = Easing::EaseInQuint(parts_array.at(3)->startPosition.x, unionTargetPosition.x, easingMax, parts_array.at(3)->easingCounter);
+		posB.y = Easing::EaseInQuint(parts_array.at(3)->startPosition.y, unionTargetPosition.y, easingMax, parts_array.at(3)->easingCounter);
+		posB.z = Easing::EaseInQuint(parts_array.at(3)->startPosition.z, unionTargetPosition.z, easingMax, parts_array.at(3)->easingCounter);
 		if (parts_array.at(3)->easingCounter < easingMax)
 		{
 			parts_array.at(3)->easingCounter++;
 		}
 		parts_array.at(3)->obj->SetPosition(posB);
 
-		posB.x = Easing::EaseInQuint(parts_array.at(4)->startPosition.x, unionTargetPositionA.x, easingMax, parts_array.at(4)->easingCounter);
-		posB.y = Easing::EaseInQuint(parts_array.at(4)->startPosition.y, unionTargetPositionA.y, easingMax, parts_array.at(4)->easingCounter);
-		posB.z = Easing::EaseInQuint(parts_array.at(4)->startPosition.z, unionTargetPositionA.z, easingMax, parts_array.at(4)->easingCounter);
+		posB.x = Easing::EaseInQuint(parts_array.at(4)->startPosition.x, unionTargetPosition.x, easingMax, parts_array.at(4)->easingCounter);
+		posB.y = Easing::EaseInQuint(parts_array.at(4)->startPosition.y, unionTargetPosition.y, easingMax, parts_array.at(4)->easingCounter);
+		posB.z = Easing::EaseInQuint(parts_array.at(4)->startPosition.z, unionTargetPosition.z, easingMax, parts_array.at(4)->easingCounter);
 		if (parts_array.at(4)->easingCounter < easingMax)
 		{
 			parts_array.at(4)->easingCounter++;
@@ -303,14 +296,11 @@ bool Title::UnionObjects()
 
 	case 5://(0-1)-(2-3-4)
 		//合体目標地点
-		unionTargetPositionA = Vector3{ 0, 100, 0 };
-		unionTargetPositionB = unionTargetPositionA - Vector3{ 0, AtoB_distance, 0 };
-		//カメラ調整
-		camera->SetTarget(unionTargetPositionA);
+		unionTargetPosition = Vector3{ 0, 100, 0 };
 
-		posA.x = Easing::EaseInQuint(parts_array.at(0)->startPosition.x, unionTargetPositionA.x, easingMax, parts_array.at(0)->easingCounter);
-		posA.y = Easing::EaseInQuint(parts_array.at(0)->startPosition.y, unionTargetPositionA.y, easingMax, parts_array.at(0)->easingCounter);
-		posA.z = Easing::EaseInQuint(parts_array.at(0)->startPosition.z, unionTargetPositionA.z, easingMax, parts_array.at(0)->easingCounter);
+		posA.x = Easing::EaseInQuint(parts_array.at(0)->startPosition.x, unionTargetPosition.x, easingMax, parts_array.at(0)->easingCounter);
+		posA.y = Easing::EaseInQuint(parts_array.at(0)->startPosition.y, unionTargetPosition.y, easingMax, parts_array.at(0)->easingCounter);
+		posA.z = Easing::EaseInQuint(parts_array.at(0)->startPosition.z, unionTargetPosition.z, easingMax, parts_array.at(0)->easingCounter);
 		if (parts_array.at(0)->easingCounter < easingMax)
 		{
 			parts_array.at(0)->easingCounter += 0.5f;
@@ -318,9 +308,9 @@ bool Title::UnionObjects()
 		parts_array.at(0)->obj->SetPosition(posA);
 		parts_array.at(1)->obj->SetPosition(posA);
 
-		posB.x = Easing::EaseInQuint(parts_array.at(2)->startPosition.x, unionTargetPositionB.x, easingMax, parts_array.at(2)->easingCounter);
-		posB.y = Easing::EaseInQuint(parts_array.at(2)->startPosition.y, unionTargetPositionB.y, easingMax, parts_array.at(2)->easingCounter);
-		posB.z = Easing::EaseInQuint(parts_array.at(2)->startPosition.z, unionTargetPositionB.z, easingMax, parts_array.at(2)->easingCounter);
+		posB.x = Easing::EaseInQuint(parts_array.at(2)->startPosition.x, unionTargetPosition.x, easingMax, parts_array.at(2)->easingCounter);
+		posB.y = Easing::EaseInQuint(parts_array.at(2)->startPosition.y, unionTargetPosition.y, easingMax, parts_array.at(2)->easingCounter);
+		posB.z = Easing::EaseInQuint(parts_array.at(2)->startPosition.z, unionTargetPosition.z, easingMax, parts_array.at(2)->easingCounter);
 		if (parts_array.at(2)->easingCounter < easingMax)
 		{
 			parts_array.at(2)->easingCounter += 0.5f;
@@ -365,10 +355,6 @@ bool Title::poseObjects()
 		for (int i = 0; i < parts_array.size(); i++)
 		{
 			parts_array.at(i)->obj->SetPosition(Vector3{ 0,100,200 });
-			if (i <= 2)
-			{
-				parts_array.at(i)->obj->SetPosition(parts_array.at(i)->obj->GetPosition() - Vector3{ 0,AtoB_distance,0 });
-			}
 		}
 		parts_array.at(0)->startPosition = parts_array.at(0)->obj->GetPosition();
 		parts_array.at(0)->startRotation = parts_array.at(0)->obj->GetRotation();
@@ -381,10 +367,6 @@ bool Title::poseObjects()
 		pos.z = Easing::EaseInQuint(parts_array.at(0)->startPosition.z, targetPosition.z, easingMax, parts_array.at(0)->easingCounter);
 		for (int i = 0; i < parts_array.size(); i++)
 		{
-			if (i >= 2)
-			{
-				pos.y = parts_array.at(0)->obj->GetPosition().y - AtoB_distance;
-			}
 			parts_array.at(i)->obj->SetPosition(pos);
 		}
 
@@ -393,10 +375,6 @@ bool Title::poseObjects()
 		rota.y = Easing::EaseInQuint(parts_array.at(0)->startRotation.y, 360.0f * 10.0f, easingMax, parts_array.at(0)->easingCounter);
 		for (int i = 0; i < parts_array.size(); i++)
 		{
-			if (i >= 2)
-			{
-				rota.x = 0.0f;
-			}
 			parts_array.at(i)->obj->SetRotation(rota);
 		}
 

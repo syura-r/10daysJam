@@ -59,7 +59,6 @@ private:
 	int unionAfterCounter;
 	bool poseObjects();//movienum3
 
-	const float AtoB_distance = 2.0f;//エを下げる量
 
 	Sprite* logo = nullptr;//タイトルロゴ
 };
