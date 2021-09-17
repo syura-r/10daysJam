@@ -15,7 +15,7 @@ cbuffer cbuff1 : register(b1)
     float m_alpha : packoffset(c2.w); // アルファ
 }
 
-cbuffer cbuff3 : register(b3)
+cbuffer cbuff3 : register(b4)
 {
     //float4 Status;
 	
@@ -27,6 +27,20 @@ cbuffer cbuff3 : register(b3)
 
 }
 
+static const int MAX_BONES = 32;
+cbuffer skinning : register(b3)
+{
+    matrix matSkinning[MAX_BONES];
+}
+
+struct VSInput
+{
+    float4 svpos : POSITION; // システム用頂点座標	
+    float3 normal : NORMAL; //法線
+    float2 uv : TEXCOORD; // uv値
+    uint4 boneIndices : BONEINDICES;
+    float4 boneWeights : BONEWEIGHTS;
+};
 
 // 平行光源の数
 static const int DIRLIGHT_NUM = 3;

@@ -43,6 +43,18 @@ private:
 	};
 	//現在の攻撃状態
 	ATTACKSTATE nowAttackState;
+
+	enum ANIMATIONSTATE
+	{
+		Wait,//待機アニメーション
+		Walk,//歩き
+		Jump,//ジャンプ
+		Turn,//振り向き
+	};
+	//現在のアニメーション状態
+	ANIMATIONSTATE nowAnimationState;
+	
+	Object* hitObj = nullptr;
 private://静的メンバ変数
 	static DebugCamera* camera;
 	static LightCamera* lightCamera;

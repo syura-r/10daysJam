@@ -55,10 +55,10 @@ void GSmain(
     const float3 normal = normalize(cross(vec1, vec2) + randNormal);
     const float3 randNormal2 = float3(random(float2(random(randNormal.xx), random(randNormal.zx))) - 0.5, random(float2(random(randNormal.xy), random(randNormal.xz))) - 0.5, random(float2(random(randNormal.yy), random(randNormal.yz))) - 0.5);
 
-    const float randPoint = abs(random(randNormal2.xy) / 2);
+    //const float randPoint = abs(random(randNormal2.xy) / 2);
 	
-    const float destruction = EaseInOutQuart(0, 1.0f, 600, 600 * smoothstep(randPoint, randPoint + 0.5f, _Destruction));
-
+    //const float destruction = EaseInOutQuart(0, 1.0f, 600, 600 * smoothstep(randPoint, randPoint + 0.5f, _Destruction));
+    const float destruction = _Destruction;
 
 	//if (destruction != 0)
     //{

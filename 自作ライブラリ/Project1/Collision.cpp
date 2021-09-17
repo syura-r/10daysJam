@@ -1,7 +1,7 @@
 #include "Collision.h"
 Window* Collision::window = nullptr;
 using namespace DirectX;
-
+#include<cmath>
 void Collision::ClosestPtPoint2Triangle(const DirectX::XMVECTOR & point, const Triangle & triangle, DirectX::XMVECTOR * closest)
 {
 	//pointがp0の外側の頂点領域の中にあるかどうかチェック
@@ -154,6 +154,24 @@ bool Collision::CheckBoxBox(const Box& box1, const Box& box2, XMVECTOR* inter, X
 		if(reject)
 		{
 			//考え中(移動ベクトルないと無理じゃない？)
+			//とりあえず2Dでの処理用にXとY軸で重なりの大きい方向を排斥ベクトルとする
+			auto a = box2.maxPosition - box1.minPosition;
+			auto b = box2.minPosition - box1.maxPosition;
+			Vector3 rejectVec = {};
+			if (a.x < abs(b.x))
+				rejectVec.x = a.x;
+			else
+				rejectVec.x = b.x;
+			if (a.y < abs(b.y))
+				rejectVec.y = a.y;
+			else
+				rejectVec.y = b.y;
+			if (abs(rejectVec.x) < abs(rejectVec.y))
+				rejectVec.y = 0;
+			else
+				rejectVec.x = 0;
+
+			*reject = XMVectorSet(rejectVec.x, -rejectVec.y, rejectVec.z, 1);
 		}
 		return true;
 	}
@@ -340,6 +358,50 @@ bool Collision::CheckRay2Sphere(const Ray & lay, const Sphere & sphere, float * 
 
 	if (inter) {
 		*inter = lay.start + t * lay.dir;
+	}
+
+	return true;
+}
+
+bool Collision::CheckRay2Box(const Ray& lay, const Box& box, float* distance, DirectX::XMVECTOR* inter)
+{
+	// 交差判定
+	float p[3], d[3], min[3], max[3];
+	memcpy(p, &lay.start, sizeof(Vector3));
+	memcpy(d, &lay.dir, sizeof(Vector3));
+	memcpy(min, &box.minPosition, sizeof(Vector3));
+	memcpy(max, &box.maxPosition, sizeof(Vector3));
+
+	float t = -FLT_MAX;
+	float t_max = FLT_MAX;
+
+	for (int i = 0; i < 3; ++i) {
+		if (abs(d[i]) < FLT_EPSILON) {
+			if (p[i] < min[i] || p[i] > max[i])
+				return false; // 交差していない
+		}
+		else {
+			// スラブとの距離を算出
+			// t1が近スラブ、t2が遠スラブとの距離
+			float odd = 1.0f / d[i];
+			float t1 = (min[i] - p[i]) * odd;
+			float t2 = (max[i] - p[i]) * odd;
+			if (t1 > t2) {
+				float tmp = t1; t1 = t2; t2 = tmp;
+			}
+
+			if (t1 > t) t = t1;
+			if (t2 < t_max) t_max = t2;
+
+			// スラブ交差チェック
+			if (t >= t_max)
+				return false;
+		}
+	}
+	*distance = t;
+	// 交差している
+	if (inter) {
+		*inter = lay.start + t * (lay.dir);
 	}
 
 	return true;

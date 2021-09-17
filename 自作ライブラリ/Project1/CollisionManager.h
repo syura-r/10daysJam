@@ -40,10 +40,13 @@ public://メンバ関数
 	/// <param name="right"></param>領域の右端
 	/// <param name="bottom"></param>領域の下端
 	void Initialize(float left, float top, float right, float bottom);
-	bool Raycast(const Ray& ray, RaycastHit* hitinfo = nullptr, float maxDistance = D3D12_FLOAT32_MAX);
-	bool Raycast(const Ray& ray,unsigned short attribute, RaycastHit* hitinfo = nullptr, float maxDistance = D3D12_FLOAT32_MAX);
+	bool Raycast(BaseCollider* collider,const Ray& ray, RaycastHit* hitinfo = nullptr, float maxDistance = D3D12_FLOAT32_MAX);
+	bool Raycast(BaseCollider* collider,const Ray& ray,unsigned short attribute, RaycastHit* hitinfo = nullptr, float maxDistance = D3D12_FLOAT32_MAX);
 	//球による衝突全検索
 	void QuerySphere(const Sphere& sphere, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff);
+	//ボックスによる衝突全検索
+	void QueryBox(const Box& box, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff);
+
 private:
 	CollisionManager() = default;
 	CollisionManager(const CollisionManager&) = default;

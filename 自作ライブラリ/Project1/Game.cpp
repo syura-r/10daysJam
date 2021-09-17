@@ -75,13 +75,15 @@ void Game::RoadAsset()
 
 		break;
 	case 3:
+		//FBXファイルの読み込み
+		FBXManager::LoadModelFile("Migi1_1", "Migi1_1", true);
+		FBXManager::LoadModelFile("Migi1_2", "Migi1_2", true);
+		FBXManager::LoadModelFile("Migi2", "Migi2", true);
 
 		break;
 
 	case 4:
 		//FBXファイルの読み込み
-		FBXManager::LoadModelFile("cube", "cube", true);
-		FBXManager::LoadModelFile("boneTest", "boneTest", true);
 		FBXManager::LoadModelFile("Hidari1", "Hidari1", true);
 		FBXManager::LoadModelFile("Hidari2", "Hidari2", true);
 
@@ -163,7 +165,7 @@ void Game::LoadFinish()
 	Player::SetLightCamera(lightCamera);
 
 	
-	CollisionManager::GetInstance()->Initialize(0,20,500,0);
+	CollisionManager::GetInstance()->Initialize(0,30,200,0);
 	
 	sceneManeger = SceneManager::GetInstance();
 	sceneManeger->Add(Scene::SCENE::Title, new Title());

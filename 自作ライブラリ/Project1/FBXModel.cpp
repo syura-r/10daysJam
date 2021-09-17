@@ -110,14 +110,14 @@ void FBXModel::Draw()
 	//static int a = 0;
 	//a++;
 	//if(a == 1)
-	if(isPlay)
-	{
-		currentTime += frameTime;
-		if(currentTime>endTime)
-		{
-			currentTime = startTime;
-		}
-	}
+	//if(isPlay)
+	//{
+	//	currentTime += frameTime;
+	//	if(currentTime>endTime)
+	//	{
+	//		currentTime = startTime;
+	//	}
+	//}
 	//定数バッファのデータ転送
 	ConstBufferDataSkin* constMapSkin = nullptr;
 	HRESULT result = constBuffSkin->Map(0, nullptr, (void**)&constMapSkin);
@@ -158,7 +158,7 @@ void FBXModel::Draw()
 	
 }
 
-void FBXModel::PlayAnimation()
+void FBXModel::AnimationInit()
 {
 	//0番のアニメーション取得
 	FbxAnimStack* animstack = fbxScene->GetSrcObject<FbxAnimStack>(0);
@@ -175,4 +175,36 @@ void FBXModel::PlayAnimation()
 	currentTime = startTime;
 	//再生中状態にする
 	isPlay = true;
+}
+
+void FBXModel::SetAnimationFrame(const int startFrame, const int endFrame, const int FrameTime)
+{
+	startTime.SetTime(0, 0, 0, startFrame, 0, FbxTime::EMode::eFrames60);
+	currentTime = startTime;
+	endTime.SetTime(0, 0, 0, endFrame, 0, FbxTime::EMode::eFrames60);
+	if(startFrame > endFrame)
+		frameTime.SetTime(0, 0, 0, -FrameTime, 0, FbxTime::EMode::eFrames60);
+	else
+		frameTime.SetTime(0, 0, 0, FrameTime, 0, FbxTime::EMode::eFrames60);
+	isPlay = true;
+}
+
+bool FBXModel::PlayAnimation(bool endless)
+{
+	if (!isPlay)
+		return false;
+	
+	currentTime += frameTime;
+	if ((currentTime > endTime && frameTime > 0) || (currentTime < endTime && frameTime < 0))
+	{
+		currentTime = startTime;
+		if (!endless)
+		{
+			isPlay = false;
+			return false;
+		}
+	}
+
+
+	return true;
 }

@@ -93,10 +93,11 @@ void CollisionManager::CheckAllCollisions()
 			BoxCollider* BoxA = dynamic_cast<BoxCollider*>(colA);
 			BoxCollider* BoxB = dynamic_cast<BoxCollider*>(colB);
 			DirectX::XMVECTOR inter;
-			if (Collision::CheckBoxBox(*BoxA, *BoxB, &inter))
+			XMVECTOR tempReject;
+			if (Collision::CheckBoxBox(*BoxA, *BoxB, &inter, &tempReject))
 			{
-				colA->OnCollision(CollisionInfo(colB->GetObject3D(), colB, inter));
-				colB->OnCollision(CollisionInfo(colA->GetObject3D(), colA, inter));
+				colA->OnCollision(CollisionInfo(colB->GetObject3D(), colB, inter, tempReject));
+				colB->OnCollision(CollisionInfo(colA->GetObject3D(), colA, inter, tempReject));
 			}
 		}
 		//ボックスと球の場合
@@ -222,39 +223,35 @@ void CollisionManager::CheckAllCollisions()
 void CollisionManager::Initialize(float left, float top, float right, float bottom)
 {
 	if (!L4Tree.Init(
-		7,
+		8,
 		left, top, right, bottom))
 		assert(0);
 
 }
 
-bool CollisionManager::Raycast(const Ray & ray, RaycastHit * hitinfo, float maxDistance)
+bool CollisionManager::Raycast(BaseCollider* collider,const Ray & ray, RaycastHit * hitinfo, float maxDistance)
 {
-	return Raycast(ray, 0xffff, hitinfo, maxDistance);
+	return Raycast(collider,ray, 0xffff, hitinfo, maxDistance);
 }
 
-bool CollisionManager::Raycast(const Ray & ray, unsigned short attribute, RaycastHit * hitinfo, float maxDistance)
+bool CollisionManager::Raycast(BaseCollider* collider,const Ray & ray, unsigned short attribute, RaycastHit * hitinfo, float maxDistance)
 {
 	bool result = false;
 	//走査用のイテレータ
-	std::vector<BaseCollider*>::iterator it;
+	//std::vector<BaseCollider*>::iterator it;
 	//今までで最も近いコライダーを記録する為のイテレータ
-	std::vector<BaseCollider*>::iterator it_hit;
+	BaseCollider* hitCollider;
 	//今までで最も近いコライダーの距離を記録する変数
 	float distance = maxDistance;
 	//今までで最も近いコライダーとの交点を記録する変数
 	XMVECTOR inter;
-
-	//全てのコライダーと総当たりチェック
-	it = colliders.begin();
-	for (; it != colliders.end(); ++it)
-	{
-		BaseCollider* colA = *it;
-
-		//属性が合わなければスキップ
+	DWORD collisionCount = L4Tree.GetTargetCollisionList(ColVect, collider->GetMin().x, collider->GetMax().y, collider->GetMax().x, collider->GetMin().y);
+	DWORD c;
+	for (c = 0; c < collisionCount; c++) {
+		BaseCollider* colA = ColVect[c];
 		if (!(colA->attribute & attribute))
 			continue;
-
+		
 		//球の場合
 		if (colA->GetShapeType() == COLLISIONSHAPE_SPHERE)
 		{
@@ -269,7 +266,7 @@ bool CollisionManager::Raycast(const Ray & ray, unsigned short attribute, Raycas
 			result = true;
 			distance = tempDistance;
 			inter = tempinter;
-			it_hit = it;
+			hitCollider = colA;
 		}
 		//メッシュの場合
 		else if (colA->GetShapeType() == COLLISIONSHAPE_MESH)
@@ -284,15 +281,32 @@ bool CollisionManager::Raycast(const Ray & ray, unsigned short attribute, Raycas
 			result = true;
 			distance = tempDistance;
 			inter = templnter;
-			it_hit = it;
+			hitCollider = colA;
 		}
+		//球の場合
+		else if (colA->GetShapeType() == COLLISIONSHAPE_BOX)
+		{
+			Box* box = dynamic_cast<Box*>(colA);
+			float tempDistance;
+			XMVECTOR tempinter;
+			//当たらなければ除外
+			if (!Collision::CheckRay2Box(ray, *box, &tempDistance, &tempinter))continue;
+			//距離が最小でなければ除外
+			if (tempDistance >= distance)continue;
+			//今までで最も近いのであれば記録を取る
+			result = true;
+			distance = tempDistance;
+			inter = tempinter;
+			hitCollider = colA;
+		}
+
 	}
 	//最終的に何かに当たっていたら結果を書き込む
 	if (result && hitinfo)
 	{
 		hitinfo->distance = distance;
 		hitinfo->inter = inter;
-		hitinfo->collider = *it_hit;
+		hitinfo->collider = hitCollider;
 		hitinfo->object = hitinfo->collider->GetObject3D();
 	}
 	return result;
@@ -363,6 +377,69 @@ void CollisionManager::QuerySphere(const Sphere & sphere, QueryCallback * callba
 			}
 		}
 
+	}
+
+}
+
+void CollisionManager::QueryBox(const Box& box, QueryCallback* callback, unsigned short attribute)
+{
+	assert(callback);
+
+	DWORD collisionCount = L4Tree.GetTargetCollisionList(ColVect, box.minPosition.x, box.maxPosition.y, box.maxPosition.x, box.minPosition.y);
+	DWORD c;
+	for (c = 0; c < collisionCount; c++) {
+		BaseCollider* col = ColVect[c];
+		if (!(col->attribute & attribute))
+			continue;
+
+		//球
+		if (col->GetShapeType() == COLLISIONSHAPE_SPHERE)
+		{
+			Sphere* sphereB = dynamic_cast<Sphere*>(col);
+
+			XMVECTOR tempInter;
+			XMVECTOR tempReject;
+			if (!Collision::CheckSphereBox( *sphereB,box, &tempInter, &tempReject))
+				continue;
+
+			//交差情報をセット
+			QueryHit info;
+			info.collider = col;
+			info.object = col->GetObject3D();
+			info.inter = tempInter;
+			info.reject = tempReject;
+
+			//クエリーコールバック呼び出し
+			if (!callback->OnQueryHit(info))
+			{
+				//戻り値がfalseの場合、継続せずに終了
+				return;
+			}
+		}
+		//ボックス
+		if (col->GetShapeType() == COLLISIONSHAPE_BOX)
+		{
+			Box* boxB = dynamic_cast<Box*>(col);
+
+			XMVECTOR tempInter;
+			XMVECTOR tempReject;
+			if (!Collision::CheckBoxBox(box,*boxB, &tempInter, &tempReject))
+				continue;
+
+			//交差情報をセット
+			QueryHit info;
+			info.collider = col;
+			info.object = col->GetObject3D();
+			info.inter = tempInter;
+			info.reject = tempReject;
+
+			//クエリーコールバック呼び出し
+			if (!callback->OnQueryHit(info))
+			{
+				//戻り値がfalseの場合、継続せずに終了
+				return;
+			}
+		}
 	}
 
 }

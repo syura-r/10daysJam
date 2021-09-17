@@ -2,11 +2,13 @@
 #include"PtrDelete.h"
 #include"Object3D.h"
 #include"Audio.h"
+#include "Enemy.h"
 #include"ParticleEmitter.h"
 #include"SphereCollider.h"
 #include"imgui.h"
 #include"FBXManager.h"
 #include "Input.h"
+#include "MapBox.h"
 #include "OBJLoader.h"
 #include "Player.h"
 
@@ -80,9 +82,9 @@ void Play::CreateStage()
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -95,11 +97,15 @@ void Play::CreateStage()
 		{
 			if(map[y][x] == 1)
 			{
-				TouchAbleObject* object = new TouchAbleObject();
-				object->Initialize(OBJLoader::GetModel("box"), { (float)x, 5.0f - y, 0 },{2.0f,2.0f,2.0f});
+				MapBox* object = new MapBox(OBJLoader::GetModel("box"), Vector3{ (float)x + 1.0f , 15.0f - y, 0 }, Vector3{ 1.0f,1.0f,1.0f });
+				//TouchAbleObject* object = new TouchAbleObject();
+				//object->Initialize(OBJLoader::GetModel("box"), Vector3{ (float)x + 1.0f , 15.0f - y, 0 }, Vector3{ 1.0f,1.0f,1.0f });
 				objectManager->Add(object);
 			}
 		}
 	}
-	
+
+
+	Enemy* enemy = new Enemy({ 20,9,0 });
+	objectManager->Add(enemy);
 }
