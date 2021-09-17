@@ -53,6 +53,9 @@ void Game::RoadAsset()
 		//テクスチャの読み込み
 		Texture::LoadTexture("LoadDot", "LoadDot.png");
 		Texture::LoadTexture("LoadPicture", "LoadPicture.png");
+		Texture::LoadTexture("title_logo", "title_logo.png");
+		Texture::LoadTexture("title_start", "title_start.png");
+		Texture::LoadTexture("title_end", "title_end.png");
 		break;
 	case 1:
 		Texture::LoadTexture("Debug", "ASCII.png");
@@ -224,6 +227,7 @@ void Game::Initialize()
 	ParticleEmitter::Initialize(camera);
 	Player::SetDebugCamera(camera);
 	Title::SetCamera(camera);
+	Title::SetWindowsize(Vector2{ (float)win->GetWindowWidth(), (float)win->GetWindowHeight() });
 
 	loadTex = new Sprite();
 	loadDot = new Sprite();

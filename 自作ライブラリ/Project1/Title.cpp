@@ -3,46 +3,53 @@
 #include "Easing.h"
 
 DebugCamera* Title::camera = nullptr;
+Vector2 Title::windowsize = Vector2{ 0,0 };
 
 Title::Title()
 {
 	next = SCENE::Play;
 
-	parts_array.push_back(new Parts("Hidari1_1"));
-	parts_array.push_back(new Parts("Hidari1_2"));
-	parts_array.push_back(new Parts("Hidari2_1"));
-	parts_array.push_back(new Parts("Hidari2_2"));
-	parts_array.push_back(new Parts("Hidari2_3"));
+	//parts_array.push_back(new Parts("Hidari1_1"));
+	//parts_array.push_back(new Parts("Hidari1_2"));
+	//parts_array.push_back(new Parts("Hidari2_1"));
+	//parts_array.push_back(new Parts("Hidari2_2"));
+	//parts_array.push_back(new Parts("Hidari2_3"));
 
 	logo = new Sprite();
+	start = new Sprite();
+	end = new Sprite();
 }
 
 
 Title::~Title()
 {
-	for (int i = 0; i < parts_array.size(); i++)
-	{
-		PtrDelete(parts_array.at(i));
-	}
+	//for (int i = 0; i < parts_array.size(); i++)
+	//{
+	//	PtrDelete(parts_array.at(i));
+	//}
 	PtrDelete(logo);
+	PtrDelete(start);
+	PtrDelete(end);
 }
 
 void Title::Initialize()
 {
 	isEnd = false;
 
-	//カメラリセット
-	camera->SetMatrixView({ 0, 0, -10 }, { 0, 0, 1 }, { 0, 1, 0 });
+	////カメラリセット
+	//camera->SetMatrixView({ 0, 0, -10 }, { 0, 0, 1 }, { 0, 1, 0 });
 
-	parts_array.at(0)->Initialize(Vector3{ -6,-2,0 }, Vector3{ 0,0,0 });
-	parts_array.at(1)->Initialize(Vector3{ -3,-2,0 }, Vector3{ 0,0,0 });
-	parts_array.at(2)->Initialize(Vector3{ 0,-2,0 }, Vector3{ 0,0,0 });
-	parts_array.at(3)->Initialize(Vector3{ 3,-2,0 }, Vector3{ 0,0,0 });
-	parts_array.at(4)->Initialize(Vector3{ 6,-2,0 }, Vector3{ 0,0,0 });
+	//parts_array.at(0)->Initialize(Vector3{ -6,-2,0 }, Vector3{ 0,0,0 });
+	//parts_array.at(1)->Initialize(Vector3{ -3,-2,0 }, Vector3{ 0,0,0 });
+	//parts_array.at(2)->Initialize(Vector3{ 0,-2,0 }, Vector3{ 0,0,0 });
+	//parts_array.at(3)->Initialize(Vector3{ 3,-2,0 }, Vector3{ 0,0,0 });
+	//parts_array.at(4)->Initialize(Vector3{ 6,-2,0 }, Vector3{ 0,0,0 });
 
-	movienum = 0;
-	unionNum = 0;
-	unionAfterCounter = 0;
+	//movienum = 0;
+	//unionNum = 0;
+	//unionAfterCounter = 0;
+
+	selectNum = 0;
 }
 
 void Title::Update()
@@ -50,52 +57,88 @@ void Title::Update()
 	if(Input::TriggerKey(DIK_RETURN))
 	ShutDown();
 
-	switch (movienum)
+	//選択
+	XMFLOAT2 selectScale = { 1.2f,1.2f };
+	XMFLOAT2 notSelectScale = { 1.0f,1.0f };
+	XMFLOAT4 selectColor = { 1,1,1,1 };
+	XMFLOAT4 notSelectColor = { 0.5f,0.5f,0.5f,1.0f };
+	if (selectNum == 0)
 	{
-	case 0:
-		//スタート入力
-		if (Input::TriggerKey(DIK_SPACE))
-		{
-			movienum++;
-		}
-		break;
-
-	case 1:
-		//パーツ上昇
-		if (RiseObjects())
-		{
-			movienum++;
-		}
-		break;
-
-	case 2:
-		//パーツ合体
-		if (UnionObjects())
-		{
-			movienum++;
-		}
-		break;
-
-	case 3:
-		//決めポーズ的な
-		if (poseObjects())
-		{
-			movienum++;
-		}
-		break;
-
-	case 4:
-		isEnd = true;
-		break;
-
-	default:
-		break;
+		//大きさ
+		startScale = selectScale;
+		endScale = notSelectScale;
+		//色
+		startColor = selectColor;
+		endColor = notSelectColor;
+	}
+	else if (selectNum == 1)
+	{
+		//大きさ
+		startScale = notSelectScale;
+		endScale = selectScale;
+		//色
+		startColor = notSelectColor;
+		endColor = selectColor;
 	}
 
-	for (int i = 0; i < parts_array.size(); i++)
+	//上選択
+	if (Input::TriggerKey(DIK_UP) || Input::TriggerKey(DIK_W) || Input::CheckPadLStickUp() || Input::CheckPadButton(XINPUT_GAMEPAD_DPAD_UP))
 	{
-		parts_array.at(i)->obj->Update();
+		selectNum = 0;
 	}
+	//下選択
+	if (Input::TriggerKey(DIK_DOWN) || Input::TriggerKey(DIK_S) || Input::CheckPadLStickDown() || Input::CheckPadButton(XINPUT_GAMEPAD_DPAD_DOWN))
+	{
+		selectNum = 1;
+	}
+
+
+	//switch (movienum)
+	//{
+	//case 0:
+	//	//スタート入力
+	//	if (Input::TriggerKey(DIK_SPACE))
+	//	{
+	//		movienum++;
+	//	}
+	//	break;
+
+	//case 1:
+	//	//パーツ上昇
+	//	if (RiseObjects())
+	//	{
+	//		movienum++;
+	//	}
+	//	break;
+
+	//case 2:
+	//	//パーツ合体
+	//	if (UnionObjects())
+	//	{
+	//		movienum++;
+	//	}
+	//	break;
+
+	//case 3:
+	//	//決めポーズ的な
+	//	if (poseObjects())
+	//	{
+	//		movienum++;
+	//	}
+	//	break;
+
+	//case 4:
+	//	isEnd = true;
+	//	break;
+
+	//default:
+	//	break;
+	//}
+
+	//for (int i = 0; i < parts_array.size(); i++)
+	//{
+	//	parts_array.at(i)->obj->Update();
+	//}
 }
 
 void Title::PreDraw()
@@ -104,12 +147,24 @@ void Title::PreDraw()
 
 void Title::PostDraw()
 {
-	for (int i = 0; i < parts_array.size(); i++)
-	{
-		parts_array.at(i)->obj->CustomDraw(true);
-	}
+	//for (int i = 0; i < parts_array.size(); i++)
+	//{
+	//	parts_array.at(i)->obj->CustomDraw(true);
+	//}
+	//if (movienum < 2)
+	//{
+	//	logo->DrawSprite("TitleLogo", logoPosition, 0.0f, { 1.3f, 1.3f }, logoColor);
+	//}
 
-	logo->DrawSprite("particle", { 0,0 });
+
+	XMFLOAT2 logoPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 5.0f };
+	XMFLOAT2 startPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 10.0f };
+	XMFLOAT2 endPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 12.0f };
+
+	logo->DrawSprite("title_logo", logoPosition, 0.0f, { 1.0f, 1.0f });
+	start->DrawSprite("title_start", startPosition, 0.0f, startScale, startColor);
+	end->DrawSprite("title_end", endPosition, 0.0f, endScale, endColor);
+
 }
 
 bool Title::RiseObjects()

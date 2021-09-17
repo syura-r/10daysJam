@@ -21,6 +21,7 @@ public:
 	void PostDraw()override;
 
 	static void SetCamera(DebugCamera* cameraPtr) { camera = cameraPtr; }
+	static void SetWindowsize(Vector2 windowsize) { Title::windowsize = windowsize; }
 
 private:
 	struct Parts
@@ -59,6 +60,20 @@ private:
 	int unionAfterCounter;
 	bool poseObjects();//movienum3
 
+	//タイトルロゴ
+	Sprite* logo = nullptr;
 
-	Sprite* logo = nullptr;//タイトルロゴ
+	//選択番号
+	int selectNum;
+	//選択項目1
+	Sprite* start = nullptr;
+	XMFLOAT2 startScale;
+	XMFLOAT4 startColor;
+	//選択項目2
+	Sprite* end = nullptr;
+	XMFLOAT2 endScale;
+	XMFLOAT4 endColor;
+
+
+	static Vector2 windowsize;
 };
