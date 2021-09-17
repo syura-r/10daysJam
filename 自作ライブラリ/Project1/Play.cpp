@@ -25,8 +25,9 @@ Play::Play()
 
 	collisionManager = CollisionManager::GetInstance();
 	objectManager = ObjectManager::GetInstance();
-
-	objectManager->Add(new Player());
+	Player* player = new Player();
+	objectManager->Add(player);
+	Enemy::SetPlayer(player);
 	CreateStage();
 }
 

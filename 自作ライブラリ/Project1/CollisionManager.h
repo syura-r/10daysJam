@@ -17,17 +17,26 @@ public://メンバ関数
 
 	inline void RemoveCollider(BaseCollider* collider)
 	{
-		for(auto it = colliders.begin();it != colliders.end();)
+		auto end_it = spSOFTAry.end();
+		for (auto it = spSOFTAry.begin(); it != end_it; ++it)
 		{
-			if (*it == collider)
+			if ((*it)->pObject == collider)
 			{
-				it = colliders.erase(it);
-			}
-			else
-			{
-				++it;
+				(*it)->Remove();
 			}
 		}
+
+		//for(auto it = colliders.begin();it != colliders.end();)
+		//{
+		//	if (*it == collider)
+		//	{
+		//		it = colliders.erase(it);
+		//	}
+		//	else
+		//	{
+		//		++it;
+		//	}
+		//}
 		//colliders.remove(collider);
 	}
 
@@ -43,16 +52,16 @@ public://メンバ関数
 	bool Raycast(BaseCollider* collider,const Ray& ray, RaycastHit* hitinfo = nullptr, float maxDistance = D3D12_FLOAT32_MAX);
 	bool Raycast(BaseCollider* collider,const Ray& ray,unsigned short attribute, RaycastHit* hitinfo = nullptr, float maxDistance = D3D12_FLOAT32_MAX);
 	//球による衝突全検索
-	void QuerySphere(const Sphere& sphere, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff);
+	void QuerySphere(const Sphere& sphere, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff, BaseCollider* collider = nullptr);
 	//ボックスによる衝突全検索
-	void QueryBox(const Box& box, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff);
+	void QueryBox(const Box& box, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff,BaseCollider * collider = nullptr);
 
 private:
 	CollisionManager() = default;
 	CollisionManager(const CollisionManager&) = default;
 	~CollisionManager() = default;
 	CollisionManager& operator=(const CollisionManager&) = default;
-	std::vector<BaseCollider*> colliders;
+	//std::vector<BaseCollider*> colliders;
 	Tree::CLiner4TreeManager<BaseCollider> L4Tree;
 	std::vector<BaseCollider*> ColVect;	// 衝突対象リスト
 	std::vector < SmartPtr<Tree::TreeObject<BaseCollider>>> spSOFTAry;

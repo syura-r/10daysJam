@@ -56,6 +56,7 @@ public:
 		move = frag;
 	}
 
+	inline unsigned short GetAttribute() { return attribute; }
 protected:
 	Object* object = nullptr;
 	CollisionShapeType shapeType = SHAPE_UNKNOWN;

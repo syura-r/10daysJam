@@ -114,6 +114,8 @@ public://メンバ関数
 
 	bool PlayAnimation(bool endless = false);
 
+	inline const FbxTime& GetCurrentAnimationTime() { return currentTime; }
+
 private:
 	ComPtr<ID3D12Resource> constBuffSkin; // 定数バッファ
 		//1フレームの時間

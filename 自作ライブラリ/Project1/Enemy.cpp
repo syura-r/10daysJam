@@ -1,8 +1,14 @@
 #include "Enemy.h"
 
+#include "BoxCollider.h"
+#include "CollisionAttribute.h"
 #include "FBXManager.h"
 #include "Input.h"
 #include"OBJLoader.h"
+#include "Player.h"
+#include "PtrDelete.h"
+
+Player* Enemy::player = nullptr;
 Enemy::Enemy(const Vector3& pos)
 {
 	Create(FBXManager::GetModel("Migi2"));
@@ -13,38 +19,57 @@ Enemy::Enemy(const Vector3& pos)
 	rotationFactor = 0.79f;
 	tessellation = 4;
 	color = { 0,0,0,1 };
-	scale = { 0.5f,0.5f,0.5f };
+	scale = { 0.3f,0.3f,0.3f };
 	CreateConstBuff();
+	BoxCollider* boxCollider = new BoxCollider({ 0,0.45f,0,0 });
+	boxCollider->SetScale(scale * 2);
+	SetCollider(boxCollider);
+	collider->SetAttribute(COLLISION_ATTR_ENEMYS);
+	collider->SetMove(true);
+
+	hp = MaxHP;
+
+	hitBox = new Object();
+	hitBox->Create(OBJLoader::GetModel("box"));
+	hitBox->SetScale(scale * 4);
+	hitBox->SetColor({ 1,1,1,0.4f });
+	hitBox->SetPosition(position + Vector3{0, 0.45f, 0});
+
+	damageCounter = 0;
+}
+
+Enemy::~Enemy()
+{
+	PtrDelete(hitBox);
 }
 
 void Enemy::Update()
 {
-	if (isDelete)
+	if (dead)
 		return;
 
-	if (Input::TriggerKey(DIK_RETURN))
-		isDead = true;
-	if(isDead)
+	if (isDamage)
+	{
+		if (damageCounter >= 10)
+		{
+			isDamage = false;
+			damageCounter = 0;
+			color = {0, 0, 0, 1};
+		}
+		damageCounter++;
+	}
+	if(playBreakAnimation)
 	{
 		destruction += breakSpeed;
 		if (destruction >= 1.0f)
-			isDelete = true;
+			dead = true;
 	}
 	Object::Update();
+	hitBox->Update();
 }
 
 void Enemy::Draw()
 {
-	if (!Object3D::GetDrawShadow())
-	{
-		ImGui::Begin("Status");
-		ImGui::SliderFloat("destruction", &destruction, 0, 1.0f);
-		ImGui::SliderFloat("scaleFactor", &scaleFactor, 0, 1.0f);
-		ImGui::SliderFloat("positionFactor", &positionFactor, 0, 2.0f);
-		ImGui::SliderFloat("rotationFactor", &rotationFactor, 0, 30.0f);
-		ImGui::SliderInt("tessellation", &tessellation, 1, 32);
-		ImGui::End();
-	}
 	// 定数バッファへデータ転送
 	ConstBuffData* constMap = nullptr;
 	HRESULT result = constBuff->Map(0, nullptr, (void**)&constMap);
@@ -74,6 +99,46 @@ void Enemy::Draw()
 		DirectXLib::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(5, constBuff->GetGPUVirtualAddress());
 	}
 	CustomDraw(false, true, ALPHA, true);
+
+	hitBox->Draw();
+}
+
+void Enemy::OnCollision(const CollisionInfo& info)
+{
+	BaseCollider* col = info.collider;
+	if( isDamage || col->GetAttribute() != COLLISION_ATTR_ATTACK )
+		return;
+
+	int damage = 0;
+	switch (player->GetAttackState())
+	{
+	case Player::Boomerang:
+	{
+		damage = 50;
+		break;
+	}
+	case Player::MeleeAttack:
+	{
+		damage = 0;
+		break;
+	}
+	case Player::JumpAttack:
+	{
+		break;
+	}
+	case Player::ULT:
+	{
+		break;
+	}
+	default:
+		return;
+	}
+
+	color = { 1,0,0,1 };
+	hp -= damage;
+	if (hp <= 0)
+		playBreakAnimation = true;
+	isDamage = true;
 }
 
 void Enemy::CreateConstBuff()

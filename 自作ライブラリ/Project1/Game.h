@@ -43,9 +43,9 @@ private:
 	DirectXLib* directX = nullptr;
 	DebugCamera* camera = nullptr;
 	Vector3 cameraPos;
-	PostEffect* postEffect = nullptr;
+	//PostEffect* postEffect = nullptr;
 	LightCamera* lightCamera = nullptr;
-	ShadowMap* shadowMap = nullptr;
+	//ShadowMap* shadowMap = nullptr;
 	float dir[3] = { 0.0f,-1.0f,0.0f };
 	float distance = 10;
 

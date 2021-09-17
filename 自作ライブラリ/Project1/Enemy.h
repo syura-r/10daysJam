@@ -1,13 +1,18 @@
 #pragma once
 #include "Object.h"
+
+class Player;
 class Enemy :
 	public Object
 {
 public:
 	Enemy(const Vector3& pos);
+	~Enemy();
 	void Update() override;
 	void Draw() override;
-	bool IsDelete() { return isDelete; }
+	void OnCollision(const CollisionInfo& info) override;
+
+	static void SetPlayer(Player* playerPtr) { Enemy::player = playerPtr; }
 private:
 	void CreateConstBuff();
 	struct ConstBuffData
@@ -25,12 +30,23 @@ private:
 	float rotationFactor;//回転の変化量
 	int  tessellation;//ポリゴン分割度
 
-	//死亡フラグ
-	bool isDead = false;
-	//死亡アニメーション終了フラグ
-	bool isDelete = false;
-
+	//死亡アニメーションフラグ
+	bool playBreakAnimation = false;
+	//死亡アニメーションの速度
 	const float breakSpeed = 0.05f;
+
+	//ダメージフラグ
+	bool isDamage = false;
+	int hp;
+	const int MaxHP = 100;
+	//複数回ヒットを防ぐカウンター
+	int damageCounter;
+
+	
+	Object* hitBox = nullptr;
+private://静的メンバ変数
+	//プレイヤーのポインタ
+	static Player* player;
 };
 
 

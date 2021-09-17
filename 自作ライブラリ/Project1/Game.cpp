@@ -28,8 +28,6 @@ Game::Game()
 	directX = DirectXLib::GetInstance();
 }
 
-
-
 Game * Game::GetInstance()
 {
 	if (instance == nullptr)
@@ -86,7 +84,9 @@ void Game::RoadAsset()
 		//FBXƒtƒ@ƒCƒ‹‚Ì“Ç‚Ýž‚Ý
 		FBXManager::LoadModelFile("Hidari1", "Hidari1", true);
 		FBXManager::LoadModelFile("Hidari2", "Hidari2", true);
-
+		FBXManager::LoadModelFile("SwoedMode_1", "SwoedMode_1", true);
+		FBXManager::LoadModelFile("SwoedMode_2", "SwoedMode_2", true);
+		FBXManager::LoadModelFile("SwoedMode_3", "SwoedMode_3", true);
 		//FBXManager::LoadModelFile("cleaningToolStorage", "cleaningToolStorage", true);
 
 		break;
@@ -112,36 +112,36 @@ void Game::CreatePipeline()
 		break;
 	case 2:
 		PipelineState::CreatePipeline("Particle", PARTICLE, ADD);
-		PipelineState::CreatePipeline("PostEffect", BasePostEffect);
+		//PipelineState::CreatePipeline("PostEffect", BasePostEffect);
 		break;
 	case 3:
-		PipelineState::CreatePipeline("Bloom", Bloom);
+		//PipelineState::CreatePipeline("Bloom", Bloom);
 		PipelineState::CreatePipeline("NoShade", NoShade);
 		break;
 	case 4:
-		PipelineState::CreatePipeline("NormalMap", NormalMap);
+		//PipelineState::CreatePipeline("NormalMap", NormalMap);
 		break;
 	case 5:
 		PipelineState::CreatePipeline("PolygonBreak", PolygonBreak);
 		break;
-	case 6:
-		PipelineState::CreatePipeline("FBXShadowMap", FBXShadowMap);
-		break;
-	case 7:
-		PipelineState::CreatePipeline("GrassShadowMap", GrassShadowMap);
-		break;
-	case 8:
-		PipelineState::CreatePipeline("Grass", GRASS);
-		break;
-	case 9:
-		PipelineState::CreatePipeline("ShadowMap", NormalShadowMap);
-		break;
-	case 10:
-		PipelineState::CreatePipeline("PBShadowMap", PBShadowMap);
-		break;
-	case 11:
-		PipelineState::CreatePipeline("DrawShadowOBJ", DrawShadowOBJ);
-		break;
+	//case 6:
+	//	PipelineState::CreatePipeline("FBXShadowMap", FBXShadowMap);
+	//	break;
+	//case 7:
+	//	PipelineState::CreatePipeline("GrassShadowMap", GrassShadowMap);
+	//	break;
+	//case 8:
+	//	PipelineState::CreatePipeline("Grass", GRASS);
+	//	break;
+	//case 9:
+	//	PipelineState::CreatePipeline("ShadowMap", NormalShadowMap);
+	//	break;
+	//case 10:
+	//	PipelineState::CreatePipeline("PBShadowMap", PBShadowMap);
+	//	break;
+	//case 11:
+	//	PipelineState::CreatePipeline("DrawShadowOBJ", DrawShadowOBJ);
+	//	break;
 	//case 12:
 	//	break;
 	default:
@@ -164,7 +164,6 @@ void Game::LoadFinish()
 	Object3D::SetLightCamera(lightCamera);
 	Player::SetLightCamera(lightCamera);
 
-	
 	CollisionManager::GetInstance()->Initialize(0,30,200,0);
 	
 	sceneManeger = SceneManager::GetInstance();
@@ -173,11 +172,9 @@ void Game::LoadFinish()
 	sceneManeger->Add(Scene::SCENE::Ending, new Ending());
 	sceneManeger->Change(Scene::SCENE::Play);
 
-	postEffect = new PostEffect();
-
-
-	shadowMap = new ShadowMap();
-	shadowMap->SetWindow(win);
+	//postEffect = new PostEffect();
+	//shadowMap = new ShadowMap();
+	//shadowMap->SetWindow(win);
 
 	nowLoading = false;
 }
@@ -318,8 +315,8 @@ void Game::End()
 	//	if (ShowCursor(true) >= 0)
 	//		break;
 	//}
-	PtrDelete(shadowMap);
-	PtrDelete(postEffect);
+	//PtrDelete(shadowMap);
+	//PtrDelete(postEffect);
 	PtrDelete(loadTex);
 	PtrDelete(loadDot);
 
