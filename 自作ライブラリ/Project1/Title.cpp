@@ -45,7 +45,7 @@ void Title::Initialize()
 	//unionNum = 0;
 	//unionAfterCounter = 0;
 
-	selectUI->Initialize(SelectUI::State::gameover);
+	selectUI->Initialize(SelectUI::State::title);
 }
 
 void Title::Update()
@@ -60,12 +60,26 @@ void Title::Update()
 	{
 		if (selectUI->GetSelectNum() == 0)
 		{
-			//はじめる
+			//はじめるの処理
 		}
 		else
 		{
-			//おわる
+			//おわるの処理
 		}
+	}
+
+	//チェック用
+	if (Input::TriggerKey(DIK_1))
+	{
+		selectUI->Initialize(SelectUI::State::title);
+	}
+	if (Input::TriggerKey(DIK_2))
+	{
+		selectUI->Initialize(SelectUI::State::gameover);
+	}
+	if (Input::TriggerKey(DIK_3))
+	{
+		selectUI->Initialize(SelectUI::State::gameclear);
 	}
 
 
