@@ -62,6 +62,19 @@ void Play::Update()
 	selectUI->Update();
 
 
+#ifdef _DEBUG
+	if (Input::TriggerKey(DIK_1))
+	{
+		isGameover = true;
+		isGameclear = false;
+	}
+	if (Input::TriggerKey(DIK_2))
+	{
+		isGameclear= true;
+		isGameover = false;
+	}
+#endif // _DEBUG
+
 	//ゲームオーバー
 	if (isGameover)
 	{
