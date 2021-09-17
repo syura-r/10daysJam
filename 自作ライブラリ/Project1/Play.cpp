@@ -24,6 +24,8 @@ Play::Play()
 	objectManager = ObjectManager::GetInstance();
 
 	objectManager->Add(new Player());
+
+	selectUI = new SelectUI();
 }
 
 
@@ -32,12 +34,18 @@ Play::~Play()
 	PtrDelete(lightGroup);
 
 	objectManager->End();
+
+	PtrDelete(selectUI);
 }
 
 void Play::Initialize()
 {
 	isEnd = false;
 	isAllEnd = false;
+
+	selectUI->Initialize(SelectUI::State::gameclear);
+	isGameover = false;
+	isGameclear = false;
 }
 
 void Play::Update()
@@ -51,6 +59,50 @@ void Play::Update()
 	lightGroup->Update();
 	objectManager->Update();
 	collisionManager->CheckAllCollisions();
+	selectUI->Update();
+
+
+
+	//ゲームオーバー
+	if (isGameover)
+	{
+		selectUI->SetState(SelectUI::State::gameover);
+	}
+	//ゲームクリア
+	if (isGameclear)
+	{
+		selectUI->SetState(SelectUI::State::gameclear);
+	}
+
+	//決定
+	if (Input::TriggerKey(DIK_SPACE) || Input::CheckPadButton(XINPUT_GAMEPAD_A) || Input::CheckPadButton(XINPUT_GAMEPAD_B))
+	{
+		if (isGameover || isGameclear)
+		{
+			//ゲームオーバー
+			if (selectUI->GetState() == SelectUI::State::gameover)
+			{
+				if (selectUI->GetSelectNum() == 0)
+				{
+					//はじめから
+					Initialize();
+				}
+				else
+				{
+					//タイトルに戻る
+					next = SCENE::Title;
+					isEnd = true;
+				}
+			}
+			//ゲームクリア
+			else if (selectUI->GetState() == SelectUI::State::gameclear)
+			{
+				//タイトルに戻る
+				next = SCENE::Title;
+				isEnd = true;
+			}
+		}
+	}
 }
 
 void Play::PreDraw()
@@ -73,4 +125,8 @@ void Play::PreDraw()
 void Play::PostDraw()
 {
 	objectManager->PostDraw();
+	if (isGameover || isGameclear)
+	{
+		selectUI->Draw();
+	}
 }

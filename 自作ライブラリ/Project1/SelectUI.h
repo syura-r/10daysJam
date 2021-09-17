@@ -18,6 +18,9 @@ public:
 	void Update();
 	void Draw();
 
+	void SetState(State state);
+	State GetState() { return state; }
+
 	int GetSelectNum() { return selectNum; }
 
 	static void SetWindowSize(XMFLOAT2 windowsize) { SelectUI::windowsize = windowsize; }

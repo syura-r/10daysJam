@@ -10,6 +10,8 @@
 #include"Grass.h"
 #include "ObjectManager.h"
 #include "Sprite.h"
+#include "SelectUI.h"
+
 class TouchAbleObject;
 class Play :public Scene
 {
@@ -31,5 +33,9 @@ private:
 	CollisionManager* collisionManager = nullptr;
 	NormalMapTestOBJ* testNormalMapOBJ = nullptr;
 	ObjectManager* objectManager = nullptr;
+
+	SelectUI* selectUI = nullptr;
+	bool isGameover;
+	bool isGameclear;
 };
 

@@ -21,42 +21,7 @@ SelectUI::~SelectUI()
 void SelectUI::Initialize(State state)
 {
 	selectNum = 0;
-	this->state = state;
-
-	switch (state)
-	{
-	case SelectUI::title:
-		mainTexname = "title_logo";
-		select1->texname = "title_start";
-		select2->texname = "title_end";
-
-		mainPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 5.0f };
-		select1->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 10.0f };
-		select2->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 12.0f };
-
-		break;
-
-	case SelectUI::gameclear:
-		mainTexname = "result_gameclear";
-		select1->texname = "result_totitle";
-
-		mainPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 5.0f };
-		select1->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 8.0f };
-		break;
-
-	case SelectUI::gameover:
-		mainTexname = "result_gameover";
-		select1->texname = "result_restart";
-		select2->texname = "result_totitle";
-
-		mainPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 5.0f };
-		select1->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 8.0f };
-		select2->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 10.0f };
-		break;
-
-	default:
-		break;
-	}
+	SetState(state);
 }
 
 void SelectUI::Update()
@@ -111,5 +76,45 @@ void SelectUI::Draw()
 	if (state != State::gameclear)
 	{
 		select2->sprite->DrawSprite(select2->texname, select2->position, 0.0f, select2->scale, select2->color);
+	}
+}
+
+void SelectUI::SetState(State state)
+{
+	this->state = state;
+
+	switch (state)
+	{
+	case SelectUI::title:
+		mainTexname = "title_logo";
+		select1->texname = "title_start";
+		select2->texname = "title_end";
+
+		mainPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 5.0f };
+		select1->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 10.0f };
+		select2->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 12.0f };
+
+		break;
+
+	case SelectUI::gameclear:
+		mainTexname = "result_gameclear";
+		select1->texname = "result_totitle";
+
+		mainPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 5.0f };
+		select1->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 8.0f };
+		break;
+
+	case SelectUI::gameover:
+		mainTexname = "result_gameover";
+		select1->texname = "result_restart";
+		select2->texname = "result_totitle";
+
+		mainPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 5.0f };
+		select1->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 8.0f };
+		select2->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 10.0f };
+		break;
+
+	default:
+		break;
 	}
 }
