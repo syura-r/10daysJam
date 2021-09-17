@@ -252,6 +252,9 @@
     <ClCompile Include="SelectUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="UnionPartsMotion.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Create3DObject.h">
@@ -468,6 +471,9 @@
       <Filter>ヘッダー ファイル\Collision</Filter>
     </ClInclude>
     <ClInclude Include="SelectUI.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="UnionPartsMotion.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

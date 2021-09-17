@@ -215,6 +215,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="TouchAbleObject.cpp" />
+    <ClCompile Include="UnionPartsMotion.cpp" />
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
@@ -294,6 +295,7 @@
     <ClInclude Include="Title.h" />
     <ClInclude Include="TouchAbleObject.h" />
     <ClInclude Include="Tree.h" />
+    <ClInclude Include="UnionPartsMotion.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="window.h" />
     <ClInclude Include="XAudio2VoiceCallback.h" />

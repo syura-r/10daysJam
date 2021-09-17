@@ -4,10 +4,9 @@
 #include"Texture.h"
 #include"Alpha.h"
 
-#include "Object.h"
-#include "FBXManager.h"
 #include "DebugCamera.h"
 #include "SelectUI.h"
+#include "UnionPartsMotion.h"
 
 class Title :
 	public Scene
@@ -24,45 +23,12 @@ public:
 	static void SetWindowsize(Vector2 windowsize) { Title::windowsize = windowsize; }
 
 private:
-	struct Parts
-	{
-		Object* obj = nullptr;
-		Vector3 startPosition;
-		Vector3 startRotation;
-		float easingCounter;
-		Parts(std::string objKeyname)
-		{
-			obj = new Object();
-			obj->Create(FBXManager::GetModel(objKeyname));
-			obj->SetColor({ 0, 0, 0, 1 });
-		}
-		~Parts()
-		{
-			delete obj;
-		}
-
-		void Initialize(const Vector3& position, const Vector3& rotation)
-		{
-			this->startPosition = position;
-			this->startRotation = rotation;
-			obj->SetPosition(position);
-			obj->SetRotation(rotation);
-			easingCounter = 0.0f;
-		}
-	};
-	std::vector<Parts*> parts_array;
 	static DebugCamera* camera;
-
-	int movienum;
-	bool RiseObjects();//movienum1
-	bool UnionObjects();//movienum2
-	int unionNum;
-	int unionAfterCounter;
-	bool poseObjects();//movienum3
 
 	//ui
 	SelectUI* selectUI = nullptr;
-
-
 	static Vector2 windowsize;
+
+	//obj
+	//UnionPartsMotion* unionParts = nullptr;
 };
