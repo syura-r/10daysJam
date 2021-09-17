@@ -56,6 +56,10 @@ void Game::RoadAsset()
 		Texture::LoadTexture("title_logo", "title_logo.png");
 		Texture::LoadTexture("title_start", "title_start.png");
 		Texture::LoadTexture("title_end", "title_end.png");
+		Texture::LoadTexture("result_restart", "result_restart.png");
+		Texture::LoadTexture("result_totitle", "result_totitle.png");
+		Texture::LoadTexture("result_gameover", "result_gameover.png");
+		Texture::LoadTexture("result_gameclear", "result_gameclear.png");
 		break;
 	case 1:
 		Texture::LoadTexture("Debug", "ASCII.png");

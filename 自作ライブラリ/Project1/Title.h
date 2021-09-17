@@ -7,7 +7,7 @@
 #include "Object.h"
 #include "FBXManager.h"
 #include "DebugCamera.h"
-#include "Sprite.h"
+#include "SelectUI.h"
 
 class Title :
 	public Scene
@@ -60,19 +60,8 @@ private:
 	int unionAfterCounter;
 	bool poseObjects();//movienum3
 
-	//タイトルロゴ
-	Sprite* logo = nullptr;
-
-	//選択番号
-	int selectNum;
-	//選択項目1
-	Sprite* start = nullptr;
-	XMFLOAT2 startScale;
-	XMFLOAT4 startColor;
-	//選択項目2
-	Sprite* end = nullptr;
-	XMFLOAT2 endScale;
-	XMFLOAT4 endColor;
+	//ui
+	SelectUI* selectUI = nullptr;
 
 
 	static Vector2 windowsize;

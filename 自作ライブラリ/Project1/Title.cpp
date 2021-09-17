@@ -15,9 +15,7 @@ Title::Title()
 	//parts_array.push_back(new Parts("Hidari2_2"));
 	//parts_array.push_back(new Parts("Hidari2_3"));
 
-	logo = new Sprite();
-	start = new Sprite();
-	end = new Sprite();
+	selectUI = new SelectUI(windowsize);
 }
 
 
@@ -27,9 +25,7 @@ Title::~Title()
 	//{
 	//	PtrDelete(parts_array.at(i));
 	//}
-	PtrDelete(logo);
-	PtrDelete(start);
-	PtrDelete(end);
+	PtrDelete(selectUI);
 }
 
 void Title::Initialize()
@@ -49,7 +45,7 @@ void Title::Initialize()
 	//unionNum = 0;
 	//unionAfterCounter = 0;
 
-	selectNum = 0;
+	selectUI->Initialize(SelectUI::State::gameover);
 }
 
 void Title::Update()
@@ -58,38 +54,18 @@ void Title::Update()
 	ShutDown();
 
 	//選択
-	XMFLOAT2 selectScale = { 0.8f,0.8f };
-	XMFLOAT2 notSelectScale = { 0.6f,0.6f };
-	XMFLOAT4 selectColor = { 1,1,1,1 };
-	XMFLOAT4 notSelectColor = { 0.5f,0.5f,0.5f,1.0f };
-	if (selectNum == 0)
+	selectUI->Update();
+	//決定
+	if (Input::TriggerKey(DIK_SPACE) || Input::CheckPadButton(XINPUT_GAMEPAD_A) || Input::CheckPadButton(XINPUT_GAMEPAD_B))
 	{
-		//大きさ
-		startScale = selectScale;
-		endScale = notSelectScale;
-		//色
-		startColor = selectColor;
-		endColor = notSelectColor;
-	}
-	else if (selectNum == 1)
-	{
-		//大きさ
-		startScale = notSelectScale;
-		endScale = selectScale;
-		//色
-		startColor = notSelectColor;
-		endColor = selectColor;
-	}
-
-	//上選択
-	if (Input::TriggerKey(DIK_UP) || Input::TriggerKey(DIK_W) || Input::CheckPadLStickUp() || Input::CheckPadButton(XINPUT_GAMEPAD_DPAD_UP))
-	{
-		selectNum = 0;
-	}
-	//下選択
-	if (Input::TriggerKey(DIK_DOWN) || Input::TriggerKey(DIK_S) || Input::CheckPadLStickDown() || Input::CheckPadButton(XINPUT_GAMEPAD_DPAD_DOWN))
-	{
-		selectNum = 1;
+		if (selectUI->GetSelectNum() == 0)
+		{
+			//はじめる
+		}
+		else
+		{
+			//おわる
+		}
 	}
 
 
@@ -157,14 +133,7 @@ void Title::PostDraw()
 	//}
 
 
-	XMFLOAT2 logoPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 5.0f };
-	XMFLOAT2 startPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 10.0f };
-	XMFLOAT2 endPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 12.0f };
-
-	logo->DrawSprite("title_logo", logoPosition, 0.0f, { 1.0f, 1.0f });
-	start->DrawSprite("title_start", startPosition, 0.0f, startScale, startColor);
-	end->DrawSprite("title_end", endPosition, 0.0f, endScale, endColor);
-
+	selectUI->Draw();
 }
 
 bool Title::RiseObjects()
