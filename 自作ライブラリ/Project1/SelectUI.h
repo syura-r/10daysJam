@@ -19,7 +19,6 @@ public:
 	void Draw();
 
 	void SetState(State state);
-	State GetState() { return state; }
 
 	int GetSelectNum() { return selectNum; }
 

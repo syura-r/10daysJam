@@ -62,7 +62,6 @@ void Play::Update()
 	selectUI->Update();
 
 
-
 	//ゲームオーバー
 	if (isGameover)
 	{
@@ -77,30 +76,27 @@ void Play::Update()
 	//決定
 	if (Input::TriggerKey(DIK_SPACE) || Input::CheckPadButton(XINPUT_GAMEPAD_A) || Input::CheckPadButton(XINPUT_GAMEPAD_B))
 	{
-		if (isGameover || isGameclear)
+		//ゲームオーバー
+		if (isGameover)
 		{
-			//ゲームオーバー
-			if (selectUI->GetState() == SelectUI::State::gameover)
+			if (selectUI->GetSelectNum() == 0)
 			{
-				if (selectUI->GetSelectNum() == 0)
-				{
-					//はじめから
-					Initialize();
-				}
-				else
-				{
-					//タイトルに戻る
-					next = SCENE::Title;
-					isEnd = true;
-				}
+				//はじめから
+				Initialize();
 			}
-			//ゲームクリア
-			else if (selectUI->GetState() == SelectUI::State::gameclear)
+			else
 			{
 				//タイトルに戻る
 				next = SCENE::Title;
 				isEnd = true;
 			}
+		}
+		//ゲームクリア
+		else if (isGameclear)
+		{
+			//タイトルに戻る
+			next = SCENE::Title;
+			isEnd = true;
 		}
 	}
 }
