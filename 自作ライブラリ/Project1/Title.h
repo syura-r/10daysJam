@@ -4,7 +4,6 @@
 #include"Texture.h"
 #include"Alpha.h"
 
-#include "DebugCamera.h"
 #include "SelectUI.h"
 #include "UnionPartsMotion.h"
 
@@ -19,16 +18,9 @@ public:
 	void PreDraw()override;
 	void PostDraw()override;
 
-	static void SetCamera(DebugCamera* cameraPtr) { camera = cameraPtr; }
-	static void SetWindowsize(Vector2 windowsize) { Title::windowsize = windowsize; }
-
 private:
-	static DebugCamera* camera;
-
 	//ui
 	SelectUI* selectUI = nullptr;
-	static Vector2 windowsize;
-
 	//obj
 	//UnionPartsMotion* unionParts = nullptr;
 };

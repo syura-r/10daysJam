@@ -7,13 +7,13 @@ class UnionPartsMotion
 {
 public:
 	UnionPartsMotion();
-	UnionPartsMotion(DebugCamera* camera);
 	~UnionPartsMotion();
 
 	void Initialize();
 	void Update();
 	void Draw();
 
+	static void SetDebugCamera(DebugCamera* camera) { UnionPartsMotion::camera = camera; }
 
 private:
 	struct Parts
@@ -53,6 +53,6 @@ private:
 	int unionAfterCounter;
 	bool poseObjects();//movienum3
 
-	DebugCamera* camera = nullptr;
+	static DebugCamera* camera;
 };
 

@@ -20,6 +20,8 @@
 #include"DrawMode.h"
 #include "ComputeShade.h"
 #include "Player.h"
+#include "SelectUI.h"
+#include "UnionPartsMotion.h"
 DrawMode::MODE DrawMode::mode = DrawMode::NormalMap;
 
 Game::Game()
@@ -229,8 +231,8 @@ void Game::Initialize()
 	Object3D::SetCamera(camera);
 	ParticleEmitter::Initialize(camera);
 	Player::SetDebugCamera(camera);
-	Title::SetCamera(camera);
-	Title::SetWindowsize(Vector2{ (float)win->GetWindowWidth(), (float)win->GetWindowHeight() });
+	SelectUI::SetWindowSize({ (float)win->GetWindowWidth(), (float)win->GetWindowHeight() });
+	UnionPartsMotion::SetDebugCamera(camera);
 
 	loadTex = new Sprite();
 	loadDot = new Sprite();

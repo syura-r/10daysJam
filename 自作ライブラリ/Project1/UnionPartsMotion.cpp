@@ -3,13 +3,10 @@
 #include "Input.h"
 #include "Easing.h"
 
+DebugCamera* UnionPartsMotion::camera = nullptr;
+
 UnionPartsMotion::UnionPartsMotion()
 {
-}
-
-UnionPartsMotion::UnionPartsMotion(DebugCamera* camera)
-{
-	this->camera = camera;
 	parts_array.push_back(new Parts("Hidari1_1"));
 	parts_array.push_back(new Parts("Hidari1_2"));
 	parts_array.push_back(new Parts("Hidari2_1"));

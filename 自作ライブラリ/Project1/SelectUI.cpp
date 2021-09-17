@@ -2,17 +2,13 @@
 #include "PtrDelete.h"
 #include "Input.h"
 
-SelectUI::SelectUI()
-{
-}
+XMFLOAT2 SelectUI::windowsize = { 0.0f,0.0f };
 
-SelectUI::SelectUI(XMFLOAT2 windowsize)
+SelectUI::SelectUI()
 {
 	main = new Sprite();
 	select1 = new Select();
 	select2 = new Select();
-
-	this->windowsize = windowsize;
 }
 
 SelectUI::~SelectUI()

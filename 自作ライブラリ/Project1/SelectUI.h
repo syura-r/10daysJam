@@ -12,7 +12,6 @@ public:
 	};
 
 	SelectUI();
-	SelectUI(XMFLOAT2 windowsize);
 	~SelectUI();
 
 	void Initialize(State state);
@@ -20,6 +19,8 @@ public:
 	void Draw();
 
 	int GetSelectNum() { return selectNum; }
+
+	static void SetWindowSize(XMFLOAT2 windowsize) { SelectUI::windowsize = windowsize; }
 
 private:
 	State state;
@@ -53,7 +54,7 @@ private:
 	Select* select1;
 	Select* select2;
 
-	XMFLOAT2 windowsize;
+	static XMFLOAT2 windowsize;
 
 };
 
