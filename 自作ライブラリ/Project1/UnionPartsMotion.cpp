@@ -44,7 +44,7 @@ void UnionPartsMotion::Update()
 	{
 	case 0:
 		//スタート入力
-		if (Input::TriggerKey(DIK_SPACE) || Input::CheckPadButton(XINPUT_GAMEPAD_A) || Input::CheckPadButton(XINPUT_GAMEPAD_B))
+		if (Input::TriggerKey(DIK_SPACE) || Input::TriggerPadButton(XINPUT_GAMEPAD_A) || Input::TriggerPadButton(XINPUT_GAMEPAD_B))
 		{
 			movienum++;
 		}
