@@ -37,6 +37,7 @@ Play::~Play()
 void Play::Initialize()
 {
 	isEnd = false;
+	isAllEnd = false;
 }
 
 void Play::Update()

@@ -13,6 +13,7 @@ Ending::~Ending()
 void Ending::Initialize()
 {
 	isEnd = false;
+	isAllEnd = false;
 }
 
 void Ending::Update()

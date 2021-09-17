@@ -11,6 +11,9 @@ public:
 	void PreDraw();
 	void PostDraw();
 	void End();
+
+	bool GetIsAllEnd() { return currentScene->GetIsAllEnd(); }
+
 private:
 	SceneManager() = default;
 	SceneManager(const SceneManager&) = delete;

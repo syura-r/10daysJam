@@ -32,6 +32,11 @@ public:
 	{
 		return next;
 	}
+	//全体終了フラグを取得
+	inline bool GetIsAllEnd()
+	{
+		return isAllEnd;
+	}
 
 protected:
 	//終了フラグをTrueにする
@@ -45,5 +50,7 @@ protected:
 	bool nextFeed;
 	//次のシーン
 	SCENE next;
+	//全体終了フラグ
+	bool isAllEnd;
 };
 

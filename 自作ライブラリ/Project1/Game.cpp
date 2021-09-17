@@ -53,13 +53,6 @@ void Game::RoadAsset()
 		//テクスチャの読み込み
 		Texture::LoadTexture("LoadDot", "LoadDot.png");
 		Texture::LoadTexture("LoadPicture", "LoadPicture.png");
-		Texture::LoadTexture("title_logo", "title_logo.png");
-		Texture::LoadTexture("title_start", "title_start.png");
-		Texture::LoadTexture("title_end", "title_end.png");
-		Texture::LoadTexture("result_restart", "result_restart.png");
-		Texture::LoadTexture("result_totitle", "result_totitle.png");
-		Texture::LoadTexture("result_gameover", "result_gameover.png");
-		Texture::LoadTexture("result_gameclear", "result_gameclear.png");
 		break;
 	case 1:
 		Texture::LoadTexture("Debug", "ASCII.png");
@@ -70,7 +63,13 @@ void Game::RoadAsset()
 		Texture::LoadTexture("SampleNormalMap", "SampleNormalMap.png");
 		Texture::LoadTexture("StainedGlass", "StainedGlass.png");
 		Texture::LoadTexture("StainedGlassNormal", "StainedGlassNormal.png");
-
+		Texture::LoadTexture("title_logo", "title_logo.png");
+		Texture::LoadTexture("title_start", "title_start.png");
+		Texture::LoadTexture("title_end", "title_end.png");
+		Texture::LoadTexture("result_restart", "result_restart.png");
+		Texture::LoadTexture("result_totitle", "result_totitle.png");
+		Texture::LoadTexture("result_gameover", "result_gameover.png");
+		Texture::LoadTexture("result_gameclear", "result_gameclear.png");
 		break;
 	case 2:
 		//Objモデルの読み込み
@@ -274,6 +273,10 @@ void Game::Run()
 
 		else if (!nowLoading)
 		{
+			if (sceneManeger->GetIsAllEnd()) {
+				break;
+			}
+
 			Input::Update();
 			Alpha::Update();
 			lightCamera->Update();

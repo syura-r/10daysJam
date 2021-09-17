@@ -23,6 +23,7 @@ Title::~Title()
 void Title::Initialize()
 {
 	isEnd = false;
+	isAllEnd = false;
 
 	selectUI->Initialize(SelectUI::State::title);
 	//unionParts->Initialize();
@@ -41,10 +42,12 @@ void Title::Update()
 		if (selectUI->GetSelectNum() == 0)
 		{
 			//‚Í‚¶‚ß‚é‚Ìˆ—
+			ShutDown();
 		}
 		else
 		{
 			//‚¨‚í‚é‚Ìˆ—
+			isAllEnd = true;
 		}
 	}
 
