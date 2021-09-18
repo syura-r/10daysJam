@@ -26,6 +26,8 @@ Play::Play()
 	objectManager->Add(new Player());
 
 	selectUI = new SelectUI();
+
+	plife = new PlayerLifeUI();
 }
 
 
@@ -36,6 +38,7 @@ Play::~Play()
 	objectManager->End();
 
 	PtrDelete(selectUI);
+	PtrDelete(plife);
 }
 
 void Play::Initialize()
@@ -46,6 +49,8 @@ void Play::Initialize()
 	selectUI->Initialize(SelectUI::State::gameclear);
 	isGameover = false;
 	isGameclear = false;
+
+	plife->Initialize();
 }
 
 void Play::Update()
@@ -112,6 +117,8 @@ void Play::Update()
 			isEnd = true;
 		}
 	}
+
+	plife->Update(3);
 }
 
 void Play::PreDraw()
@@ -138,4 +145,5 @@ void Play::PostDraw()
 	{
 		selectUI->Draw();
 	}
+	plife->Draw();
 }

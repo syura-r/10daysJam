@@ -11,6 +11,7 @@
 #include "ObjectManager.h"
 #include "Sprite.h"
 #include "SelectUI.h"
+#include "PlayerLifeUI.h"
 
 class TouchAbleObject;
 class Play :public Scene
@@ -37,5 +38,7 @@ private:
 	SelectUI* selectUI = nullptr;
 	bool isGameover;
 	bool isGameclear;
+
+	PlayerLifeUI* plife = nullptr;
 };
 
