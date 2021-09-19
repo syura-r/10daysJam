@@ -27,8 +27,8 @@ void SelectUI::Initialize(State state)
 void SelectUI::Update()
 {
 	//‘I‘ð
-	XMFLOAT2 selectScale = { 0.8f,0.8f };
-	XMFLOAT2 notSelectScale = { 0.6f,0.6f };
+	XMFLOAT2 selectScale = { 1.0f,1.0f };
+	XMFLOAT2 notSelectScale = { 0.8f,0.8f };
 	XMFLOAT4 selectColor = { 1,1,1,1 };
 	XMFLOAT4 notSelectColor = { 0.5f,0.5f,0.5f,1.0f };
 

@@ -106,7 +106,7 @@ void Play::Update()
 			{
 				//タイトルに戻る
 				next = SCENE::Title;
-				isEnd = true;
+				ShutDown();
 			}
 		}
 		//ゲームクリア
@@ -114,7 +114,7 @@ void Play::Update()
 		{
 			//タイトルに戻る
 			next = SCENE::Title;
-			isEnd = true;
+			ShutDown();
 		}
 	}
 

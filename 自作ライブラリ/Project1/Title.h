@@ -19,6 +19,17 @@ public:
 	void PostDraw()override;
 
 private:
+	//background
+	Sprite* bg01 = nullptr;
+	Sprite* bg02 = nullptr;
+	Sprite* bg03 = nullptr;
+
+	XMFLOAT2 bg02_position;
+	XMFLOAT2 bg03_position;
+
+	float firstBGPosX;
+	int easingCounter;
+
 	//ui
 	SelectUI* selectUI = nullptr;
 	//obj

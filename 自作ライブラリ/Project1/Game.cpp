@@ -65,14 +65,18 @@ void Game::RoadAsset()
 		Texture::LoadTexture("SampleNormalMap", "SampleNormalMap.png");
 		Texture::LoadTexture("StainedGlass", "StainedGlass.png");
 		Texture::LoadTexture("StainedGlassNormal", "StainedGlassNormal.png");
-		Texture::LoadTexture("title_logo", "title_logo.png");
-		Texture::LoadTexture("title_start", "title_start.png");
-		Texture::LoadTexture("title_end", "title_end.png");
-		Texture::LoadTexture("result_restart", "result_restart.png");
-		Texture::LoadTexture("result_totitle", "result_totitle.png");
-		Texture::LoadTexture("result_gameover", "result_gameover.png");
-		Texture::LoadTexture("result_gameclear", "result_gameclear.png");
+		Texture::LoadTexture("title_logo", "LogoAndChoices/title_logo.png");
+		Texture::LoadTexture("title_start", "LogoAndChoices/title_start.png");
+		Texture::LoadTexture("title_end", "LogoAndChoices/title_end.png");
+		Texture::LoadTexture("result_restart", "LogoAndChoices/result_restart.png");
+		Texture::LoadTexture("result_totitle", "LogoAndChoices/result_totitle.png");
+		Texture::LoadTexture("result_gameover", "LogoAndChoices/result_gameover.png");
+		Texture::LoadTexture("result_gameclear", "LogoAndChoices/result_gameclear.png");
+		Texture::LoadTexture("TitleBackground_1", "/BackGround/TitleBackground_1.png");
+		Texture::LoadTexture("TitleBackground_2", "/BackGround/TitleBackground_2.png");
+		Texture::LoadTexture("TitleBackground_3", "/BackGround/TitleBackground_3.png");
 		Texture::LoadTexture("player_life", "player_life.png");
+		Texture::LoadTexture("hidari_sceneChange", "hidari_sceneChange.png");
 		break;
 	case 2:
 		//ObjÉÇÉfÉãÇÃì«Ç›çûÇ›
