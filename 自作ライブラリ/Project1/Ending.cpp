@@ -40,7 +40,7 @@ void Ending::Update()
 
 void Ending::PreDraw()
 {
-	sceneCh->Draw();
+	sceneCh->Draw({ 1,1,1,1 });
 
 }
 

@@ -15,6 +15,8 @@
 #include"Play.h"
 #include"Alpha.h"
 #include"Ending.h"
+#include"GameClear.h"
+#include"GameOver.h"
 #include"PipelineState.h"
 #include"FBXManager.h"
 #include"DrawMode.h"
@@ -65,16 +67,24 @@ void Game::RoadAsset()
 		Texture::LoadTexture("SampleNormalMap", "SampleNormalMap.png");
 		Texture::LoadTexture("StainedGlass", "StainedGlass.png");
 		Texture::LoadTexture("StainedGlassNormal", "StainedGlassNormal.png");
-		Texture::LoadTexture("title_logo", "LogoAndChoices/title_logo.png");
-		Texture::LoadTexture("title_start", "LogoAndChoices/title_start.png");
-		Texture::LoadTexture("title_end", "LogoAndChoices/title_end.png");
+
+		Texture::LoadTexture("title_logo", "Title/title_logo.png");
+		Texture::LoadTexture("title_start", "Title/title_start.png");
+		Texture::LoadTexture("title_end", "Title/title_end.png");
+		Texture::LoadTexture("TitleBackground_1", "Title/TitleBackground_1.png");
+		Texture::LoadTexture("TitleBackground_2", "Title/TitleBackground_2.png");
+		Texture::LoadTexture("TitleBackground_3", "Title/TitleBackground_3.png");
+
 		Texture::LoadTexture("result_restart", "LogoAndChoices/result_restart.png");
 		Texture::LoadTexture("result_totitle", "LogoAndChoices/result_totitle.png");
-		Texture::LoadTexture("result_gameover", "LogoAndChoices/result_gameover.png");
+
+		Texture::LoadTexture("gameover_bg", "Gameover/OverBackground_1.png");
+		Texture::LoadTexture("gameover_main", "Gameover/result_gameover.png");
+		Texture::LoadTexture("gameover_restart", "Gameover/result_restart.png");
+		Texture::LoadTexture("gameover_totitle", "Gameover/result_totitle.png");
+
 		Texture::LoadTexture("result_gameclear", "LogoAndChoices/result_gameclear.png");
-		Texture::LoadTexture("TitleBackground_1", "/BackGround/TitleBackground_1.png");
-		Texture::LoadTexture("TitleBackground_2", "/BackGround/TitleBackground_2.png");
-		Texture::LoadTexture("TitleBackground_3", "/BackGround/TitleBackground_3.png");
+
 		Texture::LoadTexture("player_life", "player_life.png");
 		Texture::LoadTexture("hidari_sceneChange", "hidari_sceneChange.png");
 		break;
@@ -187,6 +197,8 @@ void Game::LoadFinish()
 	sceneManeger->Add(Scene::SCENE::Title, new Title());
 	sceneManeger->Add(Scene::SCENE::Play, new Play());
 	sceneManeger->Add(Scene::SCENE::Ending, new Ending());
+	sceneManeger->Add(Scene::SCENE::GameClear, new GameClear());
+	sceneManeger->Add(Scene::SCENE::GameOver, new GameOver());
 	sceneManeger->Change(Scene::SCENE::Title);
 
 	postEffect = new PostEffect();

@@ -10,7 +10,6 @@
 #include"Grass.h"
 #include "ObjectManager.h"
 #include "Sprite.h"
-#include "SelectUI.h"
 #include "PlayerLifeUI.h"
 #include "SceneChange.h"
 
@@ -35,10 +34,6 @@ private:
 	CollisionManager* collisionManager = nullptr;
 	NormalMapTestOBJ* testNormalMapOBJ = nullptr;
 	ObjectManager* objectManager = nullptr;
-
-	SelectUI* selectUI = nullptr;
-	bool isGameover;
-	bool isGameclear;
 
 	PlayerLifeUI* plife = nullptr;
 	SceneChange* sceneCh = nullptr;

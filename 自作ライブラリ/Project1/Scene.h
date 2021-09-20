@@ -7,6 +7,8 @@ public:
 		Title,
 		Play,
 		Ending,
+		GameOver,
+		GameClear,
 		Test,
 	};
 	Scene() {};

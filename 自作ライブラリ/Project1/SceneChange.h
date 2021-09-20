@@ -9,7 +9,7 @@ public:
 
 	void Initialize();
 	void Update();
-	void Draw();
+	void Draw(XMFLOAT4 color);
 
 	void ChangeStart();
 	bool GetToBigEnd() { return toBigEnd; }

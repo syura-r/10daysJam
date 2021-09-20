@@ -62,9 +62,9 @@ void SceneChange::Update()
 	}
 }
 
-void SceneChange::Draw()
+void SceneChange::Draw(XMFLOAT4 color)
 {
-	mainSp->DrawSprite("hidari_sceneChange", pos, 0, scale);
+	mainSp->DrawSprite("hidari_sceneChange", pos, 0, scale, color);
 }
 
 void SceneChange::ChangeStart()

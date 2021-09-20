@@ -80,7 +80,7 @@ void Title::Update()
 
 void Title::PreDraw()
 {
-	sceneCh->Draw();
+	sceneCh->Draw({ 0,0,0,1 });
 
 	selectUI->Draw();
 

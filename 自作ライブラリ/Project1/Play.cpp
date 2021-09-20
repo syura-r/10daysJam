@@ -11,7 +11,7 @@
 
 Play::Play()
 {
-	next = Ending;
+	next = GameClear;
 	//ライト生成
 	lightGroup = LightGroup::Create();
 	//3Dオブジェクトにライトをセット
@@ -24,8 +24,6 @@ Play::Play()
 	objectManager = ObjectManager::GetInstance();
 
 	objectManager->Add(new Player());
-
-	selectUI = new SelectUI();
 
 	plife = new PlayerLifeUI();
 
@@ -40,7 +38,6 @@ Play::~Play()
 
 	objectManager->End();
 
-	PtrDelete(selectUI);
 	PtrDelete(plife);
 	PtrDelete(sceneCh);
 
@@ -50,10 +47,6 @@ void Play::Initialize()
 {
 	isEnd = false;
 	isAllEnd = false;
-
-	selectUI->Initialize(SelectUI::State::gameclear);
-	isGameover = false;
-	isGameclear = false;
 
 	plife->Initialize();
 	sceneCh->Initialize();
@@ -71,59 +64,21 @@ void Play::Update()
 	lightGroup->Update();
 	objectManager->Update();
 	collisionManager->CheckAllCollisions();
-	selectUI->Update();
 
 
 #ifdef _DEBUG
 	if (Input::TriggerKey(DIK_1))
 	{
-		isGameover = true;
-		isGameclear = false;
+		next = GameOver;
+		sceneCh->ChangeStart();
+
 	}
 	if (Input::TriggerKey(DIK_2))
 	{
-		isGameclear= true;
-		isGameover = false;
+		next = GameClear;
+		sceneCh->ChangeStart();
 	}
 #endif // _DEBUG
-
-	//ゲームオーバー
-	if (isGameover)
-	{
-		selectUI->SetState(SelectUI::State::gameover);
-	}
-	//ゲームクリア
-	if (isGameclear)
-	{
-		selectUI->SetState(SelectUI::State::gameclear);
-	}
-
-	//決定
-	if (Input::TriggerKey(DIK_SPACE) || Input::TriggerPadButton(XINPUT_GAMEPAD_A) || Input::TriggerPadButton(XINPUT_GAMEPAD_B))
-	{
-		//ゲームオーバー
-		if (isGameover)
-		{
-			if (selectUI->GetSelectNum() == 0)
-			{
-				//はじめから
-				Initialize();
-			}
-			else
-			{
-				//タイトルに戻る
-				next = SCENE::Title;
-				sceneCh->ChangeStart();
-			}
-		}
-		//ゲームクリア
-		else if (isGameclear)
-		{
-			//タイトルに戻る
-			next = SCENE::Title;
-			sceneCh->ChangeStart();
-		}
-	}
 
 	plife->Update(3);
 
@@ -149,7 +104,8 @@ void Play::PreDraw()
 		ImGui::End();
 		Object3D::GetLightCamera()->SetLightDir({ lightDir[0],lightDir[1] ,lightDir[2] });
 	}
-	sceneCh->Draw();
+
+	sceneCh->Draw({ 0,0,0,1 });
 
 	objectManager->PreDraw();
 }
@@ -157,9 +113,5 @@ void Play::PreDraw()
 void Play::PostDraw()
 {
 	objectManager->PostDraw();
-	if (isGameover || isGameclear)
-	{
-		selectUI->Draw();
-	}
 	plife->Draw();
 }

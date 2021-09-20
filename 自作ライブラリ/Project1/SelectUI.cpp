@@ -105,13 +105,13 @@ void SelectUI::SetState(State state)
 		break;
 
 	case SelectUI::gameover:
-		mainTexname = "result_gameover";
-		select1->texname = "result_restart";
-		select2->texname = "result_totitle";
+		mainTexname = "gameover_main";
+		select1->texname = "gameover_restart";
+		select2->texname = "gameover_totitle";
 
-		mainPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 5.0f };
-		select1->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 8.0f };
-		select2->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 10.0f };
+		mainPosition = { windowsize.x / 4.0f, windowsize.y / 43.0f * 13.0f };
+		select1->position = { windowsize.x / 4.0f, windowsize.y / 43.0f * 28.0f };
+		select2->position = { windowsize.x / 4.0f, windowsize.y / 43.0f * 34.0f };
 		break;
 
 	default:

@@ -18,13 +18,12 @@ public:
 	void Update();
 	void Draw();
 
-	void SetState(State state);
-
 	int GetSelectNum() { return selectNum; }
-
 	static void SetWindowSize(XMFLOAT2 windowsize) { SelectUI::windowsize = windowsize; }
 
 private:
+	void SetState(State state);
+
 	State state;
 
 	//‘è–¼
