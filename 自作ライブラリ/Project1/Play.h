@@ -12,6 +12,7 @@
 #include "Sprite.h"
 #include "SelectUI.h"
 #include "PlayerLifeUI.h"
+#include "SceneChange.h"
 
 class TouchAbleObject;
 class Play :public Scene
@@ -40,5 +41,7 @@ private:
 	bool isGameclear;
 
 	PlayerLifeUI* plife = nullptr;
+	SceneChange* sceneCh = nullptr;
+
 };
 

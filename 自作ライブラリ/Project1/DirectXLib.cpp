@@ -293,7 +293,7 @@ void DirectXLib::BeginDraw()
 
 	
 	//‘S‰æ–ÊƒNƒŠƒA          R    G     B    A
-	float clearColor[] = { 0.1f,0.6f,0.3f,1.0f };
+	float clearColor[] = { 1.0f,1.0f,1.0f,1.0f };
 	//cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 	cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 

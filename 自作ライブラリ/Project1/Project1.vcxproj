@@ -208,6 +208,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerLifeUI.cpp" />
     <ClCompile Include="PostEffect.cpp" />
+    <ClCompile Include="SceneChange.cpp" />
     <ClCompile Include="SelectUI.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
@@ -285,6 +286,7 @@
     <ClInclude Include="PtrDelete.h" />
     <ClInclude Include="QueryCallback.h" />
     <ClInclude Include="RaycastHit.h" />
+    <ClInclude Include="SceneChange.h" />
     <ClInclude Include="SelectUI.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />

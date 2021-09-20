@@ -11,6 +11,7 @@ Title::Title()
 	bg03 = new Sprite();
 	selectUI = new SelectUI();
 	//unionParts = new UnionPartsMotion();
+	sceneCh = new SceneChange();
 }
 
 
@@ -21,6 +22,7 @@ Title::~Title()
 	PtrDelete(bg03);
 	PtrDelete(selectUI);
 	//PtrDelete(unionParts);
+	PtrDelete(sceneCh);
 }
 
 void Title::Initialize()
@@ -34,6 +36,7 @@ void Title::Initialize()
 	bg03_position = { -firstBGPosX,0.0f };
 	selectUI->Initialize(SelectUI::State::title);
 	//unionParts->Initialize();
+	sceneCh->Initialize();
 }
 
 void Title::Update()
@@ -59,7 +62,7 @@ void Title::Update()
 		if (selectUI->GetSelectNum() == 0)
 		{
 			//‚Í‚¶‚ß‚é‚Ìˆ—
-			ShutDown();
+			sceneCh->ChangeStart();
 		}
 		else
 		{
@@ -67,11 +70,18 @@ void Title::Update()
 			isAllEnd = true;
 		}
 	}
+	sceneCh->Update();
 
+	if (sceneCh->GetToBigEnd())
+	{
+		ShutDown();
+	}
 }
 
 void Title::PreDraw()
 {
+	sceneCh->Draw();
+
 	selectUI->Draw();
 
 	bg03->DrawSprite("TitleBackground_3", bg03_position, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });

@@ -6,6 +6,7 @@
 
 #include "SelectUI.h"
 #include "UnionPartsMotion.h"
+#include "SceneChange.h"
 
 class Title :
 	public Scene
@@ -34,4 +35,6 @@ private:
 	SelectUI* selectUI = nullptr;
 	//obj
 	//UnionPartsMotion* unionParts = nullptr;
+
+	SceneChange* sceneCh = nullptr;
 };

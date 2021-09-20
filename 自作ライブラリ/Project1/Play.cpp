@@ -28,6 +28,9 @@ Play::Play()
 	selectUI = new SelectUI();
 
 	plife = new PlayerLifeUI();
+
+	sceneCh = new SceneChange();
+
 }
 
 
@@ -39,6 +42,8 @@ Play::~Play()
 
 	PtrDelete(selectUI);
 	PtrDelete(plife);
+	PtrDelete(sceneCh);
+
 }
 
 void Play::Initialize()
@@ -51,6 +56,8 @@ void Play::Initialize()
 	isGameclear = false;
 
 	plife->Initialize();
+	sceneCh->Initialize();
+
 }
 
 void Play::Update()
@@ -106,7 +113,7 @@ void Play::Update()
 			{
 				//タイトルに戻る
 				next = SCENE::Title;
-				ShutDown();
+				sceneCh->ChangeStart();
 			}
 		}
 		//ゲームクリア
@@ -114,11 +121,18 @@ void Play::Update()
 		{
 			//タイトルに戻る
 			next = SCENE::Title;
-			ShutDown();
+			sceneCh->ChangeStart();
 		}
 	}
 
 	plife->Update(3);
+
+	sceneCh->Update();
+
+	if (sceneCh->GetToBigEnd())
+	{
+		ShutDown();
+	}
 }
 
 void Play::PreDraw()
@@ -135,6 +149,8 @@ void Play::PreDraw()
 		ImGui::End();
 		Object3D::GetLightCamera()->SetLightDir({ lightDir[0],lightDir[1] ,lightDir[2] });
 	}
+	sceneCh->Draw();
+
 	objectManager->PreDraw();
 }
 

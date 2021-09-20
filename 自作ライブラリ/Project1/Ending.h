@@ -3,6 +3,8 @@
 #include"CreateFigure.h"
 #include"Texture.h"
 #include"Alpha.h"
+
+#include "SceneChange.h"
 class Ending :public Scene
 {
 public:
@@ -13,5 +15,6 @@ public:
 	void PreDraw()override;
 	void PostDraw()override;
 private:
+	SceneChange* sceneCh = nullptr;
 };
 
