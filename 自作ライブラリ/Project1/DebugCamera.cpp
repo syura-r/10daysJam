@@ -36,11 +36,11 @@ void DebugCamera::Update()
 		else if (phi < 0)
 			phi += 360 * XM_PI / 180.0f;
 		
-		if(theta < 0)
-		{
-			distance = 10 * (1 + theta * 1.1f);
-			
-		}
+		//if(theta < 0)
+		//{
+		//	distance = 10 * (1 + theta * 1.1f);
+		//	
+		//}
 		//printf("phi : %f , theta : %f\n", phi, theta);
 		dirty = true;
 	}

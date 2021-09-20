@@ -359,13 +359,18 @@ void CollisionManager::QueryBox(const Box& box, QueryCallback* callback, unsigne
 			if (!Collision::CheckBoxBox(box,*boxB, &tempInter, &tempReject))
 				continue;
 			if(collider != nullptr)
-			col->OnCollision(CollisionInfo(collider->GetObject3D(), collider, tempInter, tempReject));
+				col->OnCollision(CollisionInfo(collider->GetObject3D(), collider, tempInter, tempReject));
 			//交差情報をセット
 			QueryHit info;
 			info.collider = col;
 			info.object = col->GetObject3D();
 			info.inter = tempInter;
 			info.reject = tempReject;
+			//if (tempReject.m128_f32[1] < 0)
+			//{
+			//	static  int a;
+			//	a++;
+			//}
 
 			//クエリーコールバック呼び出し
 			if (!callback->OnQueryHit(info))

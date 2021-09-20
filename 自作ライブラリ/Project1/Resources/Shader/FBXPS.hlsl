@@ -16,7 +16,7 @@ PSOutPut PSmain(VSOutput input)
     float brightness = diffuse + 0.3f;
     float4 shadecolor = float4(brightness, brightness, brightness, 1.0f);
 	//シェーディングによる色で描画
-	float4 rColor = shadecolor * texcolor * color;
+	float4 rColor = /*shadecolor **/ texcolor * color;
     output.target0 = rColor;
     output.target1 = float4(1 - rColor.rgb,1);
     float y = dot(float3(0.2299f, 0.587f, 0.114f), rColor);

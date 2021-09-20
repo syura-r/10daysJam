@@ -27,18 +27,20 @@ public:
 	void Draw() override;
 	static void SetDebugCamera(DebugCamera* cameraPtr) { camera = cameraPtr; }
 	static void SetLightCamera(LightCamera* cameraPtr) { lightCamera = cameraPtr; }
-	ATTACKSTATE GetAttackState() { return nowAttackState; }
-private:
+	const ATTACKSTATE& GetAttackState() { return nowAttackState; }
+private://メンバ関数
 	//攻撃処理
 	void Attack();
 	//移動処理
 	void Move();
+
+private://メンバ変数
 	//接地フラグ
 	bool onGround = true;
 	//落下ベクトル
 	XMVECTOR fallV;
 	//移動速度
-	float speed = 0.2f;
+	float speed = 0.1f;
 	Vector3 prePos;
 	//ナのオブジェクト
 	Object* naObject = nullptr;
@@ -51,6 +53,7 @@ private:
 	//現在の攻撃状態
 	ATTACKSTATE nowAttackState;
 
+	//アニメーションの種類
 	enum ANIMATIONSTATE
 	{
 		Wait,//待機アニメーション
@@ -62,16 +65,29 @@ private:
 	//現在のアニメーション状態
 	ANIMATIONSTATE nowAnimationState;
 
-	Object* hitObj = nullptr;
-
 	//攻撃フラグ
 	bool attackFrag;
 
 	//攻撃判定用のカウンタ
 	int attackCounter;
+
+	int hp;
+
+	//複数回ダメージを撃受けるのを防ぐフラグ
+	bool damage;
+	//無敵時間
+	int invCounter;
+
 	
+//-------------------デバッグ用-------------------
+#ifdef _DEBUG
+	Object* hitObj = nullptr;
+	Vector3 rejectVal = {}; 
+#endif _DEBUG
+//------------------------------------------------
+
 //---------------ブーメラン------------------
-	//ブーメランの発射方向
+		//ブーメランの発射方向
 	bool boomerangMoveRight;
 	//ブーメランの最大移動速度
 	const float BoomerangMaxSpeed = 0.3f;
@@ -86,10 +102,6 @@ private:
 	Object* itiObject = nullptr;//左の一角目(一の部分)
 	Object* noObject = nullptr;//左の二角目(ノの部分)
 	Object* eObject = nullptr;//左の残り(エの部分)
-
-	const Vector3 itiOffset = {};//元のポジションからどれだけ離れてるか
-	const Vector3 noOffset = {};
-	const Vector3 eOffset = {};
 
 	//近接段階
 	int meleeAttackStage;
@@ -116,15 +128,16 @@ private://内部クラス
 			//地面判定しきい値角度
 			const float threshold = cosf(XMConvertToRadians(30.0f));
 			//角度差によって天井または地面と判定される場合を除いて
-			if (-threshold < cos && cos < threshold)
-			{
-				//球を排斥(押し出す)
-				if(box)
+			//if (-threshold < cos && cos < threshold)
+			//{
+				///球を排斥(押し出す)
+			if (box)
 				box->center += info.reject;
-				if (sphere)
-					sphere->center += info.reject;
-				move += info.reject;
-			}
+			if (sphere)
+				sphere->center += info.reject;
+			move += info.reject;
+
+			//}
 			return true;
 		}
 		//クエリーに使用する球

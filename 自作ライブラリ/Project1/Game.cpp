@@ -77,13 +77,14 @@ void Game::RoadAsset()
 		FBXManager::LoadModelFile("Migi1_1", "Migi1_1", true);
 		FBXManager::LoadModelFile("Migi1_2", "Migi1_2", true);
 		FBXManager::LoadModelFile("Migi2", "Migi2", true);
+		FBXManager::LoadModelFile("zan-zo", "zan-zo", true);
 
 		break;
 
 	case 4:
 		//FBXファイルの読み込み
-		FBXManager::LoadModelFile("Hidari1", "Hidari1", true);
-		FBXManager::LoadModelFile("Hidari2", "Hidari2", true);
+		FBXManager::LoadModelFile("Hidari1", "NormalMode_1", true);
+		FBXManager::LoadModelFile("Hidari2", "NormalMode_2", true);
 		FBXManager::LoadModelFile("SwoedMode_1", "SwoedMode_1", true);
 		FBXManager::LoadModelFile("SwoedMode_2", "SwoedMode_2", true);
 		FBXManager::LoadModelFile("SwoedMode_3", "SwoedMode_3", true);
@@ -119,10 +120,10 @@ void Game::CreatePipeline()
 		PipelineState::CreatePipeline("NoShade", NoShade);
 		break;
 	case 4:
-		//PipelineState::CreatePipeline("NormalMap", NormalMap);
+		PipelineState::CreatePipeline("PolygonBreak", PolygonBreak);
 		break;
 	case 5:
-		PipelineState::CreatePipeline("PolygonBreak", PolygonBreak);
+		//PipelineState::CreatePipeline("NormalMap", NormalMap);
 		break;
 	//case 6:
 	//	PipelineState::CreatePipeline("FBXShadowMap", FBXShadowMap);
@@ -221,6 +222,9 @@ void Game::Initialize()
 	loadTex = new Sprite();
 	loadDot = new Sprite();
 
+	effekSeer = new EffekseerLib();
+	effekSeer->Initialize(camera);
+
 }
 
 void Game::Run()
@@ -261,9 +265,11 @@ void Game::Run()
 		{
 			Input::Update();
 			Alpha::Update();
+			effekSeer->Update();
 			lightCamera->Update();
 			sceneManeger->Update();
 			camera->Update();
+			effekSeer->Update();
 			ParticleEmitter::Update();
 			//2.画面クリアコマンドここまで
 			//Object3D::SetDrawShadow(true);
@@ -285,6 +291,9 @@ void Game::Run()
 			//}
 			//3.描画コマンドここから
 			sceneManeger->PreDraw();
+			effekSeer->BeginRendering();
+			effekSeer->Draw();
+			effekSeer->EndRendering();
 			//背面描画ここまで
 #ifdef _DEBUG
 			DebugText::Draw();
@@ -331,6 +340,7 @@ void Game::End()
 	sceneManeger->End();
 	//デリートはここまでに終わらせる
 	directX->End();
+	PtrDelete(effekSeer);
 	win->End();
 	PtrDelete(win);
 }

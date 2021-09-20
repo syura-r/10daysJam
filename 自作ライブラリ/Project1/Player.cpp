@@ -21,7 +21,7 @@ Player::Player()
 	naObject->Create(FBXManager::GetModel("Hidari1"));
 	Initialize();
 
-	BoxCollider* boxCollider = new BoxCollider({ 0,0.45f,0,0 }, scale * 2);
+	BoxCollider* boxCollider = new BoxCollider({ 0,2.25f * scale.y,0,0 }, scale * 2);
 	SetCollider(boxCollider);
 	collider->SetAttribute(COLLISION_ATTR_ALLIES);
 	collider->SetMove(true);
@@ -40,13 +40,16 @@ Player::Player()
 	eObject->Create(FBXManager::GetModel("SwoedMode_3"));
 	eObject->SetScale(scale);
 	eObject->SetColor(color);
+
+
 	
+#ifdef _DEBUG
 	hitObj = new Object();
 	hitObj->Create(OBJLoader::GetModel("box"));
 	hitObj->SetScale(scale * 4);
-	//hitObj->SetScale({ 0.5f,0.5f,0.5f });
+	//hitObj->SetScale({ 0.8f,0.8f,0.8f });
 	hitObj->SetColor({ 1,1,1,0.4f });
-
+#endif _DEBUG
 }
 
 Player::~Player()
@@ -55,7 +58,11 @@ Player::~Player()
 	PtrDelete(noObject);
 	PtrDelete(eObject);
 	PtrDelete(naObject);
+	
+#ifdef _DEBUG
 	PtrDelete(hitObj);
+#endif _DEBUG
+
 }
 
 void Player::Initialize()
@@ -70,7 +77,7 @@ void Player::Initialize()
 	naObject->SetPosition(naPos);
 	//naObject->SetRotation(rotation);
 	naObject->SetScale(scale);
-	naObject->SetColor(color);
+	//naObject->SetColor(color);
 
 	prePos = position;
 	nowAttackState = NoAttack;
@@ -89,12 +96,45 @@ void Player::Initialize()
 	boomerangSpeed = BoomerangMaxSpeed;
 
 	continueMeleeAttack = false;
+	damage = false;
+	hp = 3;
 }
 
 void Player::Update()
 {
 	Move();
 	Attack();
+//-----------------------------ダメージ処理-----------------------------------------
+	if(damage)
+	{
+		if(invCounter >= 120)
+		{
+			damage = false;
+			color = { 0,0,0,1 };
+			naObject->SetColor(color);
+			noObject->SetColor(color);
+			itiObject->SetColor(color);
+			eObject->SetColor(color);
+		}
+		else
+		{
+			if(invCounter % 10 == 0)
+			{
+				if (color.w == 1)
+					color.w = 0;
+				else
+					color.w = 1;
+				naObject->SetColor(color);
+				noObject->SetColor(color);
+				itiObject->SetColor(color);
+				eObject->SetColor(color);
+			}
+		}
+		invCounter++;
+	}
+	
+//----------------------------------------------------------------------------------
+	
 	//落下処理
 	if (!onGround)
 	{
@@ -129,26 +169,12 @@ void Player::Update()
 			}
 		}
 	}
-
-	//コライダー更新	
+//----------------------------------------マップとの判定・排斥処理-------------------------------------------
+	//コライダー更新
 	Object::Update();
-	//球コライダーを取得
+	//コライダーを取得
 	BoxCollider* boxCollider = dynamic_cast<BoxCollider*>(collider);
 	assert(boxCollider);
-
-	//クエリーコールバックの関数オブジェクト
-	PlayerQueryCallBack callback(boxCollider);
-	//球と地形の交差を全検索
-	CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_LANDSHAPE);
-
-	//交差による排斥文を動かす
-	position.x += callback.move.m128_f32[0];
-	position.y += callback.move.m128_f32[1];
-	position.z += callback.move.m128_f32[2];
-
-
-	//コライダー更新	
-	Object::Update();
 
 	//球の上端から球の下端までのレイキャスト用レイを準備
 	Ray ray;
@@ -167,7 +193,7 @@ void Player::Update()
 			&raycastHit, boxCollider->GetScale().y * 2.0f + absDistance))
 		{
 			onGround = true;
-			position.y -= (raycastHit.distance - boxCollider->GetScale().y * 2.0f);
+			position.y -= raycastHit.distance - boxCollider->GetScale().y * 2.0f;
 			//行列更新など
 			Object::Update();
 		}
@@ -184,33 +210,71 @@ void Player::Update()
 		{
 			//着地
 			onGround = true;
-			position.y -= (raycastHit.distance - boxCollider->GetScale().y * 2.0f);
+			position.y -= raycastHit.distance - boxCollider->GetScale().y * 2.0f;
 			//行列更新など
 			Object::Update();
 		}
 
-	if (prePos != position)
+	
+
+	//クエリーコールバックの関数オブジェクト
+	PlayerQueryCallBack callback(boxCollider);
+	//球と地形の交差を全検索
+	CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_LANDSHAPE);
+
+	if (callback.move.m128_f32[0] < -speed)
+		callback.move.m128_f32[0] = -speed;
+	else if (callback.move.m128_f32[0] > speed)
+		callback.move.m128_f32[0] = speed;
+	//交差による排斥文を動かす
+	position.x += callback.move.m128_f32[0];
+	position.y += callback.move.m128_f32[1];
+	position.z += callback.move.m128_f32[2];
+	if (callback.move.m128_f32[1] < -0.1f)
+		fallV.m128_f32[1] = 0;
+	rejectVal.x = callback.move.m128_f32[0];
+	rejectVal.y = callback.move.m128_f32[1];
+	rejectVal.z = callback.move.m128_f32[2];
+
+	if(rejectVal.y != 0)
+	{
+		printf("rejectVal.y : %f\n", rejectVal.y);
+	}
+	if (rejectVal.x != 0)
+	{
+		printf("rejectVal.x : %f\n", rejectVal.x);
+	}
+
+	//排斥で地面に立ってる場合
+	if (!onGround && prePos.y == position.y && callback.move.m128_f32[1] != 0)
+		onGround = true;
+	//コライダー更新	
+	Object::Update();
+
+//----------------------------------------------------------------------------------------------------------------
+	
+	if (prePos != position)//カメラのターゲット更新
 	{
 		lightCamera->SetTarget(position + Vector3{ 0,1,0 });
-		camera->SetTarget(position + Vector3{ 0, 2, 0 });
-
+		camera->SetTarget(position + Vector3{ 0, 0, 0 });
 	}
 
 	if (nowAttackState != Boomerang)
 	{
 		naPos = position;
 	}
-	if(nowAttackState == MeleeAttack)
+	
+	if(nowAttackState == MeleeAttack || nowAttackState == JumpAttack)
 	{
 		itiObject->SetRotation(rotation);
 		noObject-> SetRotation(rotation);
 		eObject->  SetRotation(rotation);
-		itiObject->SetPosition(position + itiOffset);
-		noObject->SetPosition(position + noOffset);
-		eObject->SetPosition(position + eOffset);
+		itiObject->SetPosition(position);
+		noObject ->SetPosition(position);
+		eObject  ->SetPosition(position);
 		itiObject->Update();
-		noObject->Update();
-		eObject->Update();
+		noObject ->Update();
+		eObject  ->Update();
 	}
 	
 	naObject->SetPosition(naPos);
@@ -219,23 +283,52 @@ void Player::Update()
 	Object::Update();
 	naObject->Update();
 
+
+
+#ifdef _DEBUG
 	float offsetX = 0.6f;
 	if (!moveRight)
 		offsetX *= -1;
-	//hitObj->SetPosition(naPos + Vector3{ 0,0.45f,0 });
-	hitObj->SetPosition(position + Vector3{ offsetX,0.45f,0 });
+	if (nowAttackState == Boomerang)
+	{
+		hitObj->SetScale({ scale.x * 4,scale.y * 2,scale.z * 4 });
+		hitObj->SetPosition(position + Vector3{ 0,2.25f * scale.y / 2,0});
+	}
+	else
+	{
+		hitObj->SetScale(scale * 4);
+		hitObj->SetPosition(position + Vector3{ 0,2.25f * scale.y,0 });
+	}
+	//hitObj->SetPosition(position + Vector3{ offsetX,2.25f * scale.y,0 });
 
 	hitObj->Update();
+#endif _DEBUG
 }
 
 void Player::OnCollision(const CollisionInfo & info)
 {
+	if(damage || nowAttackState == JumpAttack || info.collider->GetAttribute() != COLLISION_ATTR_ENEMYS)
+		return;
+
+	color = { 0.4f,0,0,1 };
+	hp--;
+	if (hp <= 0)
+		dead = true;
+	damage = true;
+	invCounter = 0;
 }
 
 void Player::Draw()
 {
+	ImGui::Begin("PlayerState");
+	ImGui::Text("onGround : %d\n", onGround);
+	ImGui::Text("position.y : %f\n", position.y);
+	ImGui::Text("fallVelY : %f\n", fallV.m128_f32[1]); 
+	ImGui::Text("rejectVal.y : %f\n", rejectVal.y);
+
+	ImGui::End();
 	DirectXLib::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	if(nowAttackState == MeleeAttack)
+	if(nowAttackState == MeleeAttack || nowAttackState == JumpAttack)
 	{
 		itiObject->CustomDraw(true);
 		noObject->CustomDraw(true);
@@ -244,31 +337,54 @@ void Player::Draw()
 	}
 	CustomDraw(true);
 	naObject->CustomDraw(true);
-	hitObj->Draw();
+	
+#ifdef _DEBUG
+	//if (nowAttackState == JumpAttack)
+		//hitObj->Draw();
+#endif _DEBUG
 
 }
 
 void Player::Attack()
 {
+//-----------------------------------------攻撃発生処理---------------------------------------------
 	if (!attackFrag)
 	{
 		if (nowAttackState == NoAttack && Input::TriggerKey(DIK_RETURN))
 		{
-			nowAttackState = MeleeAttack;
-			nowAnimationState = Attacks;
-			meleeAttackStage = 1;
-			attackFrag = true;
-			attackCounter = 0;
-			continueMeleeAttack = false;
-			FBXManager::GetModel("SwoedMode_1")->SetAnimationFrame(0,30);
-			FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(0, 30);
-			FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(0, 30);
-			if (!moveRight)
-				rotation.y = 180;
+			//----------------------------通常攻撃の発生処理----------------------------------------
+			if (onGround)
+			{
+				nowAttackState = MeleeAttack;
+				nowAnimationState = Attacks;
+				meleeAttackStage = 1;
+				attackFrag = true;
+				attackCounter = 0;
+				continueMeleeAttack = false;
+				FBXManager::GetModel("SwoedMode_1")->SetAnimationFrame(0, 30);
+				FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(0, 30);
+				FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(0, 30);
+				if (!moveRight)
+					rotation.y = 180;
+				else
+					rotation.y = 0;
+			}//-------------------------------------------------------------------------------------
+			//----------------------------ジャンプ攻撃の発生処理------------------------------------
 			else
-				rotation.y = 0;
+			{
+				nowAttackState = JumpAttack;
+				nowAnimationState = Attacks;
+				attackFrag = true;
+				FBXManager::GetModel("SwoedMode_1")->SetAnimationFrame(101, 130);
+				FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(101, 130);
+				FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(101, 130);
+
+
+			}//-------------------------------------------------------------------------------------
 
 		}
+		
+		//----------------------------ブーメランの発生処理------------------------------------------
 		if (Input::TriggerKey(DIK_Z))
 		{
 			nowAttackState = Boomerang;
@@ -290,20 +406,31 @@ void Player::Attack()
 			else
 				rotation.y = 0;
 
-		}
+			BoxCollider* boxCollider = dynamic_cast<BoxCollider*>(collider);
+			assert(boxCollider);
+
+			boxCollider->SetScale({ scale.x * 2,scale.y ,scale.z * 2 });
+			boxCollider->SetOffset({ 0,2.25f * scale.y / 2 + 0.025f ,0,0 });
+			boxCollider->Update();
+
+
+		}//-------------------------------------------------------------------------------------
 	}
+//----------------------------------------------------------------------------------------------------------------------
+
+//--------------------------------------------------攻撃更新処理------------------------------------------------------------
 	else
 	{
 		switch (nowAttackState)
 		{
-		case MeleeAttack:
+		case MeleeAttack://---------------------------------通常攻撃----------------------------------------------------------
 		{
 			auto nowAnimationTime = FBXManager::GetModel("SwoedMode_1")->GetCurrentAnimationTime();
 			FbxTime beginTime;
 			FbxTime endTime;
 			switch (meleeAttackStage)
 			{
-			case 1://一段階目
+			case 1://-----------------------------------------1段階目----------------------------------------------------------
 			{
 				beginTime.SetTime(0, 0, 0, 12, 0, FbxTime::EMode::eFrames60);
 				endTime.SetTime(0, 0, 0, 18, 0, FbxTime::EMode::eFrames60);
@@ -313,7 +440,7 @@ void Player::Attack()
 					float offsetX = 0.6f;
 					if (!moveRight)
 						offsetX *= -1;
-					BoxCollider* boxCollider = new BoxCollider({ offsetX,0.45f,0,0 }, scale * 2);
+					BoxCollider* boxCollider = new BoxCollider({ offsetX,2.25f * scale.y,0,0 }, scale * 2);
 					boxCollider->SetAttribute(COLLISION_ATTR_ATTACK);
 					boxCollider->SetObject(this);
 					boxCollider->Update();
@@ -321,7 +448,7 @@ void Player::Attack()
 					PlayerQueryCallBack callback(boxCollider);
 					CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ENEMYS, boxCollider);
 				}
-				if(nowAnimationTime > endTime && Input::TriggerKey(DIK_RETURN))
+				if( Input::TriggerKey(DIK_RETURN))
 				{
 					continueMeleeAttack = true;
 				}
@@ -345,8 +472,8 @@ void Player::Attack()
 					}
 				}
 				break;
-			}
-			case 2://二段階目
+			}//---------------------------------------------------------------------------------------------------------------
+			case 2://----------------------------------------2段階目----------------------------------------------------------
 			{
 				beginTime.SetTime(0, 0, 0, 44, 0, FbxTime::EMode::eFrames60);
 				endTime.SetTime(0, 0, 0, 49, 0, FbxTime::EMode::eFrames60);
@@ -356,7 +483,7 @@ void Player::Attack()
 					float offsetX = 0.6f;
 					if (!moveRight)
 						offsetX *= -1;
-					BoxCollider* boxCollider = new BoxCollider({ offsetX,0.45f,0,0 }, scale * 2);
+					BoxCollider* boxCollider = new BoxCollider({ offsetX,2.25f * scale.y,0,0 }, scale * 2);
 					boxCollider->SetAttribute(COLLISION_ATTR_ATTACK);
 					boxCollider->SetObject(this);
 					boxCollider->Update();
@@ -364,7 +491,7 @@ void Player::Attack()
 					PlayerQueryCallBack callback(boxCollider);
 					CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ENEMYS, boxCollider);
 				}
-				else if (nowAnimationTime > endTime && Input::TriggerKey(DIK_RETURN))
+				else if ( Input::TriggerKey(DIK_RETURN))
 				{
 					continueMeleeAttack = true;
 				}
@@ -389,18 +516,18 @@ void Player::Attack()
 				}
 
 				break;
-			}
-			case 3://三段階目
+			}//---------------------------------------------------------------------------------------------------------------
+			case 3://----------------------------------------3段階目----------------------------------------------------------
 			{
 				beginTime.SetTime(0, 0, 0, 70, 0, FbxTime::EMode::eFrames60);
 				endTime.SetTime(0, 0, 0, 79, 0, FbxTime::EMode::eFrames60);
-
+				
 				if (nowAnimationTime >= beginTime && nowAnimationTime <= endTime)
 				{
 					float offsetX = 0.6f;
 					if (!moveRight)
 						offsetX *= -1;
-					BoxCollider* boxCollider = new BoxCollider({ offsetX,0.45f,0,0 }, scale * 2);
+					BoxCollider* boxCollider = new BoxCollider({ offsetX,2.25f * scale.y,0,0 }, scale * 2);
 					boxCollider->SetAttribute(COLLISION_ATTR_ATTACK);
 					boxCollider->SetObject(this);
 					boxCollider->Update();
@@ -419,17 +546,15 @@ void Player::Attack()
 				}
 
 				break;
-			}
+			}//---------------------------------------------------------------------------------------------------------------
 			default:
 				break;
-			}
-
-				
+			}	
 			break;
-		}
-		case Boomerang:
+		}//----------------------------------------------------------------------------------------------------------------------
+		case Boomerang://---------------------------------------ブーメラン---------------------------------------------------------
 		{
-			SphereCollider* sphereCollider = new SphereCollider({ 0,0.45f,0,0 }, 0.5f);
+			SphereCollider* sphereCollider = new SphereCollider({ 0,2.25f * scale.y,0,0 }, 0.5f);
 			sphereCollider->SetAttribute(COLLISION_ATTR_ATTACK);
 			sphereCollider->SetObject(naObject);
 			sphereCollider->Update();
@@ -437,31 +562,65 @@ void Player::Attack()
 			PlayerQueryCallBack callback(sphereCollider);
 			CollisionManager::GetInstance()->QuerySphere(*sphereCollider, &callback, COLLISION_ATTR_ENEMYS, sphereCollider);
 
-			if (boomerangCounter >= BoomerangTime && Collision::CheckSphereBox(*sphereCollider, *dynamic_cast<BoxCollider*>(collider)))
+			if (boomerangCounter >= BoomerangTime * 4)
 			{
 				attackFrag = false;
 				nowAttackState = NoAttack;
+				nowAnimationState = Wait;
+				BoxCollider* boxCollider = dynamic_cast<BoxCollider*>(collider);
+				assert(boxCollider);
+
+				boxCollider->SetScale(scale * 2);
+				boxCollider->SetOffset({ 0,2.25f * scale.y,0,0 });
+				boxCollider->Update();
 			}
 			break;
-		}
-		case JumpAttack:
+		}//----------------------------------------------------------------------------------------------------------------------
+		case JumpAttack://---------------------------------------ジャンプ攻撃----------------------------------------------------
+		{
+			auto nowAnimationTime = FBXManager::GetModel("SwoedMode_3")->GetCurrentAnimationTime();
+			FbxTime beginTime;
+			FbxTime endTime;
+			beginTime.SetTime(0, 0, 0, 105, 0, FbxTime::EMode::eFrames60);
+			endTime.SetTime(0, 0, 0, 130, 0, FbxTime::EMode::eFrames60);
+
+			if (nowAnimationTime >= beginTime && nowAnimationTime <= endTime)
+			{
+
+				SphereCollider* sphereCollider = new SphereCollider({ 0,2.25f * scale.y,0,0 }, 0.8f);
+				sphereCollider->SetAttribute(COLLISION_ATTR_ATTACK);
+				sphereCollider->SetObject(this);
+				sphereCollider->Update();
+				//クエリーコールバックの関数オブジェクト
+				PlayerQueryCallBack callback(sphereCollider);
+				CollisionManager::GetInstance()->QuerySphere(*sphereCollider, &callback, COLLISION_ATTR_ENEMYS, sphereCollider);
+			}
+			FBXManager::GetModel("SwoedMode_1")->PlayAnimation();
+			FBXManager::GetModel("SwoedMode_2")->PlayAnimation();
+
+			if(!FBXManager::GetModel("SwoedMode_3")->PlayAnimation())
+			{
+				attackFrag = false;
+				nowAttackState = NoAttack;
+				nowAnimationState = Wait;
+			}
+			break;
+		}//----------------------------------------------------------------------------------------------------------------------
+		case ULT://-------------------------------------------------左斬り-------------------------------------------------------
 		{
 			break;
-		}
-		case ULT:
-		{
-			break;
-		}
+		}//----------------------------------------------------------------------------------------------------------------------
 		default:
 			break;
 		}
 	}
+//------------------------------------------------------------------------------------------------------------------------------------
 }
 
 void Player::Move()
 {
 	prePos = position;
-//----------------------移動処理-------------------------------
+//-----------------------------------------移動処理---------------------------------------------
 	if (nowAttackState != MeleeAttack && (Input::DownKey(DIK_D) || Input::DownKey(DIK_A)))
 	{
 		if (Input::DownKey(DIK_D))
@@ -511,9 +670,9 @@ void Player::Move()
 			FBXManager::GetModel("Hidari1")->PlayAnimation(true);
 		}
 	}
-//--------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------
 
-//-------------------方向転換時の回転処理-----------------------
+//------------------------------------方向転換時の回転処理---------------------------------------
 
 	if (nowAnimationState == Turn)
 	{
@@ -529,9 +688,9 @@ void Player::Move()
 
 		}
 	}
-//--------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------
 
-//------------ジャンプアニメーションの再生処理------------------
+//-----------------------------ジャンプアニメーションの再生処理----------------------------------
 
 	if (nowAnimationState == Jump)
 	{
@@ -542,10 +701,10 @@ void Player::Move()
 		}
 	}
 
-//--------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
 
-//---------------ブーメランの移動処理---------------------------
+//---------------------------------ブーメランの移動処理--------------------------------------------
 	if (nowAttackState == Boomerang)
 	{
 		naPos.x += boomerangSpeed;
@@ -563,5 +722,5 @@ void Player::Move()
 		}
 		boomerangCounter++;
 	}
-//--------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 }

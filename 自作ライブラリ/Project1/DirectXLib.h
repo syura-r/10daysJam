@@ -65,7 +65,7 @@ public:
 	ID3D12Device* GetDevice() { return dev.Get(); }
 	ID3D12GraphicsCommandList* GetCommandList() { return cmdList.Get(); }
 	ID3D12CommandQueue* GetCmdQueue() { return cmdQueue.Get(); }
-	
+
 	std::vector< ComPtr<ID3D12Resource>>& GetBackBuffers() { return backBuffers; }
 	ComPtr<ID3D12DescriptorHeap>& GetDsvHeap() { return dsvHeap; }
 	ComPtr < ID3D12DescriptorHeap>& GetRtvHeaps() { return  rtvHeaps; }

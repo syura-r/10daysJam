@@ -1,5 +1,7 @@
 #pragma once
+#include "CollisionPrimitive.h"
 #include "Object.h"
+#include "QueryCallback.h"
 
 class Player;
 class Enemy :
@@ -41,9 +43,38 @@ private:
 	const int MaxHP = 100;
 	//複数回ヒットを防ぐカウンター
 	int damageCounter;
+	//攻撃を受けてからの無敵時間(受けた技ごとに変えるため変数)
+	int invTime = 0;
 
-	
+#ifdef _DEBUG
 	Object* hitBox = nullptr;
+#endif
+
+	//クエリーコールバッククラス
+	class EnemyQueryCallBack :public QueryCallback
+	{
+	public:
+		EnemyQueryCallBack(Box* box) :box(box) {};
+		//衝突時のコールバック関数
+		bool OnQueryHit(const QueryHit& info)
+		{
+			//ボックスを排斥(押し出す)
+			if (box)
+				box->center += info.reject;
+			move += info.reject;
+
+			return true;
+		}
+		//クエリーに使用する球
+		Box* box = nullptr;
+		//排斥による移動量(累積値)
+		XMVECTOR move = {};
+	};
+
+	bool onGround = false;
+	XMVECTOR fallV = {};
+
+
 private://静的メンバ変数
 	//プレイヤーのポインタ
 	static Player* player;

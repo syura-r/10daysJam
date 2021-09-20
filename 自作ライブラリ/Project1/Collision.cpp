@@ -158,11 +158,11 @@ bool Collision::CheckBoxBox(const Box& box1, const Box& box2, XMVECTOR* inter, X
 			auto a = box2.maxPosition - box1.minPosition;
 			auto b = box2.minPosition - box1.maxPosition;
 			Vector3 rejectVec = {};
-			if (a.x < abs(b.x))
+			if (abs(a.x) < abs(b.x))
 				rejectVec.x = a.x;
 			else
 				rejectVec.x = b.x;
-			if (a.y < abs(b.y))
+			if (abs(a.y) < abs(b.y))
 				rejectVec.y = a.y;
 			else
 				rejectVec.y = b.y;
@@ -171,7 +171,7 @@ bool Collision::CheckBoxBox(const Box& box1, const Box& box2, XMVECTOR* inter, X
 			else
 				rejectVec.x = 0;
 
-			*reject = XMVectorSet(rejectVec.x, -rejectVec.y, rejectVec.z, 1);
+			*reject = XMVectorSet(rejectVec.x, rejectVec.y, rejectVec.z, 1);
 		}
 		return true;
 	}
@@ -365,6 +365,10 @@ bool Collision::CheckRay2Sphere(const Ray & lay, const Sphere & sphere, float * 
 
 bool Collision::CheckRay2Box(const Ray& lay, const Box& box, float* distance, DirectX::XMVECTOR* inter)
 {
+
+	if (box.center.m128_f32[1] > lay.start.m128_f32[1])
+		return false;
+	
 	// åç∑îªíË
 	float p[3], d[3], min[3], max[3];
 	memcpy(p, &lay.start, sizeof(Vector3));
