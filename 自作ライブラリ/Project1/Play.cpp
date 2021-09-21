@@ -78,6 +78,14 @@ void Play::Update()
 		next = GameClear;
 		sceneCh->ChangeStart();
 	}
+
+	if (Input::TriggerKey(DIK_P))
+	{
+		Vector3 effectPos = { 5,2,5 };
+		ParticleEmitter::CreateSlashEffects(effectPos);
+		ParticleEmitter::CreateSparkEffects(effectPos);
+		ParticleEmitter::CreateShockEffects(effectPos);
+	}
 #endif // _DEBUG
 
 	plife->Update(3);

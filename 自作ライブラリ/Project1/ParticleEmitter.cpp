@@ -477,3 +477,100 @@ void ParticleEmitter::End()
 {
 	//PtrDelete(particleManager);
 }
+
+void ParticleEmitter::CreateSparkEffects(const Vector3& pos)
+{
+	for (int i = 0; i < 20; i++)
+	{
+		Particle* particle = new Particle();
+		particle->parameter.position = pos;
+
+		particle->parameter.frame = 0;
+		particle->parameter.num_frame = 25;
+
+		particle->parameter.velocity = { 0,0,0 };
+		particle->parameter.accel = { (std::rand() % 100 - 50) * 0.01f,(std::rand() % 100 - 50) * 0.01f,(std::rand() % 100 - 50) * 0.01f };
+
+		particle->parameter.scale = 1.0f;
+		particle->parameter.s_scale = 1.0f;
+		particle->parameter.e_scale = 0.1f;
+		//üŒ`•âŠÔ
+		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+
+		particle->parameter.color = { 0,0,1 };
+		particle->parameter.s_color = { 0,0,1 };
+		particle->parameter.e_color = { 0,0,1 };
+		particle->parameter.alpha = 1;
+
+		particle->parameter.isDead = false;
+
+		particleManager->Add(particle, "particle");
+	}
+}
+
+void ParticleEmitter::CreateSlashEffects(const Vector3& pos)
+{
+	Particle* particle = new Particle();
+	particle->parameter.position = pos;
+
+	particle->parameter.frame = 0;
+	particle->parameter.num_frame = 15;
+
+	particle->parameter.velocity = { 0,0,0 };
+	particle->parameter.accel = { 0,0,0 };
+
+	particle->parameter.rotation = { 0,0,0 };
+	particle->parameter.s_rotation = { 0,0,0 };
+	particle->parameter.e_rotation = { 0,0,0 };
+
+	particle->parameter.scale = 1.0f;
+	particle->parameter.s_scale = 1.0f;
+	particle->parameter.e_scale = 8.0f;
+	//üŒ`•âŠÔ
+	particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+
+	particle->parameter.color = { 0,0,1 };
+	particle->parameter.s_color = { 0,0,1 };
+	particle->parameter.e_color = { 0,0,1 };
+	particle->parameter.alpha = 1;
+
+	particle->parameter.isDead = false;
+
+	particleManager->Add(particle, "line");
+}
+
+void ParticleEmitter::CreateShockEffects(const Vector3& pos)
+{
+	for (int i = 0; i <2; i++)
+	{
+		Particle* particle = new Particle();
+		particle->parameter.position = pos;
+
+		particle->parameter.frame = 0;
+		particle->parameter.num_frame = 5 + 20 * (i % 2);
+
+		particle->parameter.velocity = { 0,0,0 };
+		particle->parameter.accel = { 0,0,0 };
+
+		particle->parameter.s_rotation = { 0,0,0 };
+		particle->parameter.e_rotation = { 0,0,0 };
+
+
+		particle->parameter.scale = 1.0f;
+		particle->parameter.s_scale = 1.0f;
+		particle->parameter.e_scale = 4.0f;
+		//üŒ`•âŠÔ
+		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+		particle->parameter.color = { 0,0,1 };
+		particle->parameter.s_color = { 0,0,1 };
+		particle->parameter.e_color = { 0,0,1};
+		particle->parameter.alpha = 1.0f;
+
+		particle->parameter.isDead = false;
+
+		particleManager->Add(particle, "shock");
+	}
+}

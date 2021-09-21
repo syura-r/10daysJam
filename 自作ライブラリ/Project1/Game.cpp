@@ -91,6 +91,8 @@ void Game::RoadAsset()
 		Texture::LoadTexture("HPber_03", "HPber/HPber_03.png");
 
 		Texture::LoadTexture("hidari_sceneChange", "hidari_sceneChange.png");
+
+		Texture::LoadTexture("line", "Line01.png");
 		break;
 	case 2:
 		//Objƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ

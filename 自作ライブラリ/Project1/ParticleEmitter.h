@@ -18,5 +18,9 @@ public:
 	static void Draw();
 	static void Update();
 	static void End();
+
+	static void CreateSparkEffects(const Vector3& pos);
+	static void CreateSlashEffects(const Vector3& pos);
+	static void CreateShockEffects(const Vector3& pos);
 };
 
