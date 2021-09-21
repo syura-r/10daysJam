@@ -27,7 +27,9 @@ void GameClear::Initialize()
 
 void GameClear::Update()
 {
-	if (Input::TriggerKey(DIK_SPACE) || Input::TriggerPadButton(XINPUT_GAMEPAD_A) || Input::TriggerPadButton(XINPUT_GAMEPAD_B))
+	if ((Input::TriggerKey(DIK_SPACE) || Input::TriggerPadButton(XINPUT_GAMEPAD_A) || Input::TriggerPadButton(XINPUT_GAMEPAD_B)) &&
+		sceneCh->GetToSmallEnd() &&
+		!sceneCh->GetToBig())
 	{
 		//ƒ^ƒCƒgƒ‹‚É–ß‚é
 		next = SCENE::Title;

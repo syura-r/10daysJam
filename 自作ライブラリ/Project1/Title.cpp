@@ -57,7 +57,9 @@ void Title::Update()
 	//unionParts->Update();
 
 	//Œˆ’è
-	if (Input::TriggerKey(DIK_SPACE) || Input::TriggerPadButton(XINPUT_GAMEPAD_A) || Input::TriggerPadButton(XINPUT_GAMEPAD_B))
+	if ((Input::TriggerKey(DIK_SPACE) || Input::TriggerPadButton(XINPUT_GAMEPAD_A) || Input::TriggerPadButton(XINPUT_GAMEPAD_B)) &&
+		sceneCh->GetToSmallEnd() &&
+		!sceneCh->GetToBig())
 	{
 		if (selectUI->GetSelectNum() == 0)
 		{

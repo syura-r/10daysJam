@@ -67,13 +67,17 @@ void Play::Update()
 
 
 #ifdef _DEBUG
-	if (Input::TriggerKey(DIK_1))
+	if (Input::TriggerKey(DIK_1) &&
+		sceneCh->GetToSmallEnd() &&
+		!sceneCh->GetToBig())
 	{
 		next = GameOver;
 		sceneCh->ChangeStart();
 
 	}
-	if (Input::TriggerKey(DIK_2))
+	if (Input::TriggerKey(DIK_2) &&
+		sceneCh->GetToSmallEnd() &&
+		!sceneCh->GetToBig())
 	{
 		next = GameClear;
 		sceneCh->ChangeStart();

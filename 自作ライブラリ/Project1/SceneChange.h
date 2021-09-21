@@ -12,6 +12,8 @@ public:
 	void Draw(XMFLOAT4 color);
 
 	void ChangeStart();
+	bool GetToBig() { return toBig; }
+	bool GetToSmall() { return toSmall; }
 	bool GetToBigEnd() { return toBigEnd; }
 	bool GetToSmallEnd() { return toSmallEnd; }
 
