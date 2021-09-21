@@ -85,7 +85,11 @@ void Game::RoadAsset()
 
 		Texture::LoadTexture("result_gameclear", "LogoAndChoices/result_gameclear.png");
 
-		Texture::LoadTexture("player_life", "player_life.png");
+		Texture::LoadTexture("HPber_00", "HPber/HPber_00.png");
+		Texture::LoadTexture("HPber_01", "HPber/HPber_01.png");
+		Texture::LoadTexture("HPber_02", "HPber/HPber_02.png");
+		Texture::LoadTexture("HPber_03", "HPber/HPber_03.png");
+
 		Texture::LoadTexture("hidari_sceneChange", "hidari_sceneChange.png");
 		break;
 	case 2:

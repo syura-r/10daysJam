@@ -12,7 +12,7 @@ public:
 	void Draw();
 
 private:
-	static const int spriteCount = 3;//player‚ÌÅ‘åHP
+	static const int spriteCount = 4;//player‚ÌÅ‘åHP+1
 	Sprite* sprites[spriteCount];
 
 	int nowLifeCount;
