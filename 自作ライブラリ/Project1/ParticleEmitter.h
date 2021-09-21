@@ -22,5 +22,8 @@ public:
 	static void CreateSparkEffects(const Vector3& pos);
 	static void CreateSlashEffects(const Vector3& pos);
 	static void CreateShockEffects(const Vector3& pos);
+
+
+	static void CreateRiseEffects(const Vector3& pos);
 };
 

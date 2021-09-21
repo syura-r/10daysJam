@@ -543,13 +543,13 @@ void ParticleEmitter::CreateSlashEffects(const Vector3& pos)
 
 void ParticleEmitter::CreateShockEffects(const Vector3& pos)
 {
-	for (int i = 0; i <2; i++)
+	for (int i = 0; i <3; i++)
 	{
 		Particle* particle = new Particle();
 		particle->parameter.position = pos;
 
 		particle->parameter.frame = 0;
-		particle->parameter.num_frame = 5 + 20 * (i % 2);
+		particle->parameter.num_frame = 8 * (i + 1);
 
 		particle->parameter.velocity = { 0,0,0 };
 		particle->parameter.accel = { 0,0,0 };
@@ -572,5 +572,36 @@ void ParticleEmitter::CreateShockEffects(const Vector3& pos)
 		particle->parameter.isDead = false;
 
 		particleManager->Add(particle, "shock");
+	}
+}
+
+void ParticleEmitter::CreateRiseEffects(const Vector3& pos)
+{
+	for (int i = 0; i < 20; i++)
+	{
+		Particle* particle = new Particle();
+		particle->parameter.position = pos;
+
+		particle->parameter.frame = 0;
+		particle->parameter.num_frame = 20;
+
+		particle->parameter.velocity = { 0,0,0 };
+		particle->parameter.accel = { (std::rand() % 50 - 25) * 0.01f,(std::rand() % 50) * 0.01f,(std::rand() % 50 - 25) * 0.01f };
+
+		particle->parameter.scale = 1.0f;
+		particle->parameter.s_scale = 1.0f;
+		particle->parameter.e_scale = 0.1f;
+		//üŒ`•âŠÔ
+		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+
+		particle->parameter.color = { 0,0,1 };
+		particle->parameter.s_color = { 0,0,1 };
+		particle->parameter.e_color = { 0,0,1 };
+		particle->parameter.alpha = 1;
+
+		particle->parameter.isDead = false;
+
+		particleManager->Add(particle, "particle");
 	}
 }

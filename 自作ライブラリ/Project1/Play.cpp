@@ -86,6 +86,11 @@ void Play::Update()
 		ParticleEmitter::CreateSparkEffects(effectPos);
 		ParticleEmitter::CreateShockEffects(effectPos);
 	}
+	if (Input::TriggerKey(DIK_O))
+	{
+		Vector3 effectPos = { 5,2,5 };
+		ParticleEmitter::CreateRiseEffects(effectPos);
+	}
 #endif // _DEBUG
 
 	plife->Update(3);
