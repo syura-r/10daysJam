@@ -24,17 +24,14 @@ void SceneChange::Initialize()
 
 void SceneChange::Update()
 {
+	int maxCount = 90;
+	float maxScale = 30.0f;
 	//¬‚³‚­
 	if (toSmall)
 	{
-		int maxCount = 120;
-		float maxScale = 20.0f;
 		easingcount++;
-		scale.x = Easing::EaseOutQuart(maxScale, 0.0f,maxCount, easingcount);
+		scale.x = Easing::EaseOutQuart(maxScale, 0.0f, maxCount, easingcount);
 		scale.y = Easing::EaseOutQuart(maxScale, 0.0f, maxCount, easingcount);
-
-		float firstposY = 1080 / 2;
-		pos.y = Easing::EaseOutQuart(firstposY-1200, firstposY, maxCount, easingcount);
 
 		if (easingcount >= maxCount)
 		{
@@ -45,14 +42,9 @@ void SceneChange::Update()
 	//‘å‚«‚­
 	if (toBig)
 	{
-		int maxCount = 120;
-		float maxScale = 20.0f;
 		easingcount++;
 		scale.x = Easing::EaseOutQuart(0.0f, maxScale, maxCount, easingcount);
 		scale.y = Easing::EaseOutQuart(0.0f, maxScale, maxCount, easingcount);
-
-		float firstposY = 1080 / 2;
-		pos.y = Easing::EaseOutQuart(firstposY, firstposY - 1200, maxCount, easingcount);
 
 		if (easingcount >= maxCount)
 		{
