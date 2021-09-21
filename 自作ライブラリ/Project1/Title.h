@@ -37,4 +37,17 @@ private:
 	//UnionPartsMotion* unionParts = nullptr;
 
 	SceneChange* sceneCh = nullptr;
+
+
+	struct Leaf
+	{
+		Sprite* sprite;
+		std::string texname;
+		XMFLOAT2 position = {0.0f, 0.0f};
+		float rotation = 0.0f;
+		float speed = 0.0f;
+	};
+	static const int leafMax = 20;
+	Leaf* leafs[leafMax];
+	float leafBackLine;
 };

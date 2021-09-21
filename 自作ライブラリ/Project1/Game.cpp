@@ -74,6 +74,10 @@ void Game::RoadAsset()
 		Texture::LoadTexture("TitleBackground_1", "Title/TitleBackground_1.png");
 		Texture::LoadTexture("TitleBackground_2", "Title/TitleBackground_2.png");
 		Texture::LoadTexture("TitleBackground_3", "Title/TitleBackground_3.png");
+		Texture::LoadTexture("leaf01", "Title/leaf01.png");
+		Texture::LoadTexture("leaf02", "Title/leaf02.png");
+		Texture::LoadTexture("leaf03", "Title/leaf03.png");
+		Texture::LoadTexture("leaf04", "Title/leaf04.png");
 
 		Texture::LoadTexture("result_restart", "LogoAndChoices/result_restart.png");
 		Texture::LoadTexture("result_totitle", "LogoAndChoices/result_totitle.png");

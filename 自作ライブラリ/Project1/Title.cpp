@@ -12,6 +12,29 @@ Title::Title()
 	selectUI = new SelectUI();
 	//unionParts = new UnionPartsMotion();
 	sceneCh = new SceneChange();
+
+	for (int i = 0; i < leafMax; i++)
+	{
+		leafs[i] = new Leaf();
+		leafs[i]->sprite = new Sprite();
+		float r = i % 4;
+		if (r == 0.0f)
+		{
+			leafs[i]->texname = "leaf01";
+		}
+		else if (r == 1.0f)
+		{
+			leafs[i]->texname = "leaf02";
+		}
+		else if (r == 2.0f)
+		{
+			leafs[i]->texname = "leaf03";
+		}
+		else
+		{
+			leafs[i]->texname = "leaf04";
+		}
+	}
 }
 
 
@@ -23,6 +46,11 @@ Title::~Title()
 	PtrDelete(selectUI);
 	//PtrDelete(unionParts);
 	PtrDelete(sceneCh);
+	for (int i = 0; i < leafMax; i++)
+	{
+		delete leafs[i]->sprite;
+		delete leafs[i];
+	}
 }
 
 void Title::Initialize()
@@ -37,6 +65,12 @@ void Title::Initialize()
 	selectUI->Initialize(SelectUI::State::title);
 	//unionParts->Initialize();
 	sceneCh->Initialize();
+
+	leafBackLine = 1080 + 64;
+	for (int i = 0; i < leafMax; i++)
+	{
+		leafs[i]->position = { 0, leafBackLine };
+	}
 }
 
 void Title::Update()
@@ -52,6 +86,22 @@ void Title::Update()
 		bg02_position.x = Easing::EaseOutQuint(firstBGPosX, 0.0f, easingMax, easingCounter);
 		bg03_position.x = -bg02_position.x;
 	}
+		//—t‚Á‚Ï‚Ì“®‚«
+		for (int i = 0; i < leafMax; i++)
+		{
+			//–ß‚Á‚ÄÄÝ’è
+			if (leafs[i]->position.y >= leafBackLine)
+			{
+				leafs[i]->position.x = (float)(std::rand() % 1980);
+				leafs[i]->position.y = -(float)(std::rand() % 540) + 32;
+				leafs[i]->rotation = (float)(std::rand() % 360);
+				leafs[i]->speed = (float)(std::rand() % 3) + 0.5f;//0‰ñ”ð‚Ì+0.5f
+			}
+			leafs[i]->position.y += leafs[i]->speed;
+			leafs[i]->rotation += 0.1f;
+		}
+	
+
 
 	selectUI->Update();
 	//unionParts->Update();
@@ -83,6 +133,11 @@ void Title::Update()
 void Title::PreDraw()
 {
 	sceneCh->Draw({ 0,0,0,1 });
+
+	for (int i = 0; i < leafMax; i++)
+	{
+		leafs[i]->sprite->DrawSprite(leafs[i]->texname, leafs[i]->position, leafs[i]->rotation);
+	}
 
 	selectUI->Draw();
 
