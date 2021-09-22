@@ -29,6 +29,11 @@ Play::Play()
 
 	sceneCh = new SceneChange();
 
+	for (int i = 0; i < 2; i++)
+	{
+		bg01[i] = new Sprite();
+		bg02[i] = new Sprite();
+	}
 }
 
 
@@ -40,6 +45,11 @@ Play::~Play()
 
 	PtrDelete(plife);
 	PtrDelete(sceneCh);
+	for (int i = 0; i < 2; i++)
+	{
+		PtrDelete(bg01[i]);
+		PtrDelete(bg02[i]);
+	}
 
 }
 
@@ -83,29 +93,23 @@ void Play::Update()
 		sceneCh->ChangeStart();
 	}
 
+	Vector3 effectPos = { 5,2,5 };
+	float rotation = 90;
+	Vector3 color = { 1,0,0 };
 	if (Input::TriggerKey(DIK_P))
 	{
-		Vector3 effectPos = { 5,2,5 };
-		float rotation = 90;
-		Vector3 color = { 1,0,1 };
 		ParticleEmitter::CreateSlashPerfect(effectPos, rotation, color);
 	}
 	if (Input::TriggerKey(DIK_L))
 	{
-		Vector3 effectPos = { 5,2,5 };
-		Vector3 color = { 1,1,1 };
 		ParticleEmitter::CreateRiseEffects(effectPos, color);
 	}
 	if (Input::TriggerKey(DIK_O))
 	{
-		Vector3 effectPos = { 5,2,5 };
-		Vector3 color = { 1,1,1 };
 		ParticleEmitter::CreateWindEffects(effectPos, color);
 	}
 	if (Input::TriggerKey(DIK_K))
 	{
-		Vector3 effectPos = { 5,2,5 };
-		Vector3 color = { 1,1,1 };
 		ParticleEmitter::CreateSparkEffects(effectPos, color);
 	}
 #endif // _DEBUG
@@ -113,6 +117,25 @@ void Play::Update()
 	plife->Update(3);
 
 	sceneCh->Update();
+
+	//画面スクロール
+	{
+		float speed = 1.0f;//プレイヤーの移動量を入れる
+		bg01_position[0].x -= speed / 3;
+		if (bg01_position[0].x < -1920)
+		{
+			bg01_position[0].x = 0;
+		}
+		bg01_position[1].x = bg01_position[0].x + 1920;
+
+
+		bg02_position[0].x -= speed;
+		if (bg02_position[0].x < -1920)
+		{
+			bg02_position[0].x = 0;
+		}
+		bg02_position[1].x = bg02_position[0].x + 1920;
+	}
 
 	if (sceneCh->GetToBigEnd())
 	{
@@ -142,6 +165,14 @@ void Play::PreDraw()
 
 void Play::PostDraw()
 {
-	objectManager->PostDraw();
 	plife->Draw();
+
+	objectManager->PostDraw();
+
+	for (int i = 0; i < 2; i++)
+	{
+		bg02[i]->DrawSprite("TitleBackground_2", bg02_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
+		bg01[i]->DrawSprite("TitleBackground_1", bg01_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
+	}
+
 }

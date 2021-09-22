@@ -24,7 +24,7 @@ void SceneChange::Initialize()
 
 void SceneChange::Update()
 {
-	int maxCount = 90;
+	int maxCount = 60;
 	float maxScale = 30.0f;
 	//è¨Ç≥Ç≠
 	if (toSmall)

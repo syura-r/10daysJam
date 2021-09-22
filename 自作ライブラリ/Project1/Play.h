@@ -38,5 +38,10 @@ private:
 	PlayerLifeUI* plife = nullptr;
 	SceneChange* sceneCh = nullptr;
 
+	Sprite* bg01[2];
+	Vector2 bg01_position[2];
+
+	Sprite* bg02[2];
+	Vector2 bg02_position[2];
 };
 
