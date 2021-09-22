@@ -33,27 +33,29 @@ void PlayBackGround::Initialize()
 void PlayBackGround::Update()
 {
 	//‰æ–ÊƒXƒNƒ[ƒ‹
-	float windowX = 1920.0f;
-	float speed = player_PrePos.x - player->GetPosition().x;
-
-	bg01_position[0].x += speed * 20;
-	if (bg01_position[0].x < -windowX ||
-		bg01_position[0].x > 0.0f)
+	if (player->GetPosition().x > 11 &&
+		!player->GetStartFight())
 	{
-		bg01_position[0].x = 0.0f;
+		float windowX = 1920.0f;
+		float speed = player_PrePos.x - player->GetPosition().x;
+
+		bg01_position[0].x += speed * 20;
+		if (bg01_position[0].x < -windowX ||
+			bg01_position[0].x > 0.0f)
+		{
+			bg01_position[0].x = 0.0f;
+		}
+		bg01_position[1].x = bg01_position[0].x + windowX;
+
+
+		bg02_position[0].x += speed * 40;
+		if (bg02_position[0].x < -windowX ||
+			bg02_position[0].x > 0.0f)
+		{
+			bg02_position[0].x = 0.0f;
+		}
+		bg02_position[1].x = bg02_position[0].x + windowX;
 	}
-	bg01_position[1].x = bg01_position[0].x + windowX;
-
-
-	bg02_position[0].x += speed * 40;
-	if (bg02_position[0].x < -windowX ||
-		bg02_position[0].x > 0.0f)
-	{
-		bg02_position[0].x = 0.0f;
-	}
-	bg02_position[1].x = bg02_position[0].x + windowX;
-
-
 	player_PrePos = player->GetPosition();
 }
 

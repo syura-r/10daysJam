@@ -32,6 +32,7 @@ public:
 	static void SetDebugCamera(DebugCamera* cameraPtr) { camera = cameraPtr; }
 	static void SetLightCamera(LightCamera* cameraPtr) { lightCamera = cameraPtr; }
 	const ATTACKSTATE& GetAttackState() { return nowAttackState; }
+	const bool& GetStartFight() { return startFight; }
 	inline void StartFight()
 	{
 		startFight = true;
