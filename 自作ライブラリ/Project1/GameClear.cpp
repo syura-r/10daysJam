@@ -2,6 +2,8 @@
 #include "PtrDelete.h"
 #include "OBJLoader.h"
 
+DebugCamera* GameClear::camera = nullptr;
+
 GameClear::GameClear()
 {
 	next = Title;
@@ -27,9 +29,13 @@ void GameClear::Initialize()
 	isAllEnd = false;
 	sceneCh->Initialize();
 	selectUI->Initialize(SelectUI::State::gameclear);
-	moji->SetPosition({ 5,2,5, });
+	isSelectUIView = false;
+
+	moji->SetPosition({ 0,0,0, });
 	moji->SetRotation({ 90,0,0 });
-	moji->SetScale({ 5,5,5 });
+	moji->SetScale({ 4,4,4 });
+
+	camera->SetMatrixView({0,0,-20}, {0,0,1}, {0,1,0});
 }
 
 void GameClear::Update()
@@ -51,24 +57,34 @@ void GameClear::Update()
 	selectUI->Update();
 
 	//Š®‹N‚±‚µ
-	if (moji->GetRotation().x > 0.0f)
+	if (!sceneCh->GetToSmall() &&
+		moji->GetRotation().x > 0.0f)
 	{
 		Vector3 rot = moji->GetRotation();
-		rot.x -= 90.0f / 180.0f;
+		rot.x -= 90.0f / 90.0f;
 		moji->SetRotation(rot);
 	}
+
+	if (moji->GetRotation().x <= 0.0f)
+	{
+		isSelectUIView = true;
+	}
+
 	moji->Update();
 }
 
 void GameClear::PreDraw()
 {
-	sceneCh->Draw({ 0,0,0,1 });
-	//selectUI->Draw();
-	//bg->DrawSprite("gameover_bg", { 0,0 }, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
-	moji->CustomDraw();
-
+	bg->DrawSprite("End_Background", { 0,0 }, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
 }
 
 void GameClear::PostDraw()
 {
+	if(!sceneCh->GetToSmall())
+		moji->CustomDraw();
+
+	sceneCh->Draw({ 0,0,0,1 });
+
+	if(isSelectUIView)
+		selectUI->Draw();
 }
