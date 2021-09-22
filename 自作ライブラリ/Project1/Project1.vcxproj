@@ -212,6 +212,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Play.cpp" />
+    <ClCompile Include="PlayBackGround.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="SceneChange.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="Ending.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Play.h" />
+    <ClInclude Include="PlayBackGround.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="PostEffect.h" />

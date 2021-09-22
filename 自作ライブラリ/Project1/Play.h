@@ -11,6 +11,7 @@
 #include "ObjectManager.h"
 #include "Sprite.h"
 #include "SceneChange.h"
+#include "PlayBackGround.h"
 
 class TouchAbleObject;
 class Play :public Scene
@@ -37,10 +38,6 @@ private:
 
 	SceneChange* sceneCh = nullptr;
 
-	Sprite* bg01[2];
-	Vector2 bg01_position[2];
-
-	Sprite* bg02[2];
-	Vector2 bg02_position[2];
+	PlayBackGround* playbg = nullptr;
 };
 

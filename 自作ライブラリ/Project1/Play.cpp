@@ -35,11 +35,8 @@ Play::Play()
 
 	sceneCh = new SceneChange();
 
-	for (int i = 0; i < 2; i++)
-	{
-		bg01[i] = new Sprite();
-		bg02[i] = new Sprite();
-	}
+	playbg = new PlayBackGround();
+	playbg->SetPlayer(player);
 }
 
 
@@ -50,12 +47,7 @@ Play::~Play()
 	objectManager->End();
 
 	PtrDelete(sceneCh);
-	for (int i = 0; i < 2; i++)
-	{
-		PtrDelete(bg01[i]);
-		PtrDelete(bg02[i]);
-	}
-
+	PtrDelete(playbg);
 }
 
 void Play::Initialize()
@@ -64,11 +56,7 @@ void Play::Initialize()
 	isAllEnd = false;
 
 	sceneCh->Initialize();
-
-	bg01_position[0] = { 0,0 };
-	bg01_position[1] = { 0,0 };
-	bg02_position[0] = { 0,0 };
-	bg02_position[1] = { 0,0 };
+	playbg->Initialize();
 }
 
 void Play::Update()
@@ -120,25 +108,7 @@ void Play::Update()
 
 	sceneCh->Update();
 
-	//画面スクロール
-	{
-		float windowX = 1920.0f;
-		float speed = 1.0f;//プレイヤーの移動量を入れる
-		bg01_position[0].x -= speed / 3.0f;
-		if (bg01_position[0].x < -windowX)
-		{
-			bg01_position[0].x = 0.0f;
-		}
-		bg01_position[1].x = bg01_position[0].x + windowX;
-
-
-		bg02_position[0].x -= speed;
-		if (bg02_position[0].x < -windowX)
-		{
-			bg02_position[0].x = 0.0f;
-		}
-		bg02_position[1].x = bg02_position[0].x + windowX;
-	}
+	playbg->Update();
 
 	if (sceneCh->GetToBigEnd())
 	{
@@ -159,18 +129,8 @@ void Play::PreDraw()
 		Object3D::GetLightCamera()->SetLightDir({ lightDir[0],lightDir[1] ,lightDir[2] });
 	}
 
-
-
-	for (int i = 0; i < 2; i++)
-	{
-		bg02[i]->DrawSprite("Play_Background_2", bg02_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
-	}
-	for (int i = 0; i < 2; i++)
-	{
-		bg01[i]->DrawSprite("Play_Background_1", bg01_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
-	}
+	playbg->Draw();
 	//objectManager->PostDraw();
-
 
 }
 

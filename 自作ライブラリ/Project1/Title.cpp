@@ -126,7 +126,6 @@ void Title::Update()
 
 void Title::PreDraw()
 {
-
 	bg01->DrawSprite("TitleBackground_1", { 0.0f, 0.0f }, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
 }
 
