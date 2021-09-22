@@ -389,7 +389,7 @@ void Player::OnCollision(const CollisionInfo & info)
 	if (hp <= 0)
 	{
 		dead = true;
-		ParticleEmitter::CreateRiseEffects(position + Vector3{ 0.0f,1.0f,-0.6f }, {1,0,0});
+		ParticleEmitter::CreateSparkEffects(position + Vector3{ 0.0f,1.0f,-0.6f }, {1,0,0});
 		Play::IsGameOver();
 	}
 	damage = true;
