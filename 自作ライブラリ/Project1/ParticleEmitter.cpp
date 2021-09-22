@@ -477,3 +477,172 @@ void ParticleEmitter::End()
 {
 	//PtrDelete(particleManager);
 }
+
+void ParticleEmitter::CreateSparkEffects(const Vector3& pos, const Vector3& color)
+{
+	for (int i = 0; i < 20; i++)
+	{
+		Particle* particle = new Particle();
+		particle->parameter.position = pos;
+
+		particle->parameter.frame = 0;
+		particle->parameter.num_frame = 25;
+
+		particle->parameter.velocity = { 0,0,0 };
+		particle->parameter.accel = { (std::rand() % 100 - 50) * 0.01f,(std::rand() % 100 - 50) * 0.01f,(std::rand() % 100 - 50) * 0.01f };
+
+		particle->parameter.scale = 1.0f;
+		particle->parameter.s_scale = 1.0f;
+		particle->parameter.e_scale = 0.1f;
+		//線形補間
+		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+
+		particle->parameter.color = color;
+		particle->parameter.s_color = color;
+		particle->parameter.e_color = color;
+		particle->parameter.alpha = 1;
+
+		particle->parameter.isDead = false;
+
+		particleManager->Add(particle, "particle");
+	}
+}
+
+void ParticleEmitter::CreateSlashEffects(const Vector3& pos, const float& rotation, const Vector3& color)
+{
+	Particle* particle = new Particle();
+	particle->parameter.position = pos;
+
+	particle->parameter.frame = 0;
+	particle->parameter.num_frame = 15;
+
+	particle->parameter.velocity = { 0,0,0 };
+	particle->parameter.accel = { 0,0,0 };
+
+	particle->parameter.rotation = { 0,0,rotation };
+	particle->parameter.s_rotation = { 0,0,rotation };
+	particle->parameter.e_rotation = { 0,0,rotation };
+
+	particle->parameter.scale = 1.0f;
+	particle->parameter.s_scale = 1.0f;
+	particle->parameter.e_scale = 8.0f;
+	//線形補間
+	particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+
+	particle->parameter.color = color;
+	particle->parameter.s_color = color;
+	particle->parameter.e_color = color;
+	particle->parameter.alpha = 1;
+
+	particle->parameter.billboradActive = false;
+	particle->parameter.isDead = false;
+
+	particleManager->Add(particle, "line");
+}
+
+void ParticleEmitter::CreateShockEffects(const Vector3& pos, const Vector3& color)
+{
+	for (int i = 0; i <3; i++)
+	{
+		Particle* particle = new Particle();
+		particle->parameter.position = pos;
+
+		particle->parameter.frame = 0;
+		particle->parameter.num_frame = 8 * (i + 1);
+
+		particle->parameter.velocity = { 0,0,0 };
+		particle->parameter.accel = { 0,0,0 };
+
+		particle->parameter.s_rotation = { 0,0,0 };
+		particle->parameter.e_rotation = { 0,0,0 };
+
+
+		particle->parameter.scale = 1.0f;
+		particle->parameter.s_scale = 1.0f;
+		particle->parameter.e_scale = 4.0f;
+		//線形補間
+		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+		particle->parameter.color = color;
+		particle->parameter.s_color = color;
+		particle->parameter.e_color = color;
+		particle->parameter.alpha = 1.0f;
+
+		particle->parameter.isDead = false;
+
+		particleManager->Add(particle, "shock");
+	}
+}
+
+void ParticleEmitter::CreateSlashPerfect(const Vector3& pos, const float& rotation, const Vector3& color)
+{
+	CreateSparkEffects(pos, color);
+	CreateSlashEffects(pos, rotation, color);
+	CreateShockEffects(pos, color);
+}
+
+void ParticleEmitter::CreateRiseEffects(const Vector3& pos, const Vector3& color)
+{
+	for (int i = 0; i < 20; i++)
+	{
+		Particle* particle = new Particle();
+		particle->parameter.position = pos;
+
+		particle->parameter.frame = 0;
+		particle->parameter.num_frame = 20;
+
+		particle->parameter.velocity = { 0,0,0 };
+		particle->parameter.accel = { (std::rand() % 50 - 25) * 0.1f,(std::rand() % 50) * 0.1f,(std::rand() % 50 - 25) * 0.1f };
+
+		particle->parameter.scale = 0.5f;
+		particle->parameter.s_scale = 0.5f;
+		particle->parameter.e_scale = 0.1f;
+		//線形補間
+		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+
+		particle->parameter.color = color;
+		particle->parameter.s_color = color;
+		particle->parameter.e_color = color;
+		particle->parameter.alpha = 1;
+
+		particle->parameter.isDead = false;
+
+		particleManager->Add(particle, "particle");
+	}
+}
+
+void ParticleEmitter::CreateWindEffects(const Vector3& pos, const Vector3& color)
+{
+	Particle* particle = new Particle();
+	particle->parameter.position = pos;
+
+	particle->parameter.frame = 0;
+	particle->parameter.num_frame = 60;
+
+	particle->parameter.velocity = { 0,0,0 };
+	particle->parameter.accel = { 0,0,0 };
+
+	particle->parameter.rotation = { 0,0,0 };
+	particle->parameter.s_rotation = { 0,0,0 };
+	particle->parameter.e_rotation = { 0,0,-360 };
+
+	particle->parameter.scale = 10.0f;
+	particle->parameter.s_scale = 10.0f;
+	particle->parameter.e_scale = 5.0f;
+	//線形補間
+	particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+
+	particle->parameter.color = color;
+	particle->parameter.s_color = color;
+	particle->parameter.e_color = color;
+	particle->parameter.alpha = 1;
+
+	particle->parameter.billboradActive = false;
+	particle->parameter.isDead = false;
+
+	particleManager->Add(particle, "wind");
+}

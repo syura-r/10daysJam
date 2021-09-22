@@ -10,6 +10,9 @@
 #include"Grass.h"
 #include "ObjectManager.h"
 #include "Sprite.h"
+#include "PlayerLifeUI.h"
+#include "SceneChange.h"
+
 class TouchAbleObject;
 class Play :public Scene
 {
@@ -32,5 +35,14 @@ private:
 	CollisionManager* collisionManager = nullptr;
 	NormalMapTestOBJ* testNormalMapOBJ = nullptr;
 	ObjectManager* objectManager = nullptr;
+
+	PlayerLifeUI* plife = nullptr;
+	SceneChange* sceneCh = nullptr;
+
+	Sprite* bg01[2];
+	Vector2 bg01_position[2];
+
+	Sprite* bg02[2];
+	Vector2 bg02_position[2];
 };
 

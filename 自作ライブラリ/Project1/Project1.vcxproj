@@ -188,6 +188,8 @@
     <ClCompile Include="Create3DObject.cpp" />
     <ClCompile Include="CreateFigure.cpp" />
     <ClCompile Include="ComputeShade.cpp" />
+    <ClCompile Include="GameClear.cpp" />
+    <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="Grass.cpp" />
     <ClCompile Include="GSShaderTestObj.cpp" />
     <ClCompile Include="LightCamera.cpp" />
@@ -211,7 +213,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Play.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerLifeUI.cpp" />
     <ClCompile Include="PostEffect.cpp" />
+    <ClCompile Include="SceneChange.cpp" />
+    <ClCompile Include="SelectUI.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
@@ -219,6 +224,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="TouchAbleObject.cpp" />
+    <ClCompile Include="UnionPartsMotion.cpp" />
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
@@ -259,6 +265,8 @@
     <ClInclude Include="Create3DObject.h" />
     <ClInclude Include="CreateFigure.h" />
     <ClInclude Include="ComputeShade.h" />
+    <ClInclude Include="GameClear.h" />
+    <ClInclude Include="GameOver.h" />
     <ClInclude Include="Grass.h" />
     <ClInclude Include="GSShaderTestObj.h" />
     <ClInclude Include="LightCamera.h" />
@@ -284,11 +292,14 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Play.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerLifeUI.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="PtrDelete.h" />
     <ClInclude Include="QueryCallback.h" />
     <ClInclude Include="RaycastHit.h" />
+    <ClInclude Include="SceneChange.h" />
+    <ClInclude Include="SelectUI.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShadowMap.h" />
@@ -300,6 +311,7 @@
     <ClInclude Include="Title.h" />
     <ClInclude Include="TouchAbleObject.h" />
     <ClInclude Include="Tree.h" />
+    <ClInclude Include="UnionPartsMotion.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="window.h" />
     <ClInclude Include="XAudio2VoiceCallback.h" />

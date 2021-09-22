@@ -15,11 +15,15 @@
 #include"Play.h"
 #include"Alpha.h"
 #include"Ending.h"
+#include"GameClear.h"
+#include"GameOver.h"
 #include"PipelineState.h"
 #include"FBXManager.h"
 #include"DrawMode.h"
 #include "ComputeShade.h"
 #include "Player.h"
+#include "SelectUI.h"
+#include "UnionPartsMotion.h"
 DrawMode::MODE DrawMode::mode = DrawMode::NormalMap;
 
 Game::Game()
@@ -67,6 +71,39 @@ void Game::RoadAsset()
 		Texture::LoadTexture("HPber_03", "HPber_03.png");
 		Texture::LoadTexture("alert", "alert.png");
 
+		Texture::LoadTexture("title_logo", "Title/title_logo.png");
+		Texture::LoadTexture("title_start", "Title/title_start.png");
+		Texture::LoadTexture("title_end", "Title/title_end.png");
+		Texture::LoadTexture("TitleBackground_1", "Title/TitleBackground_1.png");
+		Texture::LoadTexture("TitleBackground_2", "Title/TitleBackground_2.png");
+		Texture::LoadTexture("TitleBackground_3", "Title/TitleBackground_3.png");
+		Texture::LoadTexture("leaf01", "Title/leaf01.png");
+		Texture::LoadTexture("leaf02", "Title/leaf02.png");
+		Texture::LoadTexture("leaf03", "Title/leaf03.png");
+		Texture::LoadTexture("leaf04", "Title/leaf04.png");
+
+		Texture::LoadTexture("Play_Background_1", "Play_Background_1.png");
+		Texture::LoadTexture("Play_Background_2", "Play_Background_2.png");
+
+		Texture::LoadTexture("result_restart", "LogoAndChoices/result_restart.png");
+		Texture::LoadTexture("result_totitle", "LogoAndChoices/result_totitle.png");
+
+		Texture::LoadTexture("gameover_bg", "Gameover/OverBackground_1.png");
+		Texture::LoadTexture("gameover_main", "Gameover/result_gameover.png");
+		Texture::LoadTexture("gameover_restart", "Gameover/result_restart.png");
+		Texture::LoadTexture("gameover_totitle", "Gameover/result_totitle.png");
+
+		Texture::LoadTexture("result_gameclear", "LogoAndChoices/result_gameclear.png");
+
+		Texture::LoadTexture("HPber_00", "HPber/HPber_00.png");
+		Texture::LoadTexture("HPber_01", "HPber/HPber_01.png");
+		Texture::LoadTexture("HPber_02", "HPber/HPber_02.png");
+		Texture::LoadTexture("HPber_03", "HPber/HPber_03.png");
+
+		Texture::LoadTexture("hidari_sceneChange", "hidari_sceneChange.png");
+
+		Texture::LoadTexture("line", "Line01.png");
+		Texture::LoadTexture("wind", "Wind01.png");
 		break;
 	case 2:
 		//Objƒ‚ƒfƒ‹‚Ì“Ç‚Ýž‚Ý
@@ -81,6 +118,7 @@ void Game::RoadAsset()
 		OBJLoader::LoadModelFile("HidariGiri_04", "HidariGiri_04.obj", true);
 		OBJLoader::LoadModelFile("HidariGiri_05", "HidariGiri_05.obj", true);
 		OBJLoader::LoadModelFile("stand", "Stand.obj", true);
+		OBJLoader::LoadModelFile("End", "End.obj", true);
 
 		break;
 	case 3:
@@ -105,6 +143,17 @@ void Game::RoadAsset()
 		FBXManager::LoadModelFile("SwoedMode_1", "SwoedMode_1", true);
 		FBXManager::LoadModelFile("SwoedMode_2", "SwoedMode_2", true);
 		FBXManager::LoadModelFile("SwoedMode_3", "SwoedMode_3", true);
+		FBXManager::LoadModelFile("cube", "cube", true);
+		FBXManager::LoadModelFile("boneTest", "boneTest", true);
+		FBXManager::LoadModelFile("Hidari1", "Hidari1", true);
+		FBXManager::LoadModelFile("Hidari2", "Hidari2", true);
+		FBXManager::LoadModelFile("Hidari1_1", "Hidari1_1", true);
+		FBXManager::LoadModelFile("Hidari1_2", "Hidari1_2", true);
+		FBXManager::LoadModelFile("Hidari2_1", "Hidari2_1", true);
+		FBXManager::LoadModelFile("Hidari2_2", "Hidari2_2", true);
+		FBXManager::LoadModelFile("Hidari2_3", "Hidari2_3", true);
+		//FBXManager::LoadModelFile("End", "End", false);
+
 		//FBXManager::LoadModelFile("cleaningToolStorage", "cleaningToolStorage", true);
 
 		break;
@@ -190,7 +239,9 @@ void Game::LoadFinish()
 	sceneManeger->Add(Scene::SCENE::Title, new Title());
 	sceneManeger->Add(Scene::SCENE::Play, new Play());
 	sceneManeger->Add(Scene::SCENE::Ending, new Ending());
-	sceneManeger->Change(Scene::SCENE::Play);
+	sceneManeger->Add(Scene::SCENE::GameClear, new GameClear());
+	sceneManeger->Add(Scene::SCENE::GameOver, new GameOver());
+	sceneManeger->Change(Scene::SCENE::Title);
 
 	//postEffect = new PostEffect();
 	//shadowMap = new ShadowMap();
@@ -237,6 +288,8 @@ void Game::Initialize()
 	Object3D::SetCamera(camera);
 	ParticleEmitter::Initialize(camera);
 	Player::SetDebugCamera(camera);
+	SelectUI::SetWindowSize({ (float)win->GetWindowWidth(), (float)win->GetWindowHeight() });
+	UnionPartsMotion::SetDebugCamera(camera);
 
 	loadTex = new Sprite();
 	loadDot = new Sprite();
@@ -280,6 +333,10 @@ void Game::Run()
 
 		else if (!nowLoading)
 		{
+			if (sceneManeger->GetIsAllEnd()) {
+				break;
+			}
+
 			Input::Update();
 			Alpha::Update();
 			lightCamera->Update();
@@ -340,6 +397,7 @@ void Game::End()
 	//PtrDelete(postEffect);
 	PtrDelete(loadTex);
 	PtrDelete(loadDot);
+	PtrDelete(lightCamera);
 
 	ParticleEmitter::End();
 	OBJLoader::DeleteModels();

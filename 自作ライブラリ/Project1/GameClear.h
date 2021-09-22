@@ -5,16 +5,23 @@
 #include"Alpha.h"
 
 #include "SceneChange.h"
-class Ending :public Scene
+#include "SelectUI.h"
+#include "Sprite.h"
+#include "Object.h"
+class GameClear :public Scene
 {
 public:
-	Ending();
-	~Ending()override;
+	GameClear();
+	~GameClear()override;
 	void Initialize() override;
 	void Update()override;
 	void PreDraw()override;
 	void PostDraw()override;
+
 private:
 	SceneChange* sceneCh = nullptr;
-};
+	SelectUI* selectUI = nullptr;
 
+	Sprite* bg = nullptr;
+	Object* moji = nullptr;
+};

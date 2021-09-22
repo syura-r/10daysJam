@@ -27,9 +27,10 @@ public://構造体
 	{
 		XMFLOAT3 pos; // xyz座標
 		float scale; // スケール
-		XMFLOAT4 color;//カラー
 		XMFLOAT3 rotation;//回転
 		unsigned int billboradActive;//ビルボードするかどうか
+		XMFLOAT4 color;//カラー
+
 	};
 	//定数バッファ
 	struct ConstBufferData

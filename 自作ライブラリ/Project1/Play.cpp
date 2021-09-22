@@ -15,7 +15,7 @@
 
 Play::Play()
 {
-	next = Ending;
+	next = GameClear;
 	//ライト生成
 	lightGroup = LightGroup::Create();
 	//3Dオブジェクトにライトをセット
@@ -26,11 +26,24 @@ Play::Play()
 
 	collisionManager = CollisionManager::GetInstance();
 	objectManager = ObjectManager::GetInstance();
+
 	Player* player = new Player();
 	Enemy::SetPlayer(player);
 	Boss::SetPlayer(player);
 	CreateStage();
 	objectManager->Add(player);
+
+	objectManager->Add(new Player());
+
+	plife = new PlayerLifeUI();
+
+	sceneCh = new SceneChange();
+
+	for (int i = 0; i < 2; i++)
+	{
+		bg01[i] = new Sprite();
+		bg02[i] = new Sprite();
+	}
 }
 
 
@@ -39,11 +52,29 @@ Play::~Play()
 	PtrDelete(lightGroup);
 
 	objectManager->End();
+
+	PtrDelete(plife);
+	PtrDelete(sceneCh);
+	for (int i = 0; i < 2; i++)
+	{
+		PtrDelete(bg01[i]);
+		PtrDelete(bg02[i]);
+	}
+
 }
 
 void Play::Initialize()
 {
 	isEnd = false;
+	isAllEnd = false;
+
+	plife->Initialize();
+	sceneCh->Initialize();
+
+	bg01_position[0] = { 0,0 };
+	bg01_position[1] = { 0,0 };
+	bg02_position[0] = { 0,0 };
+	bg02_position[1] = { 0,0 };
 }
 
 void Play::Update()
@@ -53,6 +84,74 @@ void Play::Update()
 	lightGroup->Update();
 	objectManager->Update();
 	collisionManager->CheckAllCollisions();
+
+
+#ifdef _DEBUG
+	if (Input::TriggerKey(DIK_1) &&
+		sceneCh->GetToSmallEnd() &&
+		!sceneCh->GetToBig())
+	{
+		next = GameOver;
+		sceneCh->ChangeStart();
+
+	}
+	if (Input::TriggerKey(DIK_2) &&
+		sceneCh->GetToSmallEnd() &&
+		!sceneCh->GetToBig())
+	{
+		next = GameClear;
+		sceneCh->ChangeStart();
+	}
+
+	Vector3 effectPos = { 5,2,5 };
+	float rotation = 90;
+	Vector3 color = { 1,0,0 };
+	if (Input::TriggerKey(DIK_P))
+	{
+		ParticleEmitter::CreateSlashPerfect(effectPos, rotation, color);
+	}
+	if (Input::TriggerKey(DIK_L))
+	{
+		ParticleEmitter::CreateRiseEffects(effectPos, color);
+	}
+	if (Input::TriggerKey(DIK_O))
+	{
+		ParticleEmitter::CreateWindEffects(effectPos, color);
+	}
+	if (Input::TriggerKey(DIK_K))
+	{
+		ParticleEmitter::CreateSparkEffects(effectPos, color);
+	}
+#endif // _DEBUG
+
+	plife->Update(3);
+
+	sceneCh->Update();
+
+	//画面スクロール
+	{
+		float windowX = 1920.0f;
+		float speed = 1.0f;//プレイヤーの移動量を入れる
+		bg01_position[0].x -= speed / 3.0f;
+		if (bg01_position[0].x < -windowX)
+		{
+			bg01_position[0].x = 0.0f;
+		}
+		bg01_position[1].x = bg01_position[0].x + windowX;
+
+
+		bg02_position[0].x -= speed;
+		if (bg02_position[0].x < -windowX)
+		{
+			bg02_position[0].x = 0.0f;
+		}
+		bg02_position[1].x = bg02_position[0].x + windowX;
+	}
+
+	if (sceneCh->GetToBigEnd())
+	{
+		ShutDown();
+	}
 }
 
 void Play::PreDraw()
@@ -67,12 +166,27 @@ void Play::PreDraw()
 		ImGui::End();
 		Object3D::GetLightCamera()->SetLightDir({ lightDir[0],lightDir[1] ,lightDir[2] });
 	}
+
+	sceneCh->Draw({ 0,0,0,1 });
+
 	objectManager->PreDraw();
 }
 
 void Play::PostDraw()
 {
+	plife->Draw();
+
 	objectManager->PostDraw();
+
+	for (int i = 0; i < 2; i++)
+	{
+		bg02[i]->DrawSprite("Play_Background_2", bg02_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		bg01[i]->DrawSprite("Play_Background_1", bg01_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
+	}
+
 }
 
 void Play::CreateStage()
