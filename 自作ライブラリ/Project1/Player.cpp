@@ -11,6 +11,8 @@
 #include "Easing.h"
 #include"FBXManager.h"
 #include "PtrDelete.h"
+#include "ParticleEmitter.h"
+#include "Play.h"
 #define SIZE 1.0f
 
 DebugCamera* Player::camera = nullptr;
@@ -385,7 +387,11 @@ void Player::OnCollision(const CollisionInfo & info)
 	color = { 0.4f,0,0,1 };
 	hp--;
 	if (hp <= 0)
+	{
 		dead = true;
+		ParticleEmitter::CreateRiseEffects(position + Vector3{ 0.0f,1.0f,-0.6f }, {1,0,0});
+		Play::IsGameOver();
+	}
 	damage = true;
 	invCounter = 0;
 }

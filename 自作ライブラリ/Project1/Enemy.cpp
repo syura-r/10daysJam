@@ -235,7 +235,7 @@ void Enemy::Draw()
 	}
 	CustomDraw(false, true, ALPHA, true);
 #ifdef _DEBUG
-	//hitBox->Draw();
+	hitBox->Draw();
 #endif
 }
 

@@ -4,7 +4,6 @@
 #include"Audio.h"
 #include "Boss.h"
 #include "Enemy.h"
-#include"ParticleEmitter.h"
 #include"SphereCollider.h"
 #include"imgui.h"
 #include"FBXManager.h"
@@ -14,6 +13,8 @@
 #include "Player.h"
 
 DebugCamera* Play::camera = nullptr;
+bool Play::isGameClear = false;
+bool Play::isGameOver = false;
 
 Play::Play()
 {
@@ -62,6 +63,8 @@ void Play::Initialize()
 	objectManager->Initialize();
 
 	sceneCh->Initialize();
+	sceneChangeLag = 0;
+
 	playbg->Initialize();
 }
 
@@ -73,33 +76,39 @@ void Play::Update()
 	objectManager->Update();
 	collisionManager->CheckAllCollisions();
 
-
-#ifdef _DEBUG
-	if (Input::TriggerKey(DIK_1) &&
-		sceneCh->GetToSmallEnd() &&
+	//ƒV[ƒ“Ø‚è‘Ö‚¦
+	if (sceneCh->GetToSmallEnd() &&
 		!sceneCh->GetToBig())
 	{
-		next = GameOver;
-		sceneCh->ChangeStart();
-
+		if (isGameOver)
+		{
+			sceneChangeLag++;
+			if (sceneChangeLag > 30)
+			{
+				next = GameOver;
+				sceneCh->ChangeStart();
+				isGameOver = false;
+			}
+		}
+		if (isGameClear)
+		{
+			sceneChangeLag++;
+			if (sceneChangeLag > 90)
+			{
+				next = GameClear;
+				sceneCh->ChangeStart();
+				isGameClear = false;
+			}
+		}
 	}
-	if (Input::TriggerKey(DIK_2) &&
-		sceneCh->GetToSmallEnd() &&
-		!sceneCh->GetToBig())
-	{
-		next = GameClear;
-		sceneCh->ChangeStart();
-	}
-#endif // _DEBUG
-
-	sceneCh->Update();
-
-	playbg->Update();
-
 	if (sceneCh->GetToBigEnd())
 	{
 		ShutDown();
 	}
+	sceneCh->Update();
+
+	playbg->Update();
+
 }
 
 void Play::PreDraw()

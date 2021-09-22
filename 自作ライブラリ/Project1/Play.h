@@ -26,6 +26,8 @@ public:
 	void PostDraw()override;
 
 	static void SetDebugCamera(DebugCamera* cameraPtr) { camera = cameraPtr; }
+	static void IsGameClear() { Play::isGameClear = true; }
+	static void IsGameOver(){ Play::isGameOver = true; }
 
 private:
 	void CreateStage();
@@ -41,9 +43,12 @@ private:
 	ObjectManager* objectManager = nullptr;
 
 	SceneChange* sceneCh = nullptr;
+	int sceneChangeLag = 0;
 
 	PlayBackGround* playbg = nullptr;
 
 	static DebugCamera* camera;
+	static bool isGameClear;
+	static bool isGameOver;
 };
 

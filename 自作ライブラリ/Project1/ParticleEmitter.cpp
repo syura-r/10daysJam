@@ -591,7 +591,7 @@ void ParticleEmitter::CreateRiseEffects(const Vector3& pos, const Vector3& color
 		particle->parameter.position = pos;
 
 		particle->parameter.frame = 0;
-		particle->parameter.num_frame = 15;
+		particle->parameter.num_frame = 20;
 
 		particle->parameter.velocity = { 0,0,0 };
 		particle->parameter.accel = { (std::rand() % 50 - 25) * 0.1f,(std::rand() % 50) * 0.1f,(std::rand() % 50 - 25) * 0.1f };
