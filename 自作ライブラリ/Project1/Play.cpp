@@ -110,6 +110,11 @@ void Play::Update()
 	{
 		ParticleEmitter::CreateSparkEffects(effectPos, color);
 	}
+	if (Input::DownKey(DIK_I))
+	{
+		color = { 0.5f,0.5f,0.5f };
+		ParticleEmitter::CreateBoosterEffects(effectPos, { 0,10,0 }, color);
+	}
 #endif // _DEBUG
 
 	sceneCh->Update();

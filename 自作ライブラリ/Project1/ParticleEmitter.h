@@ -33,5 +33,9 @@ public:
 
 	//ブーメラン
 	static void CreateWindEffects(const Vector3& pos, const Vector3& color = { 1,1,1 });
+
+	//ロケット
+	static void CreateBoosterEffects(const Vector3& pos, const Vector3& target,const Vector3& color = { 1,1,1 });
+
 };
 

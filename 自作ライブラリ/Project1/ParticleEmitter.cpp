@@ -646,3 +646,33 @@ void ParticleEmitter::CreateWindEffects(const Vector3& pos, const Vector3& color
 
 	particleManager->Add(particle, "wind");
 }
+
+void ParticleEmitter::CreateBoosterEffects(const Vector3& pos, const Vector3& target, const Vector3& color)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		Particle* particle = new Particle();
+		particle->parameter.position = pos + Vector3{ (float)(std::rand() % 10 - 5) * 0.1f, (float)(std::rand() % 10 - 5) * 0.1f, (float)(std::rand() % 10 - 5) * 0.1f };
+
+		particle->parameter.frame = 0;
+		particle->parameter.num_frame = 30;
+
+		particle->parameter.velocity = { 0,0,0 };
+		particle->parameter.accel = (pos + target) - particle->parameter.position;
+
+		particle->parameter.scale = 1.0f;
+		particle->parameter.s_scale = 1.0f;
+		particle->parameter.e_scale = 0.1f;
+		//üŒ`•âŠÔ
+		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+		particle->parameter.color = color;
+		particle->parameter.s_color = color;
+		particle->parameter.e_color = color;
+		particle->parameter.alpha = 1;
+
+		particle->parameter.isDead = false;
+
+		particleManager->Add(particle, "particle");
+	}
+}
