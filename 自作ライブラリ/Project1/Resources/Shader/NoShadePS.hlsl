@@ -20,5 +20,5 @@ float4 PSmain(VSOutput input) : SV_TARGET
 	shadecolor.a = m_alpha;
 
 	//シェーディングによる色で描画
-	return shadecolor * texcolor * color;
+	return /*shadecolor **/ texcolor * color;
 }

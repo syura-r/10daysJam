@@ -145,13 +145,6 @@ void Game::RoadAsset()
 		FBXManager::LoadModelFile("SwoedMode_3", "SwoedMode_3", true);
 		FBXManager::LoadModelFile("cube", "cube", true);
 		FBXManager::LoadModelFile("boneTest", "boneTest", true);
-		FBXManager::LoadModelFile("Hidari1", "Hidari1", true);
-		FBXManager::LoadModelFile("Hidari2", "Hidari2", true);
-		FBXManager::LoadModelFile("Hidari1_1", "Hidari1_1", true);
-		FBXManager::LoadModelFile("Hidari1_2", "Hidari1_2", true);
-		FBXManager::LoadModelFile("Hidari2_1", "Hidari2_1", true);
-		FBXManager::LoadModelFile("Hidari2_2", "Hidari2_2", true);
-		FBXManager::LoadModelFile("Hidari2_3", "Hidari2_3", true);
 		//FBXManager::LoadModelFile("End", "End", false);
 
 		//FBXManager::LoadModelFile("cleaningToolStorage", "cleaningToolStorage", true);

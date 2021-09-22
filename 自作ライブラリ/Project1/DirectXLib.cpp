@@ -304,8 +304,9 @@ void DirectXLib::BeginDraw()
 void DirectXLib::Depth()
 {
 	//auto rtvHeapPointer = peraRTVHeap->GetCPUDescriptorHandleForHeapStart();
-	//dsvH = dsvHeap->GetCPUDescriptorHandleForHeapStart();
-	//cmdList->OMSetRenderTargets(1, &rtvHeapPointer, false, &dsvH);
+	dsvH = dsvHeap->GetCPUDescriptorHandleForHeapStart();
+	cmdList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
+	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 }
 

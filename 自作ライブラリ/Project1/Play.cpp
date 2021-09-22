@@ -33,8 +33,6 @@ Play::Play()
 	CreateStage();
 	objectManager->Add(player);
 
-	objectManager->Add(new Player());
-
 	plife = new PlayerLifeUI();
 
 	sceneCh = new SceneChange();
@@ -167,16 +165,8 @@ void Play::PreDraw()
 		Object3D::GetLightCamera()->SetLightDir({ lightDir[0],lightDir[1] ,lightDir[2] });
 	}
 
+
 	sceneCh->Draw({ 0,0,0,1 });
-
-	objectManager->PreDraw();
-}
-
-void Play::PostDraw()
-{
-	plife->Draw();
-
-	objectManager->PostDraw();
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -186,6 +176,16 @@ void Play::PostDraw()
 	{
 		bg01[i]->DrawSprite("Play_Background_1", bg01_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
 	}
+	//objectManager->PostDraw();
+
+
+}
+
+void Play::PostDraw()
+{
+	plife->Draw();
+	objectManager->PreDraw();
+
 
 }
 
