@@ -97,6 +97,7 @@ void Game::RoadAsset()
 		Texture::LoadTexture("hidari_sceneChange", "hidari_sceneChange.png");
 
 		Texture::LoadTexture("line", "Line01.png");
+		Texture::LoadTexture("wind", "Wind01.png");
 		break;
 	case 2:
 		//Objƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ

@@ -96,6 +96,18 @@ void Play::Update()
 		Vector3 color = { 1,1,1 };
 		ParticleEmitter::CreateRiseEffects(effectPos, color);
 	}
+	if (Input::TriggerKey(DIK_O))
+	{
+		Vector3 effectPos = { 5,2,5 };
+		Vector3 color = { 1,1,1 };
+		ParticleEmitter::CreateWindEffects(effectPos, color);
+	}
+	if (Input::TriggerKey(DIK_K))
+	{
+		Vector3 effectPos = { 5,2,5 };
+		Vector3 color = { 1,1,1 };
+		ParticleEmitter::CreateSparkEffects(effectPos, color);
+	}
 #endif // _DEBUG
 
 	plife->Update(3);

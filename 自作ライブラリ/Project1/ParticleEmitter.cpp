@@ -594,10 +594,10 @@ void ParticleEmitter::CreateRiseEffects(const Vector3& pos, const Vector3& color
 		particle->parameter.num_frame = 20;
 
 		particle->parameter.velocity = { 0,0,0 };
-		particle->parameter.accel = { (std::rand() % 50 - 25) * 0.01f,(std::rand() % 50) * 0.01f,(std::rand() % 50 - 25) * 0.01f };
+		particle->parameter.accel = { (std::rand() % 50 - 25) * 0.1f,(std::rand() % 50) * 0.1f,(std::rand() % 50 - 25) * 0.1f };
 
-		particle->parameter.scale = 1.0f;
-		particle->parameter.s_scale = 1.0f;
+		particle->parameter.scale = 0.5f;
+		particle->parameter.s_scale = 0.5f;
 		particle->parameter.e_scale = 0.1f;
 		//üŒ`•âŠÔ
 		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
@@ -612,4 +612,37 @@ void ParticleEmitter::CreateRiseEffects(const Vector3& pos, const Vector3& color
 
 		particleManager->Add(particle, "particle");
 	}
+}
+
+void ParticleEmitter::CreateWindEffects(const Vector3& pos, const Vector3& color)
+{
+	Particle* particle = new Particle();
+	particle->parameter.position = pos;
+
+	particle->parameter.frame = 0;
+	particle->parameter.num_frame = 60;
+
+	particle->parameter.velocity = { 0,0,0 };
+	particle->parameter.accel = { 0,0,0 };
+
+	particle->parameter.rotation = { 0,0,0 };
+	particle->parameter.s_rotation = { 0,0,0 };
+	particle->parameter.e_rotation = { 0,0,-360 };
+
+	particle->parameter.scale = 10.0f;
+	particle->parameter.s_scale = 10.0f;
+	particle->parameter.e_scale = 5.0f;
+	//üŒ`•âŠÔ
+	particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
+
+
+	particle->parameter.color = color;
+	particle->parameter.s_color = color;
+	particle->parameter.e_color = color;
+	particle->parameter.alpha = 1;
+
+	particle->parameter.billboradActive = false;
+	particle->parameter.isDead = false;
+
+	particleManager->Add(particle, "wind");
 }
