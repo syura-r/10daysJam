@@ -23,7 +23,6 @@
 #include "ComputeShade.h"
 #include "Player.h"
 #include "SelectUI.h"
-#include "UnionPartsMotion.h"
 DrawMode::MODE DrawMode::mode = DrawMode::NormalMap;
 
 Game::Game()
@@ -282,7 +281,6 @@ void Game::Initialize()
 	ParticleEmitter::Initialize(camera);
 	Player::SetDebugCamera(camera);
 	SelectUI::SetWindowSize({ (float)win->GetWindowWidth(), (float)win->GetWindowHeight() });
-	UnionPartsMotion::SetDebugCamera(camera);
 
 	loadTex = new Sprite();
 	loadDot = new Sprite();

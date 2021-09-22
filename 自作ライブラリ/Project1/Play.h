@@ -10,7 +10,6 @@
 #include"Grass.h"
 #include "ObjectManager.h"
 #include "Sprite.h"
-#include "PlayerLifeUI.h"
 #include "SceneChange.h"
 
 class TouchAbleObject;
@@ -36,7 +35,6 @@ private:
 	NormalMapTestOBJ* testNormalMapOBJ = nullptr;
 	ObjectManager* objectManager = nullptr;
 
-	PlayerLifeUI* plife = nullptr;
 	SceneChange* sceneCh = nullptr;
 
 	Sprite* bg01[2];

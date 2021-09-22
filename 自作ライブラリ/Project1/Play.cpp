@@ -33,8 +33,6 @@ Play::Play()
 	CreateStage();
 	objectManager->Add(player);
 
-	plife = new PlayerLifeUI();
-
 	sceneCh = new SceneChange();
 
 	for (int i = 0; i < 2; i++)
@@ -51,7 +49,6 @@ Play::~Play()
 
 	objectManager->End();
 
-	PtrDelete(plife);
 	PtrDelete(sceneCh);
 	for (int i = 0; i < 2; i++)
 	{
@@ -66,7 +63,6 @@ void Play::Initialize()
 	isEnd = false;
 	isAllEnd = false;
 
-	plife->Initialize();
 	sceneCh->Initialize();
 
 	bg01_position[0] = { 0,0 };
@@ -122,8 +118,6 @@ void Play::Update()
 	}
 #endif // _DEBUG
 
-	plife->Update(3);
-
 	sceneCh->Update();
 
 	//‰æ–ÊƒXƒNƒ[ƒ‹
@@ -166,7 +160,6 @@ void Play::PreDraw()
 	}
 
 
-	sceneCh->Draw({ 0,0,0,1 });
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -183,9 +176,8 @@ void Play::PreDraw()
 
 void Play::PostDraw()
 {
-	plife->Draw();
+	sceneCh->Draw({ 0,0,0,1 });
 	objectManager->PreDraw();
-
 
 }
 

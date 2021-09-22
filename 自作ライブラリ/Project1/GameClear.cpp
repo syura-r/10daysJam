@@ -65,9 +65,10 @@ void GameClear::PreDraw()
 	sceneCh->Draw({ 0,0,0,1 });
 	//selectUI->Draw();
 	//bg->DrawSprite("gameover_bg", { 0,0 }, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
+	moji->CustomDraw();
+
 }
 
 void GameClear::PostDraw()
 {
-	moji->CustomDraw();
 }
