@@ -526,7 +526,7 @@ void ParticleEmitter::CreateSlashEffects(const Vector3& pos, const float& rotati
 
 	particle->parameter.scale = 1.0f;
 	particle->parameter.s_scale = 1.0f;
-	particle->parameter.e_scale = 8.0f;
+	particle->parameter.e_scale = 2.0f;
 	//üŒ`•âŠÔ
 	particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
 
@@ -544,13 +544,13 @@ void ParticleEmitter::CreateSlashEffects(const Vector3& pos, const float& rotati
 
 void ParticleEmitter::CreateShockEffects(const Vector3& pos, const Vector3& color)
 {
-	for (int i = 0; i <3; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		Particle* particle = new Particle();
 		particle->parameter.position = pos;
 
 		particle->parameter.frame = 0;
-		particle->parameter.num_frame = 8 * (i + 1);
+		particle->parameter.num_frame = 15 + 20 * (i % 3);
 
 		particle->parameter.velocity = { 0,0,0 };
 		particle->parameter.accel = { 0,0,0 };
@@ -585,19 +585,19 @@ void ParticleEmitter::CreateSlashPerfect(const Vector3& pos, const float& rotati
 
 void ParticleEmitter::CreateRiseEffects(const Vector3& pos, const Vector3& color)
 {
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 15; i++)
 	{
 		Particle* particle = new Particle();
 		particle->parameter.position = pos;
 
 		particle->parameter.frame = 0;
-		particle->parameter.num_frame = 20;
+		particle->parameter.num_frame = 15;
 
 		particle->parameter.velocity = { 0,0,0 };
 		particle->parameter.accel = { (std::rand() % 50 - 25) * 0.1f,(std::rand() % 50) * 0.1f,(std::rand() % 50 - 25) * 0.1f };
 
-		particle->parameter.scale = 0.5f;
-		particle->parameter.s_scale = 0.5f;
+		particle->parameter.scale = 0.3f;
+		particle->parameter.s_scale = 0.3f;
 		particle->parameter.e_scale = 0.1f;
 		//üŒ`•âŠÔ
 		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
@@ -620,18 +620,18 @@ void ParticleEmitter::CreateWindEffects(const Vector3& pos, const Vector3& color
 	particle->parameter.position = pos;
 
 	particle->parameter.frame = 0;
-	particle->parameter.num_frame = 60;
+	particle->parameter.num_frame = 15;
 
 	particle->parameter.velocity = { 0,0,0 };
 	particle->parameter.accel = { 0,0,0 };
 
 	particle->parameter.rotation = { 0,0,0 };
 	particle->parameter.s_rotation = { 0,0,0 };
-	particle->parameter.e_rotation = { 0,0,-360 };
+	particle->parameter.e_rotation = { 0,0,-180 };
 
-	particle->parameter.scale = 10.0f;
-	particle->parameter.s_scale = 10.0f;
-	particle->parameter.e_scale = 5.0f;
+	particle->parameter.scale = 5.0f;
+	particle->parameter.s_scale = 5.0f;
+	particle->parameter.e_scale = 2.0f;
 	//üŒ`•âŠÔ
 	particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
 

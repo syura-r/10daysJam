@@ -9,6 +9,7 @@
 #include "PtrDelete.h"
 #include "RaycastHit.h"
 #include"CollisionManager.h"
+#include "ParticleEmitter.h"
 #define SIZE  1.0f
 
 Player* Enemy::player = nullptr;
@@ -234,7 +235,7 @@ void Enemy::Draw()
 	}
 	CustomDraw(false, true, ALPHA, true);
 #ifdef _DEBUG
-	hitBox->Draw();
+	//hitBox->Draw();
 #endif
 }
 
@@ -245,30 +246,35 @@ void Enemy::OnCollision(const CollisionInfo& info)
 		return;
 
 	int damage = 0;
+	Vector3 effectPos = position + Vector3{0,0.8f,-0.6f};
 	switch (player->GetAttackState())
 	{
 	case Player::Boomerang:
 	{
 		invTime = 15;
 		damage = 20;
+		ParticleEmitter::CreateSlashEffects(effectPos, std::rand() % 180, { 0.5f,0.5f,1 });
 		break;
 	}
 	case Player::MeleeAttack:
 	{
 		invTime = 13;
 		damage = 35;
+		ParticleEmitter::CreateSlashEffects(effectPos, std::rand() % 180, {0.5f,0.5f,1});
 		break;
 	}
 	case Player::JumpAttack:
 	{
 		invTime = 26;
 		damage = 50;
+		ParticleEmitter::CreateWindEffects(effectPos, { 0.5f,0.5f,1 });
 		break;
 	}
 	case Player::ULT:
 	{
 		invTime = 26;
 		damage = 100;
+		ParticleEmitter::CreateSlashPerfect(effectPos, std::rand() % 180, { 1,1,0.5f });
 		break;
 	}
 	default:
@@ -277,7 +283,10 @@ void Enemy::OnCollision(const CollisionInfo& info)
 	color = { 0.5f,0,0,1 };
 	hp -= damage;
 	if (hp <= 0)
+	{
 		playBreakAnimation = true;
+		ParticleEmitter::CreateRiseEffects(effectPos, { 1,0,0 });
+	}
 	isDamage = true;
 }
 

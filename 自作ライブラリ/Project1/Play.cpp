@@ -90,31 +90,6 @@ void Play::Update()
 		next = GameClear;
 		sceneCh->ChangeStart();
 	}
-
-	Vector3 effectPos = { 11,13,0 };
-	float rotation = 90;
-	Vector3 color = { 1,0,0 };
-	if (Input::TriggerKey(DIK_P))
-	{
-		ParticleEmitter::CreateSlashPerfect(effectPos, rotation, color);
-	}
-	if (Input::TriggerKey(DIK_L))
-	{
-		ParticleEmitter::CreateRiseEffects(effectPos, color);
-	}
-	if (Input::TriggerKey(DIK_O))
-	{
-		ParticleEmitter::CreateWindEffects(effectPos, color);
-	}
-	if (Input::TriggerKey(DIK_K))
-	{
-		ParticleEmitter::CreateSparkEffects(effectPos, color);
-	}
-	if (Input::DownKey(DIK_I))
-	{
-		color = { 0.5f,0.5f,0.5f };
-		ParticleEmitter::CreateBoosterEffects(effectPos, { 0,10,0 }, color);
-	}
 #endif // _DEBUG
 
 	sceneCh->Update();
