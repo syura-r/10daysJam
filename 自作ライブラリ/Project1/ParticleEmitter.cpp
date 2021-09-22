@@ -478,7 +478,7 @@ void ParticleEmitter::End()
 	//PtrDelete(particleManager);
 }
 
-void ParticleEmitter::CreateSparkEffects(const Vector3& pos)
+void ParticleEmitter::CreateSparkEffects(const Vector3& pos, const Vector3& color)
 {
 	for (int i = 0; i < 20; i++)
 	{
@@ -498,9 +498,9 @@ void ParticleEmitter::CreateSparkEffects(const Vector3& pos)
 		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
 
 
-		particle->parameter.color = { 0,0,1 };
-		particle->parameter.s_color = { 0,0,1 };
-		particle->parameter.e_color = { 0,0,1 };
+		particle->parameter.color = color;
+		particle->parameter.s_color = color;
+		particle->parameter.e_color = color;
 		particle->parameter.alpha = 1;
 
 		particle->parameter.isDead = false;
@@ -509,7 +509,7 @@ void ParticleEmitter::CreateSparkEffects(const Vector3& pos)
 	}
 }
 
-void ParticleEmitter::CreateSlashEffects(const Vector3& pos)
+void ParticleEmitter::CreateSlashEffects(const Vector3& pos, const float& rotation, const Vector3& color)
 {
 	Particle* particle = new Particle();
 	particle->parameter.position = pos;
@@ -520,9 +520,9 @@ void ParticleEmitter::CreateSlashEffects(const Vector3& pos)
 	particle->parameter.velocity = { 0,0,0 };
 	particle->parameter.accel = { 0,0,0 };
 
-	particle->parameter.rotation = { 0,0,0 };
-	particle->parameter.s_rotation = { 0,0,0 };
-	particle->parameter.e_rotation = { 0,0,0 };
+	particle->parameter.rotation = { 0,0,rotation };
+	particle->parameter.s_rotation = { 0,0,rotation };
+	particle->parameter.e_rotation = { 0,0,rotation };
 
 	particle->parameter.scale = 1.0f;
 	particle->parameter.s_scale = 1.0f;
@@ -531,17 +531,18 @@ void ParticleEmitter::CreateSlashEffects(const Vector3& pos)
 	particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
 
 
-	particle->parameter.color = { 0,0,1 };
-	particle->parameter.s_color = { 0,0,1 };
-	particle->parameter.e_color = { 0,0,1 };
+	particle->parameter.color = color;
+	particle->parameter.s_color = color;
+	particle->parameter.e_color = color;
 	particle->parameter.alpha = 1;
 
+	particle->parameter.billboradActive = false;
 	particle->parameter.isDead = false;
 
 	particleManager->Add(particle, "line");
 }
 
-void ParticleEmitter::CreateShockEffects(const Vector3& pos)
+void ParticleEmitter::CreateShockEffects(const Vector3& pos, const Vector3& color)
 {
 	for (int i = 0; i <3; i++)
 	{
@@ -564,9 +565,9 @@ void ParticleEmitter::CreateShockEffects(const Vector3& pos)
 		//üŒ`•âŠÔ
 		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
 
-		particle->parameter.color = { 0,0,1 };
-		particle->parameter.s_color = { 0,0,1 };
-		particle->parameter.e_color = { 0,0,1};
+		particle->parameter.color = color;
+		particle->parameter.s_color = color;
+		particle->parameter.e_color = color;
 		particle->parameter.alpha = 1.0f;
 
 		particle->parameter.isDead = false;
@@ -575,7 +576,14 @@ void ParticleEmitter::CreateShockEffects(const Vector3& pos)
 	}
 }
 
-void ParticleEmitter::CreateRiseEffects(const Vector3& pos)
+void ParticleEmitter::CreateSlashPerfect(const Vector3& pos, const float& rotation, const Vector3& color)
+{
+	CreateSparkEffects(pos, color);
+	CreateSlashEffects(pos, rotation, color);
+	CreateShockEffects(pos, color);
+}
+
+void ParticleEmitter::CreateRiseEffects(const Vector3& pos, const Vector3& color)
 {
 	for (int i = 0; i < 20; i++)
 	{
@@ -595,9 +603,9 @@ void ParticleEmitter::CreateRiseEffects(const Vector3& pos)
 		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
 
 
-		particle->parameter.color = { 0,0,1 };
-		particle->parameter.s_color = { 0,0,1 };
-		particle->parameter.e_color = { 0,0,1 };
+		particle->parameter.color = color;
+		particle->parameter.s_color = color;
+		particle->parameter.e_color = color;
 		particle->parameter.alpha = 1;
 
 		particle->parameter.isDead = false;

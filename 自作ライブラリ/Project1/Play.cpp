@@ -86,14 +86,15 @@ void Play::Update()
 	if (Input::TriggerKey(DIK_P))
 	{
 		Vector3 effectPos = { 5,2,5 };
-		ParticleEmitter::CreateSlashEffects(effectPos);
-		ParticleEmitter::CreateSparkEffects(effectPos);
-		ParticleEmitter::CreateShockEffects(effectPos);
+		float rotation = 90;
+		Vector3 color = { 1,0,1 };
+		ParticleEmitter::CreateSlashPerfect(effectPos, rotation, color);
 	}
-	if (Input::TriggerKey(DIK_O))
+	if (Input::TriggerKey(DIK_L))
 	{
 		Vector3 effectPos = { 5,2,5 };
-		ParticleEmitter::CreateRiseEffects(effectPos);
+		Vector3 color = { 1,1,1 };
+		ParticleEmitter::CreateRiseEffects(effectPos, color);
 	}
 #endif // _DEBUG
 

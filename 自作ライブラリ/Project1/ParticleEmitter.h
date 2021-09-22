@@ -19,11 +19,12 @@ public:
 	static void Update();
 	static void End();
 
-	static void CreateSparkEffects(const Vector3& pos);
-	static void CreateSlashEffects(const Vector3& pos);
-	static void CreateShockEffects(const Vector3& pos);
+	static void CreateSparkEffects(const Vector3& pos, const Vector3& color);
+	static void CreateSlashEffects(const Vector3& pos, const float& rotation, const Vector3& color);
+	static void CreateShockEffects(const Vector3& pos, const Vector3& color);
+	static void CreateSlashPerfect(const Vector3& pos, const float& rotation, const Vector3& color = { 1,1,1 });
 
 
-	static void CreateRiseEffects(const Vector3& pos);
+	static void CreateRiseEffects(const Vector3& pos, const Vector3& color);
 };
 
