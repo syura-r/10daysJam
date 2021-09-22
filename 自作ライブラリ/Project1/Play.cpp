@@ -61,6 +61,10 @@ void Play::Initialize()
 	plife->Initialize();
 	sceneCh->Initialize();
 
+	bg01_position[0] = { 0,0 };
+	bg01_position[1] = { 0,0 };
+	bg02_position[0] = { 0,0 };
+	bg02_position[1] = { 0,0 };
 }
 
 void Play::Update()
@@ -120,21 +124,22 @@ void Play::Update()
 
 	//画面スクロール
 	{
+		float windowX = 1920.0f;
 		float speed = 1.0f;//プレイヤーの移動量を入れる
-		bg01_position[0].x -= speed / 3;
-		if (bg01_position[0].x < -1920)
+		bg01_position[0].x -= speed / 3.0f;
+		if (bg01_position[0].x < -windowX)
 		{
-			bg01_position[0].x = 0;
+			bg01_position[0].x = 0.0f;
 		}
-		bg01_position[1].x = bg01_position[0].x + 1920;
+		bg01_position[1].x = bg01_position[0].x + windowX;
 
 
 		bg02_position[0].x -= speed;
-		if (bg02_position[0].x < -1920)
+		if (bg02_position[0].x < -windowX)
 		{
-			bg02_position[0].x = 0;
+			bg02_position[0].x = 0.0f;
 		}
-		bg02_position[1].x = bg02_position[0].x + 1920;
+		bg02_position[1].x = bg02_position[0].x + windowX;
 	}
 
 	if (sceneCh->GetToBigEnd())
@@ -171,8 +176,11 @@ void Play::PostDraw()
 
 	for (int i = 0; i < 2; i++)
 	{
-		bg02[i]->DrawSprite("TitleBackground_2", bg02_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
-		bg01[i]->DrawSprite("TitleBackground_1", bg01_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
+		bg02[i]->DrawSprite("Play_Background_2", bg02_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		bg01[i]->DrawSprite("Play_Background_1", bg01_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
 	}
 
 }

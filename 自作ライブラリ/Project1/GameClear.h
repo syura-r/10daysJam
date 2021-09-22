@@ -7,6 +7,7 @@
 #include "SceneChange.h"
 #include "SelectUI.h"
 #include "Sprite.h"
+#include "Object.h"
 class GameClear :public Scene
 {
 public:
@@ -20,5 +21,7 @@ public:
 private:
 	SceneChange* sceneCh = nullptr;
 	SelectUI* selectUI = nullptr;
+
 	Sprite* bg = nullptr;
+	Object* moji = nullptr;
 };

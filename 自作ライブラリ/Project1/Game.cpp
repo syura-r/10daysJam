@@ -79,6 +79,9 @@ void Game::RoadAsset()
 		Texture::LoadTexture("leaf03", "Title/leaf03.png");
 		Texture::LoadTexture("leaf04", "Title/leaf04.png");
 
+		Texture::LoadTexture("Play_Background_1", "Play_Background_1.png");
+		Texture::LoadTexture("Play_Background_2", "Play_Background_2.png");
+
 		Texture::LoadTexture("result_restart", "LogoAndChoices/result_restart.png");
 		Texture::LoadTexture("result_totitle", "LogoAndChoices/result_totitle.png");
 
@@ -106,6 +109,7 @@ void Game::RoadAsset()
 		OBJLoader::LoadModelFile("ground", "ground.obj", false);
 		OBJLoader::LoadModelFile("plain", "plain.obj", false);
 		OBJLoader::LoadModelFile("chr_sword", "chr_sword.obj", true);
+		OBJLoader::LoadModelFile("End", "End.obj", true);
 
 		break;
 	case 3:
@@ -123,6 +127,7 @@ void Game::RoadAsset()
 		FBXManager::LoadModelFile("Hidari2_1", "Hidari2_1", true);
 		FBXManager::LoadModelFile("Hidari2_2", "Hidari2_2", true);
 		FBXManager::LoadModelFile("Hidari2_3", "Hidari2_3", true);
+		//FBXManager::LoadModelFile("End", "End", false);
 
 		//FBXManager::LoadModelFile("cleaningToolStorage", "cleaningToolStorage", true);
 
