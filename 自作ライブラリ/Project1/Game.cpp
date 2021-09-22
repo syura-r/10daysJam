@@ -281,6 +281,7 @@ void Game::Initialize()
 	Object3D::SetCamera(camera);
 	ParticleEmitter::Initialize(camera);
 	Player::SetDebugCamera(camera);
+	Play::SetDebugCamera(camera);
 	GameClear::SetDebugCamera(camera);
 	SelectUI::SetWindowSize({ (float)win->GetWindowWidth(), (float)win->GetWindowHeight() });
 

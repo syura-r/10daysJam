@@ -12,6 +12,7 @@
 #include "Sprite.h"
 #include "SceneChange.h"
 #include "PlayBackGround.h"
+#include "DebugCamera.h"
 
 class TouchAbleObject;
 class Play :public Scene
@@ -23,6 +24,9 @@ public:
 	void Update()override;
 	void PreDraw()override;
 	void PostDraw()override;
+
+	static void SetDebugCamera(DebugCamera* cameraPtr) { camera = cameraPtr; }
+
 private:
 	void CreateStage();
 	LightGroup* lightGroup = nullptr;
@@ -39,5 +43,7 @@ private:
 	SceneChange* sceneCh = nullptr;
 
 	PlayBackGround* playbg = nullptr;
+
+	static DebugCamera* camera;
 };
 

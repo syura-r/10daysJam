@@ -13,6 +13,8 @@
 #include "OBJLoader.h"
 #include "Player.h"
 
+DebugCamera* Play::camera = nullptr;
+
 Play::Play()
 {
 	next = GameClear;
@@ -55,6 +57,10 @@ void Play::Initialize()
 	isEnd = false;
 	isAllEnd = false;
 
+	camera->SetMatrixView({ 11.0f,12.5f,-10.0f }, { 11.0f,12.5f,0.0f }, { 0,1,0 });
+
+	objectManager->Initialize();
+
 	sceneCh->Initialize();
 	playbg->Initialize();
 }
@@ -85,7 +91,7 @@ void Play::Update()
 		sceneCh->ChangeStart();
 	}
 
-	Vector3 effectPos = { 5,2,5 };
+	Vector3 effectPos = { 11,13,0 };
 	float rotation = 90;
 	Vector3 color = { 1,0,0 };
 	if (Input::TriggerKey(DIK_P))
