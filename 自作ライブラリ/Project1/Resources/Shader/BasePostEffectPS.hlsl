@@ -66,7 +66,7 @@ float4 PSmain(VSOutput input) :SV_TARGET
     float2 uvOfset = float2(0, 0);
 
 	//縮小バッファに入っているテクスチャをずらしながら加算していく
-    for (int i = 0; i < 8;++i)
+    for (int i = 0; i < 5;++i)
     {
         bloomAccum += GetRet(tex3, input.uv * uvSize + uvOfset);
         uvOfset.y += uvSize.y;

@@ -4,7 +4,6 @@
 #include"window.h"
 #include"DirectXLib.h"
 #include"Game.h"
-#include"EffekseerLib.h"
 #include "DebugCamera.h"
 #include "LightCamera.h"
 #include "PostEffect.h"
@@ -57,7 +56,6 @@ private:
 	bool loadAssetFinish = false;
 	bool createPipelineFinish = false;
 
-	EffekseerLib* effekSeer = nullptr;
 
 };
 

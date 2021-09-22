@@ -49,25 +49,25 @@ void FPS::FPSFixed()
 
 #if _DEBUG
 
-	fpsCount++;
-	static int count = 0;
-	// 経過時間計測
-	auto now = std::chrono::steady_clock::now();
-	float deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastUpdate).count() / 1000000.0f;
-	float frameRate = 1.0f / deltaTime;
-	lastUpdate = now;
+	//fpsCount++;
+	//static int count = 0;
+	//// 経過時間計測
+	//auto now = std::chrono::steady_clock::now();
+	//float deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastUpdate).count() / 1000000.0f;
+	//float frameRate = 1.0f / deltaTime;
+	//lastUpdate = now;
 
-	if (fpsCount == 60)
-	{
+	//if (fpsCount == 60)
+	//{
 
-		//char str[50];
-		char str[50];
-		sprintf_s(str, 50, "fps=%f", frameRate);
-		SetWindowTextA(win->GetHwnd(), str);
+	//	//char str[50];
+	//	char str[50];
+	//	sprintf_s(str, 50, "fps=%f", frameRate);
+	//	SetWindowTextA(win->GetHwnd(), str);
 
-		//printf("FPS:",);
-		fpsCount = 0;
-	}
+	//	//printf("FPS:",);
+	//	fpsCount = 0;
+	//}
 #endif // _DEBUG
 	//処理時間に余裕がある場合はその分待つ
 	auto FRAME_TIME = 1.0 / fps;

@@ -24,6 +24,7 @@ cbuffer cbuff3 : register(b4)
     float _PositionFactor; //ポジションの変化量
     float _RotationFactor; //回転の変化量
     uint _Tessellation;//ポリゴン分割度
+    uint _OnEasing;//イージングで分解するか
 
 }
 

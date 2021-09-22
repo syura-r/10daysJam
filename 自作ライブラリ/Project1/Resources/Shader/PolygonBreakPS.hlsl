@@ -122,5 +122,5 @@ float4 PSmain(GSOutput input) : SV_TARGET
     const float TurningPoint = 0.15f;
     return (shadecolor * texcolor * color) * smoothstep(1.0f - TurningPoint, 1.0f, 1 - input.destruction)
 			+ float4(1, 1, 1, 1) * smoothstep(0, TurningPoint, input.destruction)
-			/*- float4(0.8f, 0.8f, 0.8f, 0) * smoothstep(TurningPoint, TurningPoint*10, input.destruction)*/;
+			- lerp(0, float4(0.8f, 0.8f, 0.8f, 0) * smoothstep(TurningPoint, TurningPoint * 10, input.destruction), step(0.5, _OnEasing));
 }

@@ -39,7 +39,7 @@ void Window::CreateWidow(WINDOW_TYPE type)
 {
 	w.cbSize = sizeof(WNDCLASSEX);
 	w.lpfnWndProc = (WNDPROC)WindowProc; //ウィンドウプロシージャを設定
-	w.lpszClassName = L"DirectXGame";//ウィンドウクラス名
+	w.lpszClassName = L"300_左道";//ウィンドウクラス名
 	w.hInstance = GetModuleHandle(nullptr); //ウィンドウハンドル
 	w.hCursor = LoadCursor(NULL, IDC_ARROW); //カーソル指定
 			//ウィンドウクラスをOSに登録
@@ -54,7 +54,7 @@ void Window::CreateWidow(WINDOW_TYPE type)
 	{
 	case Window::WINDOW:
 		hwnd = CreateWindow(w.lpszClassName,//クラス名
-			L"DirectXGame",			//タイトルバーの文字//
+			L"300_左道",			//タイトルバーの文字//
 			WS_OVERLAPPEDWINDOW,	//標準的なウィンドウスタイル
 			CW_USEDEFAULT,			//表示X座標（OSに任せる）
 			CW_USEDEFAULT,			//表示Y座標（OSに任せる)
@@ -67,7 +67,7 @@ void Window::CreateWidow(WINDOW_TYPE type)
 		break;
 	case Window::FULLSCREEN:
 		hwnd = CreateWindow(w.lpszClassName,//クラス名
-			L"DirectXGame",			//タイトルバーの文字//
+			L"300_左道",			//タイトルバーの文字//
 			WS_VISIBLE | WS_POPUP, //標準的なウィンドウスタイル
 			0,	
 			0,	

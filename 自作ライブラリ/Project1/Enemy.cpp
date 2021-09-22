@@ -9,8 +9,10 @@
 #include "PtrDelete.h"
 #include "RaycastHit.h"
 #include"CollisionManager.h"
+#define SIZE  1.0f
+
 Player* Enemy::player = nullptr;
-Enemy::Enemy(const Vector3& pos)
+Enemy::Enemy(const Vector3& pos, const Vector3& velocity)
 {
 	Create(FBXManager::GetModel("Migi2"));
 	position = pos;
@@ -27,12 +29,14 @@ Enemy::Enemy(const Vector3& pos)
 	SetCollider(boxCollider);
 	collider->SetAttribute(COLLISION_ATTR_ENEMYS);
 	collider->SetMove(true);
-
+	this->velocity.x = velocity.x;
+	fallV = {0, velocity.y,0,0 };
 	hp = MaxHP;
 
 	damageCounter = 0;
 
-
+	if (pos.x > player->WallLeft)
+		bossChild = true;
 #ifdef _DEBUG
 	hitBox = new Object();
 	hitBox->Create(OBJLoader::GetModel("box"));
@@ -45,6 +49,13 @@ Enemy::Enemy(const Vector3& pos)
 
 Enemy::~Enemy()
 {
+	if (collider)
+	{
+		//コリジョンマネージャーから登録を解除する
+		CollisionManager::GetInstance()->RemoveCollider(collider);
+		PtrDelete(collider);
+	}
+	PtrDelete(object);
 #ifdef _DEBUG
 	PtrDelete(hitBox);
 #endif
@@ -100,6 +111,7 @@ void Enemy::Update()
 	//接地状態
 	if (onGround)
 	{
+		firstGround = true;
 		//スムーズに坂を下る為の吸着距離
 		const float absDistance = 0.2f;
 		//接地を維持
@@ -129,21 +141,61 @@ void Enemy::Update()
 			Object::Update();
 		}
 
+	//if (EffekseerLib::GetEnd(handle))
+	//{
+	//	EffekseerLib::StopEffect(handle);
+	//}
 
 
 	//クエリーコールバックの関数オブジェクト
 	EnemyQueryCallBack callback(boxCollider);
 	//球と地形の交差を全検索
 	CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_LANDSHAPE);
-
-
+	
 	//交差による排斥文を動かす
 	position.x += callback.move.m128_f32[0];
 	position.y += callback.move.m128_f32[1];
 	position.z += callback.move.m128_f32[2];
 
-//----------------------------------------------------------------------------------------------------------------
+	if (callback.move.m128_f32[0] < 0)
+		speed = -0.02f;
+	else if (callback.move.m128_f32[0] > 0)
+		speed = 0.02f;
 
+//----------------------------------------------------------------------------------------------------------------
+	if (firstGround)
+		position.x += speed;
+	else
+		position += velocity;
+
+	if (bossChild)
+	{
+		if (position.x < player->WallLeft)
+		{
+			position.x = player->WallLeft;
+			speed *= -1.0f;
+		}
+		else if(position.x > player->WallRight)
+		{
+			position.x = player->WallRight;
+			speed *= -1.0f;
+		}
+	}
+	else
+	{
+		if (position.x > player->WallLeft - 1)
+		{
+			position.x = player->WallLeft - 1;
+			speed *= -1.0f;
+		}
+		if (position.x < 1)
+		{
+			position.x = 1;
+			speed *= -1.0f;
+		}
+
+	}
+	
 	Object::Update();
 #ifdef _DEBUG
 	hitBox->SetPosition(position + Vector3{ 0, 2.25f * scale.y, 0 });
@@ -173,7 +225,6 @@ void Enemy::Draw()
 		// パイプラインステートの設定
 		PipelineState::SetPipeline("PBShadowMap");
 		DirectXLib::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, constBuff->GetGPUVirtualAddress());
-
 	}
 	else
 	{
@@ -185,7 +236,6 @@ void Enemy::Draw()
 #ifdef _DEBUG
 	hitBox->Draw();
 #endif
-
 }
 
 void Enemy::OnCollision(const CollisionInfo& info)
@@ -200,7 +250,7 @@ void Enemy::OnCollision(const CollisionInfo& info)
 	case Player::Boomerang:
 	{
 		invTime = 15;
-		damage = 50;
+		damage = 20;
 		break;
 	}
 	case Player::MeleeAttack:
@@ -217,12 +267,13 @@ void Enemy::OnCollision(const CollisionInfo& info)
 	}
 	case Player::ULT:
 	{
+		invTime = 26;
+		damage = 100;
 		break;
 	}
 	default:
 		return;
 	}
-
 	color = { 0.5f,0,0,1 };
 	hp -= damage;
 	if (hp <= 0)

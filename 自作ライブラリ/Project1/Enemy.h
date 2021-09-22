@@ -1,4 +1,5 @@
 #pragma once
+
 #include "CollisionPrimitive.h"
 #include "Object.h"
 #include "QueryCallback.h"
@@ -8,7 +9,7 @@ class Enemy :
 	public Object
 {
 public:
-	Enemy(const Vector3& pos);
+	Enemy(const Vector3& pos,const Vector3& velocity = {});
 	~Enemy();
 	void Update() override;
 	void Draw() override;
@@ -24,6 +25,8 @@ private:
 		float _PositionFactor;//ポジションの変化量
 		float _RotationFactor;//回転の変化量
 		int _Tessellation;//ポリゴン分割度
+		int _OnEasing = 0;//イージングで分解するか
+
 	};
 	ComPtr<ID3D12Resource> constBuff; // 定数バッファ
 	float destruction;
@@ -46,6 +49,15 @@ private:
 	//攻撃を受けてからの無敵時間(受けた技ごとに変えるため変数)
 	int invTime = 0;
 
+	//速度
+	float speed = 0.02f;
+
+	//スポーンから着地まで
+	bool firstGround = false;
+
+	//ボス戦時に生まれたやつか
+	bool bossChild = false;
+	
 #ifdef _DEBUG
 	Object* hitBox = nullptr;
 #endif

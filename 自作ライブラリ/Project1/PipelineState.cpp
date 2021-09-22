@@ -1464,6 +1464,7 @@ void PipelineState::CreatePipeline(const std::string& keyName, const ShaderType 
 	}
 	case NoShade:
 	{
+		gpipeline.BlendState.AlphaToCoverageEnable = true;
 		//頂点シェーダの読み込みとコンパイル
 		result = D3DCompileFromFile(
 			L"Resources/Shader/NoShadeVS.hlsl",  //シェーダファイル名

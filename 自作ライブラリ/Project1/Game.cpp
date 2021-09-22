@@ -61,6 +61,11 @@ void Game::RoadAsset()
 		Texture::LoadTexture("SampleNormalMap", "SampleNormalMap.png");
 		Texture::LoadTexture("StainedGlass", "StainedGlass.png");
 		Texture::LoadTexture("StainedGlassNormal", "StainedGlassNormal.png");
+		Texture::LoadTexture("HPber_00", "HPber_00.png");
+		Texture::LoadTexture("HPber_01", "HPber_01.png");
+		Texture::LoadTexture("HPber_02", "HPber_02.png");
+		Texture::LoadTexture("HPber_03", "HPber_03.png");
+		Texture::LoadTexture("alert", "alert.png");
 
 		break;
 	case 2:
@@ -70,14 +75,26 @@ void Game::RoadAsset()
 		OBJLoader::LoadModelFile("ground", "ground.obj", false);
 		OBJLoader::LoadModelFile("plain", "plain.obj", false);
 		OBJLoader::LoadModelFile("chr_sword", "chr_sword.obj", true);
+		OBJLoader::LoadModelFile("HidariGiri_01", "HidariGiri_01.obj", true);
+		OBJLoader::LoadModelFile("HidariGiri_02", "HidariGiri_02.obj", true);
+		OBJLoader::LoadModelFile("HidariGiri_03", "HidariGiri_03.obj", true);
+		OBJLoader::LoadModelFile("HidariGiri_04", "HidariGiri_04.obj", true);
+		OBJLoader::LoadModelFile("HidariGiri_05", "HidariGiri_05.obj", true);
+		OBJLoader::LoadModelFile("stand", "Stand.obj", true);
 
 		break;
 	case 3:
 		//FBXファイルの読み込み
-		FBXManager::LoadModelFile("Migi1_1", "Migi1_1", true);
-		FBXManager::LoadModelFile("Migi1_2", "Migi1_2", true);
-		FBXManager::LoadModelFile("Migi2", "Migi2", true);
+		FBXManager::LoadModelFile("Migi1_1", "Migi_1", true);
+		//FBXManager::LoadModelFile("Migi1_2", "Migi1_2", true);
+		FBXManager::LoadModelFile("Migi2", "Migi_2", true);
 		FBXManager::LoadModelFile("zan-zo", "zan-zo", true);
+
+		//FBXManager::LoadModelFile("HidariGiri_01", "HidariGiri_01", true);
+		//FBXManager::LoadModelFile("HidariGiri_02", "HidariGiri_02", true);
+		//FBXManager::LoadModelFile("HidariGiri_03", "HidariGiri_03", true);
+		//FBXManager::LoadModelFile("HidariGiri_04", "HidariGiri_04", true);
+		//FBXManager::LoadModelFile("HidariGiri_05", "HidariGiri_05", true);
 
 		break;
 
@@ -91,6 +108,8 @@ void Game::RoadAsset()
 		//FBXManager::LoadModelFile("cleaningToolStorage", "cleaningToolStorage", true);
 
 		break;
+	case 5:
+
 
 	default:
 		loadAssetFinish = true;
@@ -165,7 +184,7 @@ void Game::LoadFinish()
 	Object3D::SetLightCamera(lightCamera);
 	Player::SetLightCamera(lightCamera);
 
-	CollisionManager::GetInstance()->Initialize(0,30,200,0);
+	CollisionManager::GetInstance()->Initialize(0,30,100,0);
 	
 	sceneManeger = SceneManager::GetInstance();
 	sceneManeger->Add(Scene::SCENE::Title, new Title());
@@ -222,8 +241,6 @@ void Game::Initialize()
 	loadTex = new Sprite();
 	loadDot = new Sprite();
 
-	effekSeer = new EffekseerLib();
-	effekSeer->Initialize(camera);
 
 }
 
@@ -265,11 +282,9 @@ void Game::Run()
 		{
 			Input::Update();
 			Alpha::Update();
-			effekSeer->Update();
 			lightCamera->Update();
 			sceneManeger->Update();
 			camera->Update();
-			effekSeer->Update();
 			ParticleEmitter::Update();
 			//2.画面クリアコマンドここまで
 			//Object3D::SetDrawShadow(true);
@@ -291,9 +306,6 @@ void Game::Run()
 			//}
 			//3.描画コマンドここから
 			sceneManeger->PreDraw();
-			effekSeer->BeginRendering();
-			effekSeer->Draw();
-			effekSeer->EndRendering();
 			//背面描画ここまで
 #ifdef _DEBUG
 			DebugText::Draw();
@@ -340,7 +352,6 @@ void Game::End()
 	sceneManeger->End();
 	//デリートはここまでに終わらせる
 	directX->End();
-	PtrDelete(effekSeer);
 	win->End();
 	PtrDelete(win);
 }

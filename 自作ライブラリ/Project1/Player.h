@@ -1,8 +1,11 @@
 #pragma once
+
 #include "CollisionPrimitive.h"
 #include "DebugCamera.h"
+#include "FbxLoader.h"
 #include "Object.h"
 #include "QueryCallback.h"
+#include "Sprite.h"
 
 class Player :
 	public Object
@@ -25,9 +28,16 @@ public:
 	void Update()override;
 	void OnCollision(const CollisionInfo& info)override;
 	void Draw() override;
+	bool GetWaitFight() { return waitFight; }
 	static void SetDebugCamera(DebugCamera* cameraPtr) { camera = cameraPtr; }
 	static void SetLightCamera(LightCamera* cameraPtr) { lightCamera = cameraPtr; }
 	const ATTACKSTATE& GetAttackState() { return nowAttackState; }
+	inline void StartFight()
+	{
+		startFight = true;
+		notMove = false;
+		waitFight = false;
+	}
 private://メンバ関数
 	//攻撃処理
 	void Attack();
@@ -78,7 +88,24 @@ private://メンバ変数
 	//無敵時間
 	int invCounter;
 
-	
+
+	//HP用のスプライト
+	Sprite* hpSprites[4];
+
+//-------------------ボス演出用--------------------
+	bool notMove;//戦闘開始前の自動移動フラグ
+	bool startFight;//ボス戦開始フラグ
+	bool waitFight;//アニメーション終了後ボスの出現待ちフラグ
+public:
+	const float WallLeft = 40;//左側のカベ
+	const float WallRight = 60;//右側のカベ
+private:
+	bool drawBlackTex;//帯を出すフラグ
+	Sprite* upTex;//上部に出てくる黒い帯
+	Sprite* downTex;//下部に出てくる黒い帯
+	float texSizeY;//上下の帯の縦サイズ
+	int texSizeCounter;//イージング用のカウンター
+//-------------------------------------------------	
 //-------------------デバッグ用-------------------
 #ifdef _DEBUG
 	Object* hitObj = nullptr;
@@ -96,17 +123,30 @@ private://メンバ変数
 	const int BoomerangTime = 15;
 	//ブーメラン減速までのカウンター
 	int boomerangCounter;
+
+	bool boomerang;
 //-------------------------------------------
 
 //------------攻撃アニメーション用-----------
 	Object* itiObject = nullptr;//左の一角目(一の部分)
 	Object* noObject = nullptr;//左の二角目(ノの部分)
 	Object* eObject = nullptr;//左の残り(エの部分)
+	Object* zanzoObject = nullptr;//残像
 
+	//残像エフェクトの表フラグ
+	bool drawZanzoFrag;
+	
 	//近接段階
 	int meleeAttackStage;
 	//2段目以降継続させるかのフラグ
 	bool continueMeleeAttack;
+
+
+	Object* hidariGiri[5] = {};
+
+	bool drawHidariGiri[5];
+	FbxTime drawFrame[5];
+
 //-------------------------------------------
 private://内部クラス
 	//クエリーコールバッククラス
