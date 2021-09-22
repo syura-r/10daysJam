@@ -21,6 +21,7 @@ public:
 	void PreDraw()override;
 	void PostDraw()override;
 private:
+	void CreateStage();
 	LightGroup* lightGroup = nullptr;
 	XMFLOAT3 pos = { 1,0,0 };
 	float coloramb[3] = { 1,1,1 };

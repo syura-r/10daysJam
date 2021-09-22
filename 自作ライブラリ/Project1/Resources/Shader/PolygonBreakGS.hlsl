@@ -57,9 +57,9 @@ void GSmain(
 
     const float randPoint = abs(random(randNormal2.xy) / 2);
 	
-    const float destruction = EaseInOutQuart(0, 1.0f, 600, 600 * smoothstep(randPoint, randPoint + 0.5f, _Destruction));
-
-
+    const float destruction = lerp(_Destruction, EaseInOutQuart(0, 1.0f, 600, 600 * smoothstep(randPoint, randPoint + 0.5f, _Destruction)), step(0.5, _OnEasing));
+;
+    //const float destruction = _Destruction;
 	//if (destruction != 0)
     //{
     //    GSOutput o1[4];

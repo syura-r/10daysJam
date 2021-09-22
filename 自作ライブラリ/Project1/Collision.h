@@ -29,6 +29,9 @@ public:
 	// レイと球の当たり判定
 	static bool CheckRay2Sphere(const Ray& lay, const Sphere& sphere, float*distance = nullptr, DirectX::XMVECTOR* inter = nullptr);
 
+	//レイとボックスの当たり判定
+	static bool CheckRay2Box(const Ray& lay, const Box& box, float* distance = nullptr, DirectX::XMVECTOR* inter = nullptr);
+	
 	//球と矩形の当たり判定
 	static bool CheckSphereBox(const Sphere& sphere, const Box& box, DirectX::XMVECTOR* inter = nullptr, DirectX::XMVECTOR* reject = nullptr);
 

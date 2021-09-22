@@ -1053,7 +1053,7 @@ void PipelineState::CreatePipeline(const std::string& keyName, const ShaderType 
 		inputLayout.push_back(layout);
 		layout =
 		{//法線ベクトル
-		"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,
+			"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,
 		D3D12_APPEND_ALIGNED_ELEMENT,
 		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0
 		};
@@ -1065,6 +1065,20 @@ void PipelineState::CreatePipeline(const std::string& keyName, const ShaderType 
 				D3D12_APPEND_ALIGNED_ELEMENT,
 				D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
 		}; //uv座標
+		inputLayout.push_back(layout);
+		layout =
+		{//影響を受けるボーン番号(4つ)
+			"BONEINDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		};
+		inputLayout.push_back(layout);
+		layout =
+		{//ボーンスキニングウェイト(4つ)
+			"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		};
 		inputLayout.push_back(layout);
 
 		gpipeline.InputLayout.pInputElementDescs = inputLayout.data();
@@ -1089,6 +1103,9 @@ void PipelineState::CreatePipeline(const std::string& keyName, const ShaderType 
 		rootparams.push_back(param);
 		//4番目
 		param.InitAsConstantBufferView(3, 0, D3D12_SHADER_VISIBILITY_ALL); //種類
+		rootparams.push_back(param);
+		//5番目
+		param.InitAsConstantBufferView(4, 0, D3D12_SHADER_VISIBILITY_ALL); //種類
 		rootparams.push_back(param);
 
 		rootSignatureDesc.Init_1_0(rootparams.size(), rootparams.data(), 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -1447,6 +1464,7 @@ void PipelineState::CreatePipeline(const std::string& keyName, const ShaderType 
 	}
 	case NoShade:
 	{
+		gpipeline.BlendState.AlphaToCoverageEnable = true;
 		//頂点シェーダの読み込みとコンパイル
 		result = D3DCompileFromFile(
 			L"Resources/Shader/NoShadeVS.hlsl",  //シェーダファイル名

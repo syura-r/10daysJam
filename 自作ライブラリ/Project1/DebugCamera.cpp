@@ -17,7 +17,7 @@ void DebugCamera::Update()
 	bool dirty = false;
 	//float angleX = 0;
 	//float angleY = 0;
-
+#ifdef _DEBUG
 	auto mouseMove = Input::GetMouseMove();
 
 	// マウスの左ボタンが押されていたらカメラを回転させる
@@ -36,11 +36,11 @@ void DebugCamera::Update()
 		else if (phi < 0)
 			phi += 360 * XM_PI / 180.0f;
 		
-		if(theta < 0)
-		{
-			distance = 10 * (1 + theta * 1.1f);
-			
-		}
+		//if(theta < 0)
+		//{
+		//	distance = 10 * (1 + theta * 1.1f);
+		//	
+		//}
 		//printf("phi : %f , theta : %f\n", phi, theta);
 		dirty = true;
 	}
@@ -79,7 +79,7 @@ void DebugCamera::Update()
 		distance = max(distance, 1.0f);
 		dirty = true;
 	}
-
+#endif
 	if (dirty || viewDirty) {
 		float nowTheta = theta;
 		if (theta < 0)

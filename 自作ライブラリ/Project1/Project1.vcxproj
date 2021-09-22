@@ -114,12 +114,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex;$(SolutionDir)imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex;$(SolutionDir)imgui;$(ProjectDir)\lib\Effekseer</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>libfbxsdk-md.lib;libxml2-md.lib;zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\lib\Effekseer</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -150,7 +151,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex;$(SolutionDir)imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex;$(SolutionDir)imgui;$(ProjectDir)\lib\Effekseer</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>true</SupportJustMyCode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -161,11 +162,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>libfbxsdk-mt.lib;libxml2-mt.lib;zlib-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\lib\Effekseer</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Alpha.cpp" />
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
@@ -175,6 +178,7 @@
     <ClCompile Include="DebugText.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="Easing.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FbxLoader.cpp" />
     <ClCompile Include="FBXManager.cpp" />
     <ClCompile Include="FBXModel.cpp" />
@@ -188,6 +192,7 @@
     <ClCompile Include="GSShaderTestObj.cpp" />
     <ClCompile Include="LightCamera.cpp" />
     <ClCompile Include="LightGroup.cpp" />
+    <ClCompile Include="MapBox.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshCollider.cpp" />
@@ -229,6 +234,7 @@
     <ClInclude Include="Alpha.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="BaseCollider.h" />
+    <ClInclude Include="Boss.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="CircleShadow.h" />
     <ClInclude Include="Collision.h" />
@@ -243,6 +249,7 @@
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="DrawMode.h" />
     <ClInclude Include="Easing.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="FbxLoader.h" />
     <ClInclude Include="FBXManager.h" />
     <ClInclude Include="FBXModel.h" />
@@ -256,6 +263,7 @@
     <ClInclude Include="GSShaderTestObj.h" />
     <ClInclude Include="LightCamera.h" />
     <ClInclude Include="LightGroup.h" />
+    <ClInclude Include="MapBox.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshCollider.h" />

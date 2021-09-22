@@ -108,7 +108,13 @@ public://メンバ関数
 	/// <summary>
 	/// アニメーション開始
 	/// </summary>
-	void PlayAnimation();
+	void AnimationInit();
+
+	void SetAnimationFrame(const int startFrame, const int endFrame,const int FrameTime = 1);
+
+	bool PlayAnimation(bool endless = false);
+
+	inline const FbxTime& GetCurrentAnimationTime() { return currentTime; }
 
 private:
 	ComPtr<ID3D12Resource> constBuffSkin; // 定数バッファ

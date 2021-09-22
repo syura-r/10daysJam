@@ -1,14 +1,9 @@
 #pragma once
-#include <d3d12.h>
-#include<dxgi1_6.h>
-#include <d3dcompiler.h>
-#include<DirectXTex.h>
 #include<wrl.h>
 #include"Input.h"
 #include"window.h"
 #include"DirectXLib.h"
 #include"Game.h"
-#include"Camera.h"
 #include "DebugCamera.h"
 #include "LightCamera.h"
 #include "PostEffect.h"
@@ -43,9 +38,9 @@ private:
 	DirectXLib* directX = nullptr;
 	DebugCamera* camera = nullptr;
 	Vector3 cameraPos;
-	PostEffect* postEffect = nullptr;
+	//PostEffect* postEffect = nullptr;
 	LightCamera* lightCamera = nullptr;
-	ShadowMap* shadowMap = nullptr;
+	//ShadowMap* shadowMap = nullptr;
 	float dir[3] = { 0.0f,-1.0f,0.0f };
 	float distance = 10;
 
@@ -60,5 +55,7 @@ private:
 
 	bool loadAssetFinish = false;
 	bool createPipelineFinish = false;
+
+
 };
 

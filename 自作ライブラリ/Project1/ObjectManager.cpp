@@ -31,10 +31,17 @@ void ObjectManager::Update()
 	auto end_it = objects.end();
 	for(auto it = objects.begin();it != end_it;++it)
 	{
-		auto end_itr = it->second.end();
-		for(auto itr = it->second.begin();itr != end_itr;++itr)
+		for(auto itr = it->second.begin();itr != it->second.end();)
 		{
 			(*itr)->Update();
+			if ((*itr)->IsDead())
+			{
+				auto deletePtr = *itr;
+				itr = it->second.erase(itr);
+				PtrDelete(deletePtr);
+			}
+			else
+				++itr;
 		}
 	}
 }

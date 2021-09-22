@@ -179,7 +179,29 @@ public:
 		return (DWORD)ColVect.size();
 	}
 
+	// 特定の位置から衝突の可能性があるリストを作成する
+	DWORD GetTargetCollisionList(std::vector<T*>& ColVect, float left, float top, float right, float bottom)
+	{
+		// リスト（配列）は必ず初期化します
+		ColVect.clear();
+		auto Elem = GetMortonNumber(left, top, right, bottom);
+		// ルート空間の存在をチェック
+		if (ppCellAry[Elem] == nullptr)
+			return 0;	// 空間が存在していない
 
+		// ルート空間を処理
+		GetCollisionList2(Elem, ColVect);
+
+		if (Elem == 0)
+			return (DWORD)ColVect.size();
+		Elem = (Elem - 1) >> 2;
+		if (ppCellAry[Elem] == nullptr)
+			return (DWORD)ColVect.size();
+
+		GetBackCollisionList(Elem, ColVect);
+
+		return (DWORD)ColVect.size();
+	}
 
 protected:
 	// 空間内で衝突リストを作成する
@@ -230,6 +252,55 @@ protected:
 		if (ChildFlag) {
 			for (i = 0; i < ObjNum; i++)
 				ColStac.pop_back();
+		}
+
+		return true;
+	}
+
+	bool GetCollisionList2(DWORD Elem, std::vector<T*>& ColVect)
+	{
+		std::list<T*>::iterator it;
+		// ① 空間内のオブジェクト同士の衝突リスト作成
+		SmartPtr<TreeObject<T> > spOFT1 = ppCellAry[Elem]->GetFirstObj();
+		while (spOFT1.GetPtr() != NULL)
+		{
+			ColVect.push_back(spOFT1->pObject);
+			spOFT1 = spOFT1->spNext;
+		}
+
+		// ③ 子空間に移動
+		DWORD ObjNum = 0;
+		DWORD i, NextElem;
+		for (i = 0; i < 4; i++) {
+			NextElem = Elem * 4 + 1 + i;
+			if (NextElem < m_dwCellNum && ppCellAry[Elem * 4 + 1 + i]) {
+				GetCollisionList2(Elem * 4 + 1 + i, ColVect);	// 子空間へ
+			}
+		}
+		return true;
+	}
+
+	// 子空間から遡った衝突リストを作成する
+	bool GetBackCollisionList(DWORD Elem, std::vector<T*>& ColVect)
+	{		
+		std::list<T*>::iterator it;
+		// ① 空間内のオブジェクト同士の衝突リスト作成
+		SmartPtr<TreeObject<T> > spOFT1 = ppCellAry[Elem]->GetFirstObj();
+		while (spOFT1.GetPtr() != NULL)
+		{
+			ColVect.push_back(spOFT1->pObject);
+			spOFT1 = spOFT1->spNext;
+		}
+
+		// ③ 親空間に移動
+		DWORD  NextElem;
+
+		if (Elem > 0)
+		{
+			NextElem = (Elem - 1) >> 2;
+			if (ppCellAry[NextElem]) {
+				GetBackCollisionList(NextElem, ColVect);	// 子空間へ
+			}
 		}
 
 		return true;

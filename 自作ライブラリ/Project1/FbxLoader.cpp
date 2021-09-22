@@ -213,7 +213,7 @@ FBXModel* FbxLoader::LoadModelFromFile(const string& modelName)
     //FBXシーン解析
    // fbxScene->Destroy();
     model->fbxScene = fbxScene;
-    model->PlayAnimation();
+    model->AnimationInit();
     return model;
 }
 

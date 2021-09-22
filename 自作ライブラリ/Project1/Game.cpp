@@ -28,8 +28,6 @@ Game::Game()
 	directX = DirectXLib::GetInstance();
 }
 
-
-
 Game * Game::GetInstance()
 {
 	if (instance == nullptr)
@@ -63,6 +61,11 @@ void Game::RoadAsset()
 		Texture::LoadTexture("SampleNormalMap", "SampleNormalMap.png");
 		Texture::LoadTexture("StainedGlass", "StainedGlass.png");
 		Texture::LoadTexture("StainedGlassNormal", "StainedGlassNormal.png");
+		Texture::LoadTexture("HPber_00", "HPber_00.png");
+		Texture::LoadTexture("HPber_01", "HPber_01.png");
+		Texture::LoadTexture("HPber_02", "HPber_02.png");
+		Texture::LoadTexture("HPber_03", "HPber_03.png");
+		Texture::LoadTexture("alert", "alert.png");
 
 		break;
 	case 2:
@@ -72,22 +75,41 @@ void Game::RoadAsset()
 		OBJLoader::LoadModelFile("ground", "ground.obj", false);
 		OBJLoader::LoadModelFile("plain", "plain.obj", false);
 		OBJLoader::LoadModelFile("chr_sword", "chr_sword.obj", true);
+		OBJLoader::LoadModelFile("HidariGiri_01", "HidariGiri_01.obj", true);
+		OBJLoader::LoadModelFile("HidariGiri_02", "HidariGiri_02.obj", true);
+		OBJLoader::LoadModelFile("HidariGiri_03", "HidariGiri_03.obj", true);
+		OBJLoader::LoadModelFile("HidariGiri_04", "HidariGiri_04.obj", true);
+		OBJLoader::LoadModelFile("HidariGiri_05", "HidariGiri_05.obj", true);
+		OBJLoader::LoadModelFile("stand", "Stand.obj", true);
 
 		break;
 	case 3:
+		//FBXファイルの読み込み
+		FBXManager::LoadModelFile("Migi1_1", "Migi_1", true);
+		//FBXManager::LoadModelFile("Migi1_2", "Migi1_2", true);
+		FBXManager::LoadModelFile("Migi2", "Migi_2", true);
+		FBXManager::LoadModelFile("zan-zo", "zan-zo", true);
+
+		//FBXManager::LoadModelFile("HidariGiri_01", "HidariGiri_01", true);
+		//FBXManager::LoadModelFile("HidariGiri_02", "HidariGiri_02", true);
+		//FBXManager::LoadModelFile("HidariGiri_03", "HidariGiri_03", true);
+		//FBXManager::LoadModelFile("HidariGiri_04", "HidariGiri_04", true);
+		//FBXManager::LoadModelFile("HidariGiri_05", "HidariGiri_05", true);
 
 		break;
 
 	case 4:
 		//FBXファイルの読み込み
-		FBXManager::LoadModelFile("cube", "cube", true);
-		FBXManager::LoadModelFile("boneTest", "boneTest", true);
-		FBXManager::LoadModelFile("Hidari1", "Hidari1", true);
-		FBXManager::LoadModelFile("Hidari2", "Hidari2", true);
-
+		FBXManager::LoadModelFile("Hidari1", "NormalMode_1", true);
+		FBXManager::LoadModelFile("Hidari2", "NormalMode_2", true);
+		FBXManager::LoadModelFile("SwoedMode_1", "SwoedMode_1", true);
+		FBXManager::LoadModelFile("SwoedMode_2", "SwoedMode_2", true);
+		FBXManager::LoadModelFile("SwoedMode_3", "SwoedMode_3", true);
 		//FBXManager::LoadModelFile("cleaningToolStorage", "cleaningToolStorage", true);
 
 		break;
+	case 5:
+
 
 	default:
 		loadAssetFinish = true;
@@ -110,36 +132,36 @@ void Game::CreatePipeline()
 		break;
 	case 2:
 		PipelineState::CreatePipeline("Particle", PARTICLE, ADD);
-		PipelineState::CreatePipeline("PostEffect", BasePostEffect);
+		//PipelineState::CreatePipeline("PostEffect", BasePostEffect);
 		break;
 	case 3:
-		PipelineState::CreatePipeline("Bloom", Bloom);
+		//PipelineState::CreatePipeline("Bloom", Bloom);
 		PipelineState::CreatePipeline("NoShade", NoShade);
 		break;
 	case 4:
-		PipelineState::CreatePipeline("NormalMap", NormalMap);
-		break;
-	case 5:
 		PipelineState::CreatePipeline("PolygonBreak", PolygonBreak);
 		break;
-	case 6:
-		PipelineState::CreatePipeline("FBXShadowMap", FBXShadowMap);
+	case 5:
+		//PipelineState::CreatePipeline("NormalMap", NormalMap);
 		break;
-	case 7:
-		PipelineState::CreatePipeline("GrassShadowMap", GrassShadowMap);
-		break;
-	case 8:
-		PipelineState::CreatePipeline("Grass", GRASS);
-		break;
-	case 9:
-		PipelineState::CreatePipeline("ShadowMap", NormalShadowMap);
-		break;
-	case 10:
-		PipelineState::CreatePipeline("PBShadowMap", PBShadowMap);
-		break;
-	case 11:
-		PipelineState::CreatePipeline("DrawShadowOBJ", DrawShadowOBJ);
-		break;
+	//case 6:
+	//	PipelineState::CreatePipeline("FBXShadowMap", FBXShadowMap);
+	//	break;
+	//case 7:
+	//	PipelineState::CreatePipeline("GrassShadowMap", GrassShadowMap);
+	//	break;
+	//case 8:
+	//	PipelineState::CreatePipeline("Grass", GRASS);
+	//	break;
+	//case 9:
+	//	PipelineState::CreatePipeline("ShadowMap", NormalShadowMap);
+	//	break;
+	//case 10:
+	//	PipelineState::CreatePipeline("PBShadowMap", PBShadowMap);
+	//	break;
+	//case 11:
+	//	PipelineState::CreatePipeline("DrawShadowOBJ", DrawShadowOBJ);
+	//	break;
 	//case 12:
 	//	break;
 	default:
@@ -162,8 +184,7 @@ void Game::LoadFinish()
 	Object3D::SetLightCamera(lightCamera);
 	Player::SetLightCamera(lightCamera);
 
-	
-	CollisionManager::GetInstance()->Initialize(0,20,500,0);
+	CollisionManager::GetInstance()->Initialize(0,30,100,0);
 	
 	sceneManeger = SceneManager::GetInstance();
 	sceneManeger->Add(Scene::SCENE::Title, new Title());
@@ -171,11 +192,9 @@ void Game::LoadFinish()
 	sceneManeger->Add(Scene::SCENE::Ending, new Ending());
 	sceneManeger->Change(Scene::SCENE::Play);
 
-	postEffect = new PostEffect();
-
-
-	shadowMap = new ShadowMap();
-	shadowMap->SetWindow(win);
+	//postEffect = new PostEffect();
+	//shadowMap = new ShadowMap();
+	//shadowMap->SetWindow(win);
 
 	nowLoading = false;
 }
@@ -221,6 +240,7 @@ void Game::Initialize()
 
 	loadTex = new Sprite();
 	loadDot = new Sprite();
+
 
 }
 
@@ -316,8 +336,8 @@ void Game::End()
 	//	if (ShowCursor(true) >= 0)
 	//		break;
 	//}
-	PtrDelete(shadowMap);
-	PtrDelete(postEffect);
+	//PtrDelete(shadowMap);
+	//PtrDelete(postEffect);
 	PtrDelete(loadTex);
 	PtrDelete(loadDot);
 
