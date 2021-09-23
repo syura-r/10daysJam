@@ -431,6 +431,10 @@ void Player::EndFight()
 	nowAnimationState = Wait;
 	FBXManager::GetModel("Hidari2")->SetAnimationFrame(0, 60, 2);
 	FBXManager::GetModel("Hidari1")->SetAnimationFrame(0, 60, 2);
+	nowAttackState = JumpAttack;
+	FBXManager::GetModel("SwoedMode_1")->SetAnimationFrame(0, 30);
+	FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(0, 30);
+	FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(0, 30);
 }
 
 void Player::Draw()

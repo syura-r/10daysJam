@@ -34,7 +34,7 @@ void PlayBackGround::Update()
 {
 	//‰æ–ÊƒXƒNƒ[ƒ‹
 	if (player->GetPosition().x > 11 &&
-		!player->GetStartFight())
+		!player->GetStartFight() && !player->GetEnd())
 	{
 		float windowX = 1920.0f;
 		float speed = player_PrePos.x - player->GetPosition().x;

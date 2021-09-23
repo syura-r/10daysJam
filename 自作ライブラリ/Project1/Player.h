@@ -53,6 +53,7 @@ public:
 	{
 		end = true;
 	}
+	bool GetEnd() { return end; }
 private://ƒƒ“ƒoŠÖ”
 	//UŒ‚ˆ—
 	void Attack();
