@@ -353,7 +353,7 @@ void Boss::Draw()
 
 	CustomDraw(false, true, ALPHA, true);
 
-	if(attackType == Rocket && attack)
+	if(attackType == Rocket && attack && nowState == ATTACK)
 	{
 		lockOnObj->CustomDraw(true);
 	}

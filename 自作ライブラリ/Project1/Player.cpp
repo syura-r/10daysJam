@@ -444,6 +444,7 @@ void Player::OnCollision(const CollisionInfo & info)
 }
 void Player::EndFight()
 {
+	drawZanzoFrag = false;
 	boomerang = false;
 	attackFrag = false;
 	endCounter = 0;
@@ -473,7 +474,7 @@ void Player::Draw()
 	ImGui::Text("onGround : %d\n", onGround);
 	ImGui::Text("position.x : %f\n", position.x);
 	ImGui::Text("position.y : %f\n", position.y);
-	ImGui::Text("fallVelY : %f\n", fallV.m128_f32[1]); 
+	ImGui::Text("fallVelY : %f\n", fallV.m128_f32[1]);
 	ImGui::Text("rejectVal.y : %f\n", rejectVal.y);
 
 	ImGui::End();
@@ -488,19 +489,21 @@ void Player::Draw()
 		}
 	}
 	DirectXLib::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	if(nowAnimationState == Attacks && nowAttackState != Boomerang)
+	if (nowAnimationState == Attacks && nowAttackState != Boomerang)
 	{
 		itiObject->CustomDraw(true);
 		noObject->CustomDraw(true);
 		eObject->CustomDraw(true);
-		if (drawZanzoFrag == true)
+		if (drawZanzoFrag == true && !end)
+		{
 			zanzoObject->CustomDraw(true);
-		if(nowAttackState == ULT)
+		}
+		if (nowAttackState == ULT)
 		{
 			for (int i = 0; i < 5; i++)
 			{
 				if (drawHidariGiri[i])
-					hidariGiri[i]->CustomDraw(false,false);
+					hidariGiri[i]->CustomDraw(false, false);
 			}
 		}
 		return;
@@ -510,9 +513,9 @@ void Player::Draw()
 	if (boomerang)
 		boomerangEffect->CustomDraw(true);
 
-	if(drawBlackTex)
+	if (drawBlackTex)
 	{
-		upTex->DrawSprite("white1x1",{960,0},0,{1920,texSizeY},{0,0,0,1},{0.5f,0});
+		upTex->DrawSprite("white1x1", { 960,0 }, 0, { 1920,texSizeY }, { 0,0,0,1 }, { 0.5f,0 });
 		downTex->DrawSprite("white1x1", { 960,1080 }, 0, { 1920,texSizeY }, { 0,0,0,1 }, { 0.5f,1 });
 
 	}
