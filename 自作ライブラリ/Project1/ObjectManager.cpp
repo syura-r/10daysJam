@@ -23,7 +23,7 @@ void ObjectManager::Initialize()
 		(*itr)->Initialize();
 	}
 	auto end_itr2 = objects[false].end();
-	for (auto itr = objects[false].begin(); itr != end_itr2; ++itr)
+	for (auto itr = objects[false].begin(); itr != end_itr2;)
 	{
 		auto deletePtr = *itr;
 		itr =  objects[false].erase(itr);

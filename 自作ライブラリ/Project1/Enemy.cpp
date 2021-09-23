@@ -55,7 +55,15 @@ Enemy::Enemy(const Vector3& pos, const Vector3& velocity)
 }
 
 Enemy::~Enemy()
-{	
+{
+	if (collider)
+	{
+		//コリジョンマネージャーから登録を解除する
+		CollisionManager::GetInstance()->RemoveCollider(collider);
+		PtrDelete(collider);
+	}
+	PtrDelete(object);
+
 	PtrDelete(naObject);
 #ifdef _DEBUG
 	PtrDelete(hitBox);

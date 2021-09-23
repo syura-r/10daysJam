@@ -373,7 +373,7 @@ void Boss::OnCollision(const CollisionInfo& info)
 		return;
 
 	int damage = 0;
-	Vector3 effectPos = position + Vector3{ 0.0f,1.0f,-0.6f };
+	Vector3 effectPos = position + Vector3{ 0.0f,0.0f,-0.6f };
 	switch (player->GetAttackState())
 	{
 	case Player::Boomerang:
