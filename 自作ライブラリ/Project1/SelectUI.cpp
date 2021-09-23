@@ -71,7 +71,10 @@ void SelectUI::Update()
 
 void SelectUI::Draw()
 {
-	main->DrawSprite(mainTexname, mainPosition, 0.0f, { 1.0f, 1.0f });
+	if (state != State::gameclear)
+	{
+		main->DrawSprite(mainTexname, mainPosition, 0.0f, { 1.0f, 1.0f });
+	}
 	select1->sprite->DrawSprite(select1->texname, select1->position, 0.0f, select1->scale, select1->color);
 	if (state != State::gameclear)
 	{
@@ -97,11 +100,9 @@ void SelectUI::SetState(State state)
 		break;
 
 	case SelectUI::gameclear:
-		mainTexname = "result_gameclear";
 		select1->texname = "result_totitle";
 
-		mainPosition = { windowsize.x / 2.0f, windowsize.y / 14.0f * 5.0f };
-		select1->position = { windowsize.x / 2.0f, windowsize.y / 14.0f * 8.0f };
+		select1->position = { windowsize.x / 5.0f * 4.0f, windowsize.y / 7.0f * 6.0f };
 		break;
 
 	case SelectUI::gameover:

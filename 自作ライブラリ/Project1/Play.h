@@ -12,8 +12,9 @@
 #include "ObjectManager.h"
 #include "Player.h"
 #include "Sprite.h"
-#include "PlayerLifeUI.h"
 #include "SceneChange.h"
+#include "PlayBackGround.h"
+#include "DebugCamera.h"
 
 class TouchAbleObject;
 class Play :public Scene
@@ -25,6 +26,11 @@ public:
 	void Update()override;
 	void PreDraw()override;
 	void PostDraw()override;
+
+	static void SetDebugCamera(DebugCamera* cameraPtr) { camera = cameraPtr; }
+	static void IsGameClear() { Play::isGameClear = true; }
+	static void IsGameOver(){ Play::isGameOver = true; }
+
 private:
 	void CreateStage();
 	void CreateEnemies();
@@ -39,16 +45,15 @@ private:
 	NormalMapTestOBJ* testNormalMapOBJ = nullptr;
 	ObjectManager* objectManager = nullptr;
 
-	PlayerLifeUI* plife = nullptr;
 	SceneChange* sceneCh = nullptr;
+	int sceneChangeLag = 0;
 
-	Sprite* bg01[2];
-	Vector2 bg01_position[2];
-
-	Sprite* bg02[2];
-	Vector2 bg02_position[2];
+	PlayBackGround* playbg = nullptr;
 
 	Player* player = nullptr;
 	Boss* boss = nullptr;
+	static DebugCamera* camera;
+	static bool isGameClear;
+	static bool isGameOver;
 };
 

@@ -213,8 +213,8 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Play.cpp" />
+    <ClCompile Include="PlayBackGround.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PlayerLifeUI.cpp" />
     <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="SceneChange.cpp" />
     <ClCompile Include="SelectUI.cpp" />
@@ -225,7 +225,6 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="TouchAbleObject.cpp" />
-    <ClCompile Include="UnionPartsMotion.cpp" />
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
@@ -292,8 +291,8 @@
     <ClInclude Include="Ending.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Play.h" />
+    <ClInclude Include="PlayBackGround.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="PlayerLifeUI.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="PtrDelete.h" />
@@ -312,7 +311,6 @@
     <ClInclude Include="Title.h" />
     <ClInclude Include="TouchAbleObject.h" />
     <ClInclude Include="Tree.h" />
-    <ClInclude Include="UnionPartsMotion.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="window.h" />
     <ClInclude Include="XAudio2VoiceCallback.h" />

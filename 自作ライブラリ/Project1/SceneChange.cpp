@@ -43,8 +43,8 @@ void SceneChange::Update()
 	if (toBig)
 	{
 		easingcount++;
-		scale.x = Easing::EaseOutQuart(0.0f, maxScale, maxCount, easingcount);
-		scale.y = Easing::EaseOutQuart(0.0f, maxScale, maxCount, easingcount);
+		scale.x = Easing::EaseInQuart(0.0f, maxScale, maxCount, easingcount);
+		scale.y = Easing::EaseInQuart(0.0f, maxScale, maxCount, easingcount);
 
 		if (easingcount >= maxCount)
 		{

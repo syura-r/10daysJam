@@ -23,7 +23,6 @@
 #include "ComputeShade.h"
 #include "Player.h"
 #include "SelectUI.h"
-#include "UnionPartsMotion.h"
 DrawMode::MODE DrawMode::mode = DrawMode::NormalMap;
 
 Game::Game()
@@ -85,6 +84,7 @@ void Game::RoadAsset()
 		Texture::LoadTexture("Play_Background_1", "Play_Background_1.png");
 		Texture::LoadTexture("Play_Background_2", "Play_Background_2.png");
 
+		Texture::LoadTexture("End_Background", "End_Background.png");
 		Texture::LoadTexture("result_restart", "LogoAndChoices/result_restart.png");
 		Texture::LoadTexture("result_totitle", "LogoAndChoices/result_totitle.png");
 
@@ -287,8 +287,9 @@ void Game::Initialize()
 	Object3D::SetCamera(camera);
 	ParticleEmitter::Initialize(camera);
 	Player::SetDebugCamera(camera);
+	Play::SetDebugCamera(camera);
+	GameClear::SetDebugCamera(camera);
 	SelectUI::SetWindowSize({ (float)win->GetWindowWidth(), (float)win->GetWindowHeight() });
-	UnionPartsMotion::SetDebugCamera(camera);
 
 	loadTex = new Sprite();
 	loadDot = new Sprite();

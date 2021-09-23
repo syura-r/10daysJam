@@ -10,7 +10,6 @@ Title::Title()
 	bg02 = new Sprite();
 	bg03 = new Sprite();
 	selectUI = new SelectUI();
-	//unionParts = new UnionPartsMotion();
 	sceneCh = new SceneChange();
 
 	for (int i = 0; i < leafMax; i++)
@@ -44,7 +43,6 @@ Title::~Title()
 	PtrDelete(bg02);
 	PtrDelete(bg03);
 	PtrDelete(selectUI);
-	//PtrDelete(unionParts);
 	PtrDelete(sceneCh);
 	for (int i = 0; i < leafMax; i++)
 	{
@@ -63,7 +61,6 @@ void Title::Initialize()
 	bg02_position = { firstBGPosX,0.0f };
 	bg03_position = { -firstBGPosX,0.0f };
 	selectUI->Initialize(SelectUI::State::title);
-	//unionParts->Initialize();
 	sceneCh->Initialize();
 
 	leafBackLine = 1080 + 64;
@@ -100,11 +97,8 @@ void Title::Update()
 			leafs[i]->position.y += leafs[i]->speed;
 			leafs[i]->rotation += 0.1f;
 		}
-	
-
 
 	selectUI->Update();
-	//unionParts->Update();
 
 	//Œˆ’è
 	if ((Input::TriggerKey(DIK_SPACE) || Input::TriggerPadButton(XINPUT_GAMEPAD_A) || Input::TriggerPadButton(XINPUT_GAMEPAD_B)) &&
@@ -132,6 +126,11 @@ void Title::Update()
 
 void Title::PreDraw()
 {
+	bg01->DrawSprite("TitleBackground_1", { 0.0f, 0.0f }, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
+}
+
+void Title::PostDraw()
+{
 	sceneCh->Draw({ 0,0,0,1 });
 
 	for (int i = 0; i < leafMax; i++)
@@ -143,11 +142,4 @@ void Title::PreDraw()
 
 	bg03->DrawSprite("TitleBackground_3", bg03_position, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
 	bg02->DrawSprite("TitleBackground_2", bg02_position, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
-	bg01->DrawSprite("TitleBackground_1", { 0.0f, 0.0f }, 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
-}
-
-void Title::PostDraw()
-{
-	//unionParts->Draw();
-
 }

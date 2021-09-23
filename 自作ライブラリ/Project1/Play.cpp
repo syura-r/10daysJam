@@ -4,7 +4,6 @@
 #include"Audio.h"
 #include "Boss.h"
 #include "Enemy.h"
-#include"ParticleEmitter.h"
 #include"SphereCollider.h"
 #include"imgui.h"
 #include"FBXManager.h"
@@ -12,6 +11,10 @@
 #include "MapBox.h"
 #include "OBJLoader.h"
 #include "Player.h"
+
+DebugCamera* Play::camera = nullptr;
+bool Play::isGameClear = false;
+bool Play::isGameOver = false;
 
 Play::Play()
 {
@@ -35,15 +38,10 @@ Play::Play()
 	Boss::SetPlayer(player);
 	CreateStage();
 
-	plife = new PlayerLifeUI();
-
 	sceneCh = new SceneChange();
 
-	for (int i = 0; i < 2; i++)
-	{
-		bg01[i] = new Sprite();
-		bg02[i] = new Sprite();
-	}
+	playbg = new PlayBackGround();
+	playbg->SetPlayer(player);
 }
 
 
@@ -57,12 +55,7 @@ Play::~Play()
 	PtrDelete(boss);
 	PtrDelete(plife);
 	PtrDelete(sceneCh);
-	for (int i = 0; i < 2; i++)
-	{
-		PtrDelete(bg01[i]);
-		PtrDelete(bg02[i]);
-	}
-
+	PtrDelete(playbg);
 }
 
 void Play::Initialize()
@@ -70,14 +63,15 @@ void Play::Initialize()
 	isEnd = false;
 	isAllEnd = false;
 
-	plife->Initialize();
-	sceneCh->Initialize();
-	
-	bg01_position[0] = { 0,0 };
-	bg01_position[1] = { 0,0 };
-	bg02_position[0] = { 0,0 };
-	bg02_position[1] = { 0,0 };
+	camera->SetMatrixView({ 11.0f,12.5f,-10.0f }, { 11.0f,12.5f,0.0f }, { 0,1,0 });
+
 	objectManager->Initialize();
+
+	sceneCh->Initialize();
+	sceneChangeLag = 0;
+
+	playbg->Initialize();
+	bjectManager->Initialize();
 	player->Initialize();
 	boss->Initialize();
 }
@@ -92,73 +86,39 @@ void Play::Update()
 	boss->Update();
 	collisionManager->CheckAllCollisions();
 
-
-#ifdef _DEBUG
-	if (Input::TriggerKey(DIK_1) &&
-		sceneCh->GetToSmallEnd() &&
+	//シーン切り替え
+	if (sceneCh->GetToSmallEnd() &&
 		!sceneCh->GetToBig())
 	{
-		next = GameOver;
-		sceneCh->ChangeStart();
-
-	}
-	if (Input::TriggerKey(DIK_2) &&
-		sceneCh->GetToSmallEnd() &&
-		!sceneCh->GetToBig())
-	{
-		next = GameClear;
-		sceneCh->ChangeStart();
-	}
-
-	Vector3 effectPos = { 5,2,5 };
-	float rotation = 90;
-	Vector3 color = { 1,0,0 };
-	if (Input::TriggerKey(DIK_P))
-	{
-		ParticleEmitter::CreateSlashPerfect(effectPos, rotation, color);
-	}
-	if (Input::TriggerKey(DIK_L))
-	{
-		ParticleEmitter::CreateRiseEffects(effectPos, color);
-	}
-	if (Input::TriggerKey(DIK_O))
-	{
-		ParticleEmitter::CreateWindEffects(effectPos, color);
-	}
-	if (Input::TriggerKey(DIK_K))
-	{
-		ParticleEmitter::CreateSparkEffects(effectPos, color);
-	}
-#endif // _DEBUG
-
-	plife->Update(3);
-
-	sceneCh->Update();
-
-	//画面スクロール
-	{
-		float windowX = 1920.0f;
-		float speed = 1.0f;//プレイヤーの移動量を入れる
-		bg01_position[0].x -= speed / 3.0f;
-		if (bg01_position[0].x < -windowX)
+		if (isGameOver)
 		{
-			bg01_position[0].x = 0.0f;
+			sceneChangeLag++;
+			if (sceneChangeLag > 30)
+			{
+				next = GameOver;
+				sceneCh->ChangeStart();
+				isGameOver = false;
+			}
 		}
-		bg01_position[1].x = bg01_position[0].x + windowX;
-
-
-		bg02_position[0].x -= speed;
-		if (bg02_position[0].x < -windowX)
+		if (isGameClear)
 		{
-			bg02_position[0].x = 0.0f;
+			sceneChangeLag++;
+			if (sceneChangeLag > 90)
+			{
+				next = GameClear;
+				sceneCh->ChangeStart();
+				isGameClear = false;
+			}
 		}
-		bg02_position[1].x = bg02_position[0].x + windowX;
 	}
-
 	if (sceneCh->GetToBigEnd())
 	{
 		ShutDown();
 	}
+	sceneCh->Update();
+
+	playbg->Update();
+
 }
 
 void Play::PreDraw()
@@ -174,19 +134,8 @@ void Play::PreDraw()
 		Object3D::GetLightCamera()->SetLightDir({ lightDir[0],lightDir[1] ,lightDir[2] });
 	}
 
-
-	sceneCh->Draw({ 0,0,0,1 });
-
-	for (int i = 0; i < 2; i++)
-	{
-		bg02[i]->DrawSprite("Play_Background_2", bg02_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
-	}
-	for (int i = 0; i < 2; i++)
-	{
-		bg01[i]->DrawSprite("Play_Background_1", bg01_position[i], 0, { 1,1 }, { 1,1,1,1 }, { 0,0 });
-	}
+	playbg->Draw();
 	//objectManager->PostDraw();
-
 
 }
 
@@ -195,8 +144,8 @@ void Play::PostDraw()
 	plife->Draw();
 	player->Draw();
 	boss->Draw();
+	sceneCh->Draw({ 0,0,0,1 });
 	objectManager->PreDraw();
-
 
 }
 

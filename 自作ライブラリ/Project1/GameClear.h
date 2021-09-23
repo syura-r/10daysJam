@@ -8,6 +8,8 @@
 #include "SelectUI.h"
 #include "Sprite.h"
 #include "Object.h"
+#include "DebugCamera.h"
+
 class GameClear :public Scene
 {
 public:
@@ -18,10 +20,15 @@ public:
 	void PreDraw()override;
 	void PostDraw()override;
 
+	static void SetDebugCamera(DebugCamera* cameraPtr) { camera = cameraPtr; }
+
 private:
 	SceneChange* sceneCh = nullptr;
 	SelectUI* selectUI = nullptr;
+	bool isSelectUIView;
 
 	Sprite* bg = nullptr;
 	Object* moji = nullptr;
+
+	static DebugCamera* camera;
 };
