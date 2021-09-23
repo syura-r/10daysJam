@@ -112,6 +112,7 @@ void Boss::Initialize()
 	drawFlash = false;
 	flashAlpha = 0;
 	flashCounter = 0;
+	dead = false;
 }
 
 void Boss::Update()
