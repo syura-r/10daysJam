@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "ObjectManager.h"
 #include "ParticleEmitter.h"
+#include "Audio.h"
 #define SIZE  1.0f
 
 Player* Boss::player = nullptr;
@@ -185,6 +186,10 @@ void Boss::Update()
 		}
 		if (player->GetFinish())
 		{
+			if (!playBreakAnimation)
+			{
+				Audio::PlayWave("Boss_dead");
+			}
 			playBreakAnimation = true;
 			if(destruction == 0.0f)
 				ParticleEmitter::CreateShock(position);
@@ -203,6 +208,10 @@ void Boss::Update()
 	
 	if (player->GetWaitFight())
 	{
+		if (!appearAnimation)
+		{
+			Audio::PlayWave("Boss_spawn_1");
+		}
 		appearAnimation = true;
 	}
 	if(appearAnimation)
@@ -224,6 +233,7 @@ void Boss::Update()
 				if (whiteCounter == 0)
 				{
 					ParticleEmitter::CreateShock(position);
+					Audio::PlayWave("Boss_spawn_2");
 				}
 				float col = 0;
 				if(whiteCounter<15)
@@ -642,6 +652,7 @@ void Boss::Move()
 					alert.drawAlert = true;
 					alert.pos = { 1770,250 };
 					nowState = ATTACK;
+					Audio::PlayWave("Boss_SideRush_1");
 				}
 				else
 					nowState = WAIT;
@@ -836,6 +847,7 @@ void Boss::Attack()
 				enemy->Update();
 				ObjectManager::GetInstance()->Add(enemy,false);
 			}
+			Audio::PlayWave("Boss_BirthChildren");
 		}
 		naObject->SetScale(scale);
 		break;
@@ -844,6 +856,10 @@ void Boss::Attack()
 	{
 		if (attackCounter >= 120 && attackCounter < 150)
 		{
+			if (position.x == 70)
+			{
+				Audio::PlayWave("Boss_SideRush_2");
+			}
 			position.x -= 2;
 			BoxCollider* boxCollider = new BoxCollider({}, scale * 2);
 			boxCollider->SetAttribute(COLLISION_ATTR_ENEMYS);
@@ -858,6 +874,7 @@ void Boss::Attack()
 		{
 			position = {30,10,0};
 			alert.pos = { 100,850 };
+			Audio::PlayWave("Boss_SideRush_1");
 		}
 		else if (attackCounter < 30 || (attackCounter > 60 && attackCounter < 90) || 
 			(attackCounter > 150 && attackCounter < 180) || (attackCounter > 210 && attackCounter < 240))
@@ -877,6 +894,10 @@ void Boss::Attack()
 		}
 		else if (attackCounter >= 270 && attackCounter < 300)
 		{
+			if (position.x == 30)
+			{
+				Audio::PlayWave("Boss_SideRush_2");
+			}
 			position.x += 2;
 			BoxCollider* boxCollider = new BoxCollider({}, scale * 2);
 			boxCollider->SetAttribute(COLLISION_ATTR_ENEMYS);
@@ -925,6 +946,8 @@ void Boss::Attack()
 			if (attackCounter == 90)
 			{
 				toDestinationVel = (destination - position) / 30;
+				Audio::PlayWave("Boss_Rocket_1");
+				Audio::PlayWave("Boss_Rocket_2");
 			}
 		}
 		else if (attackCounter <= 120)
@@ -1016,7 +1039,6 @@ void Boss::Attack()
 			attackCounter++;
 			
 		rotation.z += rotVel;
-
 		break;
 	}
 	}

@@ -175,6 +175,17 @@ void Game::RoadAsset()
 		Audio::LoadFile("finish", "ç∂éaÇËèIÇÌÇËÇ…égÇ¶ÇªÇ§.wav");
 		Audio::LoadFile("select", "ëIë.wav");
 
+		Audio::LoadFile("Boss_spawn_1", "Boss/spawn_1.wav");
+		Audio::LoadFile("Boss_spawn_2", "Boss/spawn_2.wav");
+		Audio::LoadFile("Boss_Rocket_1", "Boss/Rocket_1.wav");
+		Audio::LoadFile("Boss_Rocket_2", "Boss/Rocket_2.wav");
+		Audio::LoadFile("Boss_RollingRush", "Boss/RollingRush.wav");
+		Audio::LoadFile("Boss_SideRush_1", "Boss/SideRush_1.wav");
+		Audio::LoadFile("Boss_SideRush_2", "Boss/SideRush_2.wav");
+		Audio::LoadFile("Boss_BirthChildren", "Boss/BirthChildren.wav");
+		Audio::LoadFile("Boss_dead", "Boss/dead.wav");
+
+
 	default:
 		loadAssetFinish = true;
 		break;

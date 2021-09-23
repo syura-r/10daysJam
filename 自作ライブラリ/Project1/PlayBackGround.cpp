@@ -33,21 +33,21 @@ void PlayBackGround::Initialize()
 void PlayBackGround::Update()
 {
 	//‰æ–ÊƒXƒNƒ[ƒ‹
+
+	float windowX = 1920.0f;
+	float speed = player_PrePos.x - player->GetPosition().x;
+
+	bg01_position[0].x += -5.0f;
+	if (bg01_position[0].x < -windowX ||
+		bg01_position[0].x > 0.0f)
+	{
+		bg01_position[0].x = 0.0f;
+	}
+	bg01_position[1].x = bg01_position[0].x + windowX;
+
 	if (player->GetPosition().x > 11 &&
 		!player->GetStartFight() && !player->GetEnd())
 	{
-		float windowX = 1920.0f;
-		float speed = player_PrePos.x - player->GetPosition().x;
-
-		bg01_position[0].x += speed * 20;
-		if (bg01_position[0].x < -windowX ||
-			bg01_position[0].x > 0.0f)
-		{
-			bg01_position[0].x = 0.0f;
-		}
-		bg01_position[1].x = bg01_position[0].x + windowX;
-
-
 		bg02_position[0].x += speed * 40;
 		if (bg02_position[0].x < -windowX ||
 			bg02_position[0].x > 0.0f)
