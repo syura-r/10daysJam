@@ -29,6 +29,7 @@ public:
 	void OnCollision(const CollisionInfo& info)override;
 	void Draw() override;
 	bool GetWaitFight() { return waitFight; }
+	bool GetFinish() { return finish; }
 	static void SetDebugCamera(DebugCamera* cameraPtr) { camera = cameraPtr; }
 	static void SetLightCamera(LightCamera* cameraPtr) { lightCamera = cameraPtr; }
 	const ATTACKSTATE& GetAttackState() { return nowAttackState; }
@@ -38,12 +39,25 @@ public:
 		notMove = false;
 		waitFight = false;
 	}
+	void EndFight();
+	inline void EndPosition()
+	{
+		moveRight = true;
+		rotation.y = 0;
+		naObject->SetRotation(rotation);
+		position = { 45,8.45f,0 };
+		velocity = (Vector3{ 49,14.7f,0 } - position) / 30.0f;
+	}
+	inline void End()
+	{
+		end = true;
+	}
 private://メンバ関数
 	//攻撃処理
 	void Attack();
 	//移動処理
 	void Move();
-
+	void EndMovie();
 private://メンバ変数
 	//接地フラグ
 	bool onGround = true;
@@ -59,7 +73,6 @@ private://メンバ変数
 	bool moveRight;
 	//進行方向が変わった時にペラペラさせるフラグ
 	bool moveShift;
-
 	//現在の攻撃状態
 	ATTACKSTATE nowAttackState;
 
@@ -83,6 +96,8 @@ private://メンバ変数
 
 	int hp;
 
+	bool cameramove;
+
 	//複数回ダメージを撃受けるのを防ぐフラグ
 	bool damage;
 	//無敵時間
@@ -105,6 +120,11 @@ private:
 	Sprite* downTex;//下部に出てくる黒い帯
 	float texSizeY;//上下の帯の縦サイズ
 	int texSizeCounter;//イージング用のカウンター
+
+	//最後のムービー用フラグ
+	bool end;
+	int endCounter;
+	bool finish;
 //-------------------------------------------------	
 //-------------------デバッグ用-------------------
 #ifdef _DEBUG
@@ -125,6 +145,8 @@ private:
 	int boomerangCounter;
 
 	bool boomerang;
+
+	Object* boomerangEffect = nullptr;
 //-------------------------------------------
 
 //------------攻撃アニメーション用-----------

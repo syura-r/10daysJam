@@ -20,10 +20,16 @@ Enemy::Enemy(const Vector3& pos, const Vector3& velocity)
 	scaleFactor = 1.0f;
 	positionFactor = 2.0f;
 	rotationFactor = 0.79f;
-	tessellation = 4;
+	tessellation = 3;
 	color = { 0,0,0,1 };
 	scale = { 0.3f,0.3f,0.3f };
 	CreateConstBuff();
+
+	naObject = new Object();
+	naObject->Create(FBXManager::GetModel("Migi1"));
+	naObject->SetColor(color);
+	naObject->SetScale(scale);
+	
 	BoxCollider* boxCollider = new BoxCollider({ 0,2.25f * scale.y,0,0 });
 	boxCollider->SetScale(scale * 2);
 	SetCollider(boxCollider);
@@ -48,14 +54,8 @@ Enemy::Enemy(const Vector3& pos, const Vector3& velocity)
 }
 
 Enemy::~Enemy()
-{
-	if (collider)
-	{
-		//コリジョンマネージャーから登録を解除する
-		CollisionManager::GetInstance()->RemoveCollider(collider);
-		PtrDelete(collider);
-	}
-	PtrDelete(object);
+{	
+	PtrDelete(naObject);
 #ifdef _DEBUG
 	PtrDelete(hitBox);
 #endif
@@ -81,6 +81,7 @@ void Enemy::Update()
 		destruction += breakSpeed;
 		if (destruction >= 1.0f)
 			dead = true;
+		return;
 	}
 //----------------------------------------マップとの判定・排斥処理-------------------------------------------
 	//コライダー更新
@@ -163,10 +164,6 @@ void Enemy::Update()
 		speed = 0.02f;
 
 //----------------------------------------------------------------------------------------------------------------
-	if (firstGround)
-		position.x += speed;
-	else
-		position += velocity;
 
 	if (bossChild)
 	{
@@ -180,6 +177,11 @@ void Enemy::Update()
 			position.x = player->WallRight;
 			speed *= -1.0f;
 		}
+		if (firstGround)
+			position.x += speed;
+		else
+			position += velocity;
+
 	}
 	else
 	{
@@ -195,7 +197,9 @@ void Enemy::Update()
 		}
 
 	}
-	
+	naObject->SetPosition(position);
+	naObject->SetRotation(rotation);
+	naObject->Update();
 	Object::Update();
 #ifdef _DEBUG
 	hitBox->SetPosition(position + Vector3{ 0, 2.25f * scale.y, 0 });
@@ -233,8 +237,9 @@ void Enemy::Draw()
 		DirectXLib::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(5, constBuff->GetGPUVirtualAddress());
 	}
 	CustomDraw(false, true, ALPHA, true);
+	naObject->CustomDraw(false, true, ALPHA, true);
 #ifdef _DEBUG
-	hitBox->Draw();
+	//hitBox->Draw();
 #endif
 }
 
@@ -249,35 +254,35 @@ void Enemy::OnCollision(const CollisionInfo& info)
 	{
 	case Player::Boomerang:
 	{
-		invTime = 15;
-		damage = 20;
+		invTime = 25;
+		damage = 35;
 		break;
 	}
 	case Player::MeleeAttack:
 	{
 		invTime = 13;
-		damage = 35;
+		damage = 100;
 		break;
 	}
 	case Player::JumpAttack:
 	{
 		invTime = 26;
-		damage = 50;
-		break;
-	}
-	case Player::ULT:
-	{
-		invTime = 26;
 		damage = 100;
 		break;
 	}
+	case Player::ULT:
+		break;
 	default:
 		return;
 	}
 	color = { 0.5f,0,0,1 };
 	hp -= damage;
 	if (hp <= 0)
+	{
 		playBreakAnimation = true;
+		collider->SetAttribute(COLLISION_ATTR_ALLIES);
+		Object::Update();
+	}
 	isDamage = true;
 }
 

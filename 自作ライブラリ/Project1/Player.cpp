@@ -46,6 +46,12 @@ Player::Player()
 	zanzoObject = new Object();
 	zanzoObject->Create(FBXManager::GetModel("zan-zo"));
 	zanzoObject->SetScale(scale);
+
+	
+	boomerangEffect = new Object();
+	boomerangEffect->Create(FBXManager::GetModel("Boomerang"));
+	boomerangEffect->SetScale(scale * 2.0f);
+
 	//zanzoObject->SetColor({1,1,1,1});
 
 	for(int i = 0;i<5;i++)
@@ -54,7 +60,7 @@ Player::Player()
 		std::string modelName = "HidariGiri_0" + std::to_string(i + 1);
 		hidariGiri[i] = new Object();
 		hidariGiri[i]->Create(OBJLoader::GetModel(modelName));
-		hidariGiri[i]->SetScale(scale);
+		hidariGiri[i]->SetScale(scale * 3.5f);
 	}
 	drawFrame[0].SetTime(0, 0, 0, 148, 0, FbxTime::EMode::eFrames60);
 	drawFrame[1].SetTime(0, 0, 0, 170, 0, FbxTime::EMode::eFrames60);
@@ -86,6 +92,8 @@ Player::~Player()
 	PtrDelete(eObject);
 	PtrDelete(naObject);
 	PtrDelete(zanzoObject);
+	PtrDelete(boomerangEffect);
+
 	for(int i = 0;i<5;i++)
 	{
 		PtrDelete(hidariGiri[i]);
@@ -145,12 +153,22 @@ void Player::Initialize()
 
 	drawBlackTex = false;
 	waitFight = false;
+	end = false;
+	endCounter = 0;
+	finish = false;
+	cameramove = true;
 }
 
 void Player::Update()
 {
+	
 	Move();
 	Attack();
+	if(end)
+	{
+		EndMovie();
+		return;
+	}
 //-----------------------------ダメージ処理-----------------------------------------
 	if(damage)
 	{
@@ -196,7 +214,7 @@ void Player::Update()
 		position.z += fallV.m128_f32[2];
 	}
 	//ジャンプ動作(地面作るまでコメントアウト)
-	else if (Input::TriggerKey(DIK_SPACE) && !notMove)
+	else if ((Input::TriggerKey(DIK_SPACE) || Input::TriggerPadButton(XINPUT_GAMEPAD_A)) && !notMove && nowAttackState != MeleeAttack)
 	{
 		onGround = false;
 		const float jumpVYFist = 0.5f;//ジャンプ時上向き初速
@@ -288,7 +306,7 @@ void Player::Update()
 
 //----------------------------------------------------------------------------------------------------------------
 	
-	if (prePos != position && !startFight)//カメラのターゲット更新
+	if (prePos != position && !startFight && cameramove)//カメラのターゲット更新
 	{
 		Vector3 targetPos = Vector3{position.x,12.5f,0};
 		if(position.x < 11)
@@ -303,7 +321,11 @@ void Player::Update()
 	{
 		naPos = position;
 	}
-
+	else
+	{
+		boomerangEffect->SetPosition(naPos + Vector3{ 0, 2.25f * scale.y + 0.3f, 0});
+		boomerangEffect->Update();
+	}
 	if(drawZanzoFrag == true)
 	{
 		zanzoObject->SetRotation(rotation);
@@ -335,7 +357,7 @@ void Player::Update()
 		noObject ->Update();
 		eObject  ->Update();
 	}
-	
+
 	naObject->SetPosition(naPos);
 
 	//コライダー更新	
@@ -379,15 +401,29 @@ void Player::Update()
 
 void Player::OnCollision(const CollisionInfo & info)
 {
-	if(damage || nowAttackState == JumpAttack || info.collider->GetAttribute() != COLLISION_ATTR_ENEMYS)
+	if(damage || nowAttackState == JumpAttack || info.collider->GetAttribute() != COLLISION_ATTR_ENEMYS )
 		return;
 
 	color = { 0.4f,0,0,1 };
-	hp--;
-	if (hp <= 0)
-		dead = true;
+	if (startFight)
+	{
+		hp--;
+		if (hp <= 0)
+			dead = true;
+	}
 	damage = true;
 	invCounter = 0;
+}
+void Player::EndFight()
+{
+	startFight = false;
+	notMove = true;
+	cameramove = false;
+	color = { 0,0,0,1 };
+	naObject->SetColor(color);
+	nowAnimationState = Wait;
+	FBXManager::GetModel("Hidari2")->SetAnimationFrame(0, 60, 2);
+	FBXManager::GetModel("Hidari1")->SetAnimationFrame(0, 60, 2);
 }
 
 void Player::Draw()
@@ -400,13 +436,15 @@ void Player::Draw()
 	ImGui::Text("rejectVal.y : %f\n", rejectVal.y);
 
 	ImGui::End();
-	for (int i = 0; i < 4; i++)
+	if (startFight)
 	{
-		std::string texName = "HPber_0" + std::to_string(i);
-		if (hp >= i)
-			hpSprites[i]->DrawSprite(texName, { 100,100 }, 0, { 0.5f,0.5f }, { 1,1,1,1 }, { 0,0 });
+		for (int i = 0; i < 4; i++)
+		{
+			std::string texName = "HPber_0" + std::to_string(i);
+			if (hp >= i)
+				hpSprites[i]->DrawSprite(texName, { 100,100 }, 0, { 0.5f,0.5f }, { 1,1,1,1 }, { 0,0 });
+		}
 	}
-
 	DirectXLib::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	if(nowAnimationState == Attacks && nowAttackState !=Boomerang)
 	{
@@ -429,6 +467,9 @@ void Player::Draw()
 	}
 	CustomDraw(true);
 	naObject->CustomDraw(true);
+	if (boomerang)
+		boomerangEffect->CustomDraw(true);
+
 	if(drawBlackTex)
 	{
 		upTex->DrawSprite("white1x1",{960,0},0,{1920,texSizeY},{0,0,0,1},{0.5f,0});
@@ -444,12 +485,10 @@ void Player::Draw()
 
 void Player::Attack()
 {
-	if(notMove)
-		return;
 //-----------------------------------------攻撃発生処理---------------------------------------------
 	if (!attackFrag)
 	{
-		if (nowAttackState == NoAttack && Input::TriggerKey(DIK_RETURN))
+		if (nowAttackState == NoAttack && (Input::TriggerKey(DIK_RETURN) || Input::TriggerPadButton(XINPUT_GAMEPAD_B)) && !notMove)
 		{
 			//----------------------------通常攻撃の発生処理----------------------------------------
 			if (onGround)
@@ -486,7 +525,7 @@ void Player::Attack()
 		}
 		
 		//----------------------------ブーメランの発生処理------------------------------------------
-		if (Input::TriggerKey(DIK_Z))
+		if ((Input::TriggerKey(DIK_Z) || Input::TriggerPadButton(XINPUT_GAMEPAD_X)) && !notMove)
 		{
 			nowAttackState = Boomerang;
 			nowAnimationState = Attacks;
@@ -512,16 +551,16 @@ void Player::Attack()
 		}//-------------------------------------------------------------------------------------
 
 		//-------------------------------左斬り発生処理---------------------------------------------
-		if(Input::TriggerKey(DIK_X))
-		{
-			nowAttackState = ULT;
-			nowAnimationState = Attacks;
-			attackFrag = true;
-			FBXManager::GetModel("SwoedMode_1")->SetAnimationFrame(131, 240);
-			FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(131, 240);
-			FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(131, 240);
+		//if(Input::TriggerKey(DIK_X))
+		//{
+		//	nowAttackState = ULT;
+		//	nowAnimationState = Attacks;
+		//	attackFrag = true;
+		//	FBXManager::GetModel("SwoedMode_1")->SetAnimationFrame(131, 240);
+		//	FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(131, 240);
+		//	FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(131, 240);
 
-		}
+		//}
 		
 		//------------------------------------------------------------------------------------------
 	}
@@ -555,12 +594,12 @@ void Player::Attack()
 					boxCollider->Update();
 					//クエリーコールバックの関数オブジェクト
 					PlayerQueryCallBack callback(boxCollider);
-					CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ENEMYS, boxCollider);
+					CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ENEMYS,COLLISION_ATTR_BOSS, boxCollider);
 					drawZanzoFrag = true;
 					FBXManager::GetModel("zan-zo")->PlayAnimation();
 
 				}
-				if( Input::TriggerKey(DIK_RETURN))
+				if( Input::TriggerKey(DIK_RETURN) || Input::TriggerPadButton(XINPUT_GAMEPAD_B))
 				{
 					continueMeleeAttack = true;
 				}
@@ -583,6 +622,8 @@ void Player::Attack()
 						attackFrag = false;
 						nowAttackState = NoAttack;
 						nowAnimationState = Wait;
+						FBXManager::GetModel("Hidari1")->SetAnimationFrame(221, 300);
+						FBXManager::GetModel("Hidari2")->SetAnimationFrame(221, 300);
 					}
 				}
 				break;
@@ -603,14 +644,14 @@ void Player::Attack()
 					boxCollider->Update();
 					//クエリーコールバックの関数オブジェクト
 					PlayerQueryCallBack callback(boxCollider);
-					CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ENEMYS, boxCollider);
+					CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ENEMYS, COLLISION_ATTR_BOSS, boxCollider);
 					if (nowAnimationTime >= beginTime && nowAnimationTime < endTime)
 					{
 						drawZanzoFrag = true;
 						FBXManager::GetModel("zan-zo")->PlayAnimation();
 					}
 				}
-				else if ( Input::TriggerKey(DIK_RETURN))
+				else if ( Input::TriggerKey(DIK_RETURN) || Input::TriggerPadButton(XINPUT_GAMEPAD_B))
 				{
 					continueMeleeAttack = true;
 				}
@@ -633,6 +674,8 @@ void Player::Attack()
 						attackFrag = false;
 						nowAttackState = NoAttack;
 						nowAnimationState = Wait;
+						FBXManager::GetModel("Hidari1")->SetAnimationFrame(221, 300);
+						FBXManager::GetModel("Hidari2")->SetAnimationFrame(221, 300);
 					}
 				}
 
@@ -654,7 +697,7 @@ void Player::Attack()
 					boxCollider->Update();
 					//クエリーコールバックの関数オブジェクト
 					PlayerQueryCallBack callback(boxCollider);
-					CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ENEMYS, boxCollider);
+					CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ENEMYS, COLLISION_ATTR_BOSS, boxCollider);
 					drawZanzoFrag = true;
 					FBXManager::GetModel("zan-zo")->PlayAnimation();
 				}
@@ -666,7 +709,8 @@ void Player::Attack()
 					attackFrag = false;
 					nowAttackState = NoAttack;
 					nowAnimationState = Wait;
-
+					FBXManager::GetModel("Hidari1")->SetAnimationFrame(221, 300);
+					FBXManager::GetModel("Hidari2")->SetAnimationFrame(221, 300);
 				}
 
 				break;
@@ -684,22 +728,32 @@ void Player::Attack()
 			sphereCollider->Update();
 			//クエリーコールバックの関数オブジェクト
 			PlayerQueryCallBack callback(sphereCollider);
-			CollisionManager::GetInstance()->QuerySphere(*sphereCollider, &callback, COLLISION_ATTR_ENEMYS, sphereCollider);
+			CollisionManager::GetInstance()->QuerySphere(*sphereCollider, &callback, COLLISION_ATTR_ENEMYS, COLLISION_ATTR_BOSS, sphereCollider);
 
 			FbxTime beginTime;
 			beginTime.SetTime(0, 0, 0, 200, 0, FbxTime::EMode::eFrames60);
 
 			FBXManager::GetModel("Hidari2")->PlayAnimation();
-			FBXManager::GetModel("Hidari1")->PlayAnimation();
+			FBXManager::GetModel("Hidari1")->PlayAnimation(true);
+			FBXManager::GetModel("Boomerang")->PlayAnimation(true);
 			auto nowAnimationTime = FBXManager::GetModel("Hidari1")->GetCurrentAnimationTime();
 			if (nowAnimationTime == beginTime)
+			{
+				FBXManager::GetModel("Boomerang")->SetAnimationFrame(0, 30);
+				FBXManager::GetModel("Hidari1")->SetAnimationFrame(200, 210);
 				boomerang = true;
+				boomerangEffect->SetRotation(rotation);
+			}
 			if (boomerang && boomerangCounter >= BoomerangTime * 4)
 			{
 				boomerang = false;
 				attackFrag = false;
 				nowAttackState = NoAttack;
 				nowAnimationState = Wait;
+				FBXManager::GetModel("Hidari1")->SetAnimationFrame(221, 300);
+				FBXManager::GetModel("Hidari2")->SetAnimationFrame(221, 300);
+				naObject->SetRotation(rotation);
+
 			}
 			break;
 		}//----------------------------------------------------------------------------------------------------------------------
@@ -720,7 +774,7 @@ void Player::Attack()
 				sphereCollider->Update();
 				//クエリーコールバックの関数オブジェクト
 				PlayerQueryCallBack callback(sphereCollider);
-				CollisionManager::GetInstance()->QuerySphere(*sphereCollider, &callback, COLLISION_ATTR_ENEMYS, sphereCollider);
+				CollisionManager::GetInstance()->QuerySphere(*sphereCollider, &callback, COLLISION_ATTR_ENEMYS, COLLISION_ATTR_BOSS, sphereCollider);
 				drawZanzoFrag = true;
 				FBXManager::GetModel("zan-zo")->PlayAnimation();
 			}
@@ -733,6 +787,13 @@ void Player::Attack()
 				attackFrag = false;
 				nowAttackState = NoAttack;
 				nowAnimationState = Wait;
+				FBXManager::GetModel("Hidari1")->SetAnimationFrame(221, 300);
+				FBXManager::GetModel("Hidari2")->SetAnimationFrame(221, 300);
+				if (moveRight)
+					rotation.y = 0;
+				else
+					rotation.y = 180;
+				naObject->SetRotation(rotation);
 			}
 			break;
 		}//----------------------------------------------------------------------------------------------------------------------
@@ -746,18 +807,15 @@ void Player::Attack()
 
 			if (nowAnimationTime >= beginTime && nowAnimationTime <= endTime)
 			{
-				float offsetX = 0.6f;
-				if (!moveRight)
-					offsetX *= -1;
-				BoxCollider* boxCollider = new BoxCollider({ offsetX,2.25f * scale.y,0,0 }, scale * 3);
-				boxCollider->SetAttribute(COLLISION_ATTR_ATTACK);
-				boxCollider->SetObject(this);
-				boxCollider->Update();
-				//クエリーコールバックの関数オブジェクト
-				PlayerQueryCallBack callback(boxCollider);
-				CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ENEMYS, boxCollider);
 				for (int i = 0; i < 5; i++)
 				{
+					hidariGiri[i]->SetRotation(rotation);
+					float offset = 0.7f;
+					if (!moveRight)
+						offset *= -1;
+					hidariGiri[i]->SetPosition(position + Vector3{ offset, 2.25f * scale.y, 0.02f - i * 0.01f });
+					hidariGiri[i]->Update();
+
 					if (nowAnimationTime == drawFrame[i])
 					{
 						drawHidariGiri[i] = true;
@@ -769,14 +827,8 @@ void Player::Attack()
 
 			if (!FBXManager::GetModel("SwoedMode_3")->PlayAnimation())
 			{
-				attackFrag = false;
-				nowAttackState = NoAttack;
-				nowAnimationState = Wait;
-				for (int i = 0; i < 5; i++)
-				{
-					drawHidariGiri[i] = false;
-				}
-
+				velocity = (Vector3{ 55, 8.45f, 0 } - position) / 30;
+				endCounter++;
 			}
 
 			break;
@@ -792,20 +844,23 @@ void Player::Move()
 {
 	prePos = position;
 //-----------------------------------------移動処理---------------------------------------------
-	if (nowAttackState != MeleeAttack && (Input::DownKey(DIK_D) || Input::DownKey(DIK_A)) && !notMove)
+	if (nowAttackState != MeleeAttack && (Input::DownKey(DIK_D) || Input::DownKey(DIK_A) || Input::CheckPadLStickRight() || Input::CheckPadLStickLeft() )&& !notMove)
 	{
-		if (Input::DownKey(DIK_D))
+		if (Input::DownKey(DIK_D)|| Input::CheckPadLStickRight())
 		{
 			//回転処理関連の初期化
 			if (!moveRight)
 			{
-				rotation.y = 180;
 				moveRight = true;
-				nowAnimationState = Turn;
-				if (nowAttackState != Boomerang)
+				if (nowAttackState != JumpAttack)
 				{
-					FBXManager::GetModel("Hidari2")->SetAnimationFrame(61, 120, 3);
-					FBXManager::GetModel("Hidari1")->SetAnimationFrame(61, 120, 3);
+					rotation.y = 180;
+					nowAnimationState = Turn;
+					if (nowAttackState != Boomerang)
+					{
+						FBXManager::GetModel("Hidari2")->SetAnimationFrame(61, 120, 3);
+						FBXManager::GetModel("Hidari1")->SetAnimationFrame(61, 120, 3);
+					}
 				}
 				naObject->SetRotation(rotation);
 
@@ -814,18 +869,21 @@ void Player::Move()
 			if (nowAttackState == Boomerang)
 				naPos.x += speed;
 		}
-		if (Input::DownKey(DIK_A))
+		if (Input::DownKey(DIK_A) || Input::CheckPadLStickLeft())
 		{
 			//回転処理関連の初期化
 			if (moveRight)
 			{
-				rotation.y = 0;
 				moveRight = false;
-				nowAnimationState = Turn;
-				if (nowAttackState != Boomerang)
+				if (nowAttackState != JumpAttack)
 				{
-					FBXManager::GetModel("Hidari2")->SetAnimationFrame(61, 120, 3);
-					FBXManager::GetModel("Hidari1")->SetAnimationFrame(61, 120, 3);
+					rotation.y = 0;
+					nowAnimationState = Turn;
+					if (nowAttackState != Boomerang)
+					{
+						FBXManager::GetModel("Hidari2")->SetAnimationFrame(61, 120, 3);
+						FBXManager::GetModel("Hidari1")->SetAnimationFrame(61, 120, 3);
+					}
 				}
 				naObject->SetRotation(rotation);
 			}
@@ -847,6 +905,10 @@ void Player::Move()
 		{
 			drawBlackTex = true;
 			notMove = true;
+			nowAnimationState = Walk;
+			FBXManager::GetModel("Hidari2")->SetAnimationFrame(221, 300);
+			FBXManager::GetModel("Hidari1")->SetAnimationFrame(221, 300);
+			return;
 		}
 
 		//待機アニメーションの時は歩行アニメーションを実行
@@ -856,28 +918,45 @@ void Player::Move()
 			FBXManager::GetModel("Hidari1")->SetAnimationFrame(0, 60, 2);
 			nowAnimationState = Walk;
 		}
-		if (nowAnimationState == Walk)
-		{
-			FBXManager::GetModel("Hidari2")->PlayAnimation(true);
-			FBXManager::GetModel("Hidari1")->PlayAnimation(true);
-		}
 	}
+	else if(nowAnimationState == Walk && !notMove)
+	{
+		nowAnimationState = Wait;
+		FBXManager::GetModel("Hidari2")->SetAnimationFrame(221, 300);
+		FBXManager::GetModel("Hidari1")->SetAnimationFrame(221, 300);
+	}
+	if (nowAnimationState == Wait || nowAnimationState == Walk)
+	{
+		FBXManager::GetModel("Hidari2")->PlayAnimation(true);
+		FBXManager::GetModel("Hidari1")->PlayAnimation(true);
+	}
+
 //---------------------------------------------------------------------------------------------------
 
 //------------------------------------方向転換時の回転処理---------------------------------------
 
-	if (nowAnimationState == Turn && nowAttackState != Boomerang)
+	if (nowAnimationState == Turn )
 	{
-		FBXManager::GetModel("Hidari2")->PlayAnimation();
-		if (!FBXManager::GetModel("Hidari1")->PlayAnimation())
+		if (nowAttackState != Boomerang)
 		{
-			nowAnimationState = Wait;
+			FBXManager::GetModel("Hidari2")->PlayAnimation();
+			if (!FBXManager::GetModel("Hidari1")->PlayAnimation())
+			{
+				nowAnimationState = Wait;
+				if (!moveRight)
+					rotation.y = 180;
+				else
+					rotation.y = 0;
+				naObject->SetRotation(rotation);
+
+			}
+		}
+		else
+		{
 			if (!moveRight)
 				rotation.y = 180;
 			else
 				rotation.y = 0;
-			naObject->SetRotation(rotation);
-
 		}
 	}
 //-----------------------------------------------------------------------------------------------
@@ -922,6 +1001,9 @@ void Player::Move()
 		if (position.x >= WallLeft + (WallRight - WallLeft) / 2)
 		{
 			//notMove = false;
+			nowAnimationState = Wait;
+			FBXManager::GetModel("Hidari2")->SetAnimationFrame(221, 300);
+			FBXManager::GetModel("Hidari1")->SetAnimationFrame(221, 300);
 			waitFight = true;
 			lightCamera->SetTarget({ WallLeft + (WallRight - WallLeft) / 2 ,12.5f,0 });
 			camera->SetTarget({ WallLeft + (WallRight - WallLeft) / 2 ,12.5f,0 });
@@ -948,4 +1030,60 @@ void Player::Move()
 	}
 
 //------------------------------------------------------------------------------------------------
+}
+
+void Player::EndMovie()
+{
+
+	if (endCounter == 0&&(position.x > 49 + 0.1f || position.x < 49 - 0.1f))
+	{
+		position += velocity;
+		naObject->SetPosition(position);
+
+		//コライダー更新	
+		Object::Update();
+		naObject->Update();
+
+		return;
+	}
+	
+	if (endCounter < 11)
+		endCounter++;
+	if (endCounter == 10)
+	{
+		nowAttackState = ULT;
+		nowAnimationState = Attacks;
+		attackFrag = true;
+		FBXManager::GetModel("SwoedMode_1")->SetAnimationFrame(131, 240);
+		FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(131, 240);
+		FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(131, 240);
+	}
+	itiObject->SetRotation(rotation);
+	noObject->SetRotation(rotation);
+	eObject->SetRotation(rotation);
+	itiObject->SetPosition(position);
+	noObject->SetPosition(position);
+	eObject->SetPosition(position);
+	itiObject->Update();
+	noObject->Update();
+	eObject->Update();
+
+	if (endCounter > 12)
+	{
+		if (position.x <= 55 + 0.01f && position.x >= 55 - 0.01f)
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				drawHidariGiri[i] = false;
+			}
+			finish = true;
+		}
+
+		position += velocity;
+		naObject->SetPosition(position);
+
+		//コライダー更新	
+		Object::Update();
+		naObject->Update();
+	}
 }

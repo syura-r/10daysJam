@@ -27,11 +27,13 @@ Play::Play()
 	collisionManager = CollisionManager::GetInstance();
 	objectManager = ObjectManager::GetInstance();
 
-	Player* player = new Player();
+	 player = new Player();
+	 
+	 boss = new Boss({ 50,15,0 });
+
 	Enemy::SetPlayer(player);
 	Boss::SetPlayer(player);
 	CreateStage();
-	objectManager->Add(player);
 
 	plife = new PlayerLifeUI();
 
@@ -51,6 +53,8 @@ Play::~Play()
 
 	objectManager->End();
 
+	PtrDelete(player);
+	PtrDelete(boss);
 	PtrDelete(plife);
 	PtrDelete(sceneCh);
 	for (int i = 0; i < 2; i++)
@@ -68,11 +72,14 @@ void Play::Initialize()
 
 	plife->Initialize();
 	sceneCh->Initialize();
-
+	
 	bg01_position[0] = { 0,0 };
 	bg01_position[1] = { 0,0 };
 	bg02_position[0] = { 0,0 };
 	bg02_position[1] = { 0,0 };
+	objectManager->Initialize();
+	player->Initialize();
+	boss->Initialize();
 }
 
 void Play::Update()
@@ -81,6 +88,8 @@ void Play::Update()
 	lightGroup->SetDirLightDir(0, { lightDir[0],lightDir[1],lightDir[2],1 });
 	lightGroup->Update();
 	objectManager->Update();
+	player->Update();
+	boss->Update();
 	collisionManager->CheckAllCollisions();
 
 
@@ -184,6 +193,8 @@ void Play::PreDraw()
 void Play::PostDraw()
 {
 	plife->Draw();
+	player->Draw();
+	boss->Draw();
 	objectManager->PreDraw();
 
 
@@ -191,13 +202,6 @@ void Play::PostDraw()
 
 void Play::CreateStage()
 {
-	Enemy* enemy = new Enemy({ 20,9,0 });
-	objectManager->Add(enemy);
-
-	Boss* boss = new Boss({ 55,10,0 });
-	objectManager->Add(boss);
-
-	
 	int map[15][60] = {
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -236,4 +240,11 @@ void Play::CreateStage()
 			}
 		}
 	}
+}
+
+void Play::CreateEnemies()
+{
+	Enemy* enemy = new Enemy({ 20,9,0 });
+	objectManager->Add(enemy,false);
+
 }

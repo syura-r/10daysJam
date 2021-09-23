@@ -11,44 +11,58 @@
 #include "Easing.h"
 #include "Enemy.h"
 #include "ObjectManager.h"
+#include "ParticleEmitter.h"
 #define SIZE  1.0f
 
 Player* Boss::player = nullptr;
 Boss::Boss(const Vector3& pos)
 {
-	Create(FBXManager::GetModel("Migi2"));
+	Create(FBXManager::GetModel("Boss2"));
 	InitPos = pos;
 	CreateConstBuff();
 	naObject = new Object();
-	naObject->Create(FBXManager::GetModel("Migi1_1"));
+	naObject->Create(FBXManager::GetModel("Boss1"));
 	Initialize();
-	BoxCollider* boxCollider = new BoxCollider({ 0,2.25f * scale.y,0,0 });
+	BoxCollider* boxCollider = new BoxCollider();
 	boxCollider->SetScale(scale * 2);
 	SetCollider(boxCollider);
-	collider->SetAttribute(COLLISION_ATTR_ENEMYS);
+	collider->SetAttribute(COLLISION_ATTR_BOSS);//ボスとプレイヤーとで直接当たり判定を取らない(ボスの攻撃のみ判定)
 	collider->SetMove(true);
 
+	lockOnObj = new Object();
+	lockOnObj->Create(FBXManager::GetModel("lockOn"));
+	lockOnObj->SetRotation({ 90,0,0 });
+	lockOnObj->SetScale({ scale.x * 4,scale.y * 2,scale.z * 2 });
+	lockOnObj->SetColor({ 0.6f,0,0,1 });
+	
 	for(int i = 0;i<2;i++)
 	{
-		alerts[i].alertTex = new Sprite();
+		alert.alertTex = new Sprite();
+	}
+	for(int i = 0;i<3;i++)
+	{
+		hpTex[i] = new Sprite();
 	}
 #ifdef _DEBUG
 	hitBox = new Object();
 	hitBox->Create(OBJLoader::GetModel("box"));
 	hitBox->SetScale(scale * 4);
 	hitBox->SetColor({ 1,1,1,0.4f });
-	hitBox->SetPosition(position + Vector3{ 0, 2.25f * scale.y, 0 });
+	hitBox->SetPosition(position );
 #endif
-
+	flashTex = new Sprite();
 }
 
 Boss::~Boss()
 {
+	PtrDelete(flashTex);
 	PtrDelete(naObject);
-	for (int i = 0; i < 2; i++)
+	PtrDelete(alert.alertTex);
+	for (int i = 0; i < 3; i++)
 	{
-		PtrDelete(alerts[i].alertTex);
+		PtrDelete(hpTex[i]);
 	}
+
 #ifdef _DEBUG
 	PtrDelete(hitBox);
 #endif
@@ -71,7 +85,7 @@ void Boss::Initialize()
 	whiteCounter = 0;
 	for (int i = 0; i < 2; i++)
 	{
-		alerts[i].drawAlert = false;
+		alert.drawAlert = false;
 	}
 	nowState = WAIT;
 	appear = false;
@@ -89,18 +103,98 @@ void Boss::Initialize()
 	naObject->SetColor(color);
 	attackCounter =0;
 	attack = false;
+	rotVel = 0;
+	for (int i = 0; i < 4; i++)
+		selectAttack[i] = false;
+	moveCounter = 0;
+	end = false;
+	drawFlash = false;
+	flashAlpha = 0;
+	flashCounter = 0;
 }
 
 void Boss::Update()
 {
+#ifdef _DEBUG
 	if(Input::TriggerKey(DIK_K))
 	{
-		destination = Vector3{ 50,15,0 };
+		destination = Vector3{ 50,14,0 };
 		toDestinationVel = (destination - position) / 40;
 		attack = true;
 		nowState = MOVE;
 		attackType = BirthChildren;
+		attackCounter = 0;
 	}
+	if (Input::TriggerKey(DIK_L))
+	{
+		destination = Vector3{ 70,14,0 };
+		toDestinationVel = (destination - position) / 40;
+		attack = true;
+		nowState = MOVE;
+		attackType = SideRush;
+		attackCounter = 0;
+	}
+	if (Input::TriggerKey(DIK_P))
+	{
+		attack = true;
+		nowState = MOVE;
+		attackType = RollingRush;
+		rotVel = 0;
+		attackCounter = 0;
+	}
+	if (Input::TriggerKey(DIK_O))
+	{
+		attack = true;
+		nowState = MOVE;
+		attackType = Rocket;
+		rotVel = 0;
+		attackCounter = 0;
+	}
+
+#endif
+	if(end)
+	{
+		if (flashCounter < 31)
+			flashCounter++;
+		if (flashCounter <= 10)
+			flashAlpha = Easing::EaseInOutQuart(0, 1, 10, flashCounter);
+		else if(flashCounter <= 20)
+			flashAlpha = Easing::EaseInOutQuart(1, 0, 20, flashCounter - 10);
+		if (flashCounter == 10)
+		{
+			player->EndPosition();
+			position = { 50,15,1 };
+			rotation = { 0,0,0 };
+			naObject->SetPosition(position);
+			naObject->SetRotation(rotation);
+			Object::Update();
+			naObject->Update();
+			ObjectManager::GetInstance()->Initialize();
+
+		}
+		else if (flashCounter == 20)
+			drawFlash = true;
+		if (flashCounter == 30)
+		{
+			player->End();
+		}
+		if (player->GetFinish())
+		{
+			playBreakAnimation = true;
+			if(destruction == 0.0f)
+				ParticleEmitter::CreateShock(position);
+		}
+		if (playBreakAnimation)
+		{
+			destruction += breakSpeed;
+			if (destruction >= 1.0f)
+				dead = true;
+			return;
+		}
+
+		return;
+	}
+
 	
 	if (player->GetWaitFight())
 	{
@@ -120,6 +214,10 @@ void Boss::Update()
 			}
 			else
 			{
+				if (whiteCounter == 0)
+				{
+					ParticleEmitter::CreateShock(position);
+				}
 				float col = 0;
 				if(whiteCounter<15)
 				{
@@ -142,19 +240,12 @@ void Boss::Update()
 		naObject->Update();
 
 		Object::Update();
-		hitBox->SetPosition(position + Vector3{ 0, 2.25f * scale.y, 0 });
+		hitBox->SetPosition(position);
 		hitBox->Update();
 
 	}
 	if (!appear)
 		return;
-	
-	Move();
-	Attack();
-	//if(Input::TriggerKey(DIK_K))
-	//{
-	//	player->StartFight();
-	//}
 	if (dead)
 		return;
 
@@ -171,25 +262,32 @@ void Boss::Update()
 		}
 		damageCounter++;
 	}
-	if (playBreakAnimation)
+
+	if (nowState == WAIT )
 	{
-		destruction += breakSpeed;
-		if (destruction >= 1.0f)
-			dead = true;
+		attackCounter++;
+		CauseAttack();
+		moveCounter++;
+		NextMovePoint();
 	}
+	Move();
+	Attack();
+	//if(Input::TriggerKey(DIK_K))
+	//{
+	//	player->StartFight();
+	//}
 
 	//position.x += speed;
 
 
 	naPos = position;
-	
+	naObject->SetRotation(rotation);
 	naObject->SetPosition(naPos);
 	naObject->Update();
-
 	
 	Object::Update();
 #ifdef _DEBUG
-	hitBox->SetPosition(position + Vector3{ 0, 2.25f * scale.y, 0 });
+	hitBox->SetPosition(position );
 	hitBox->Update();
 #endif
 }
@@ -209,7 +307,11 @@ void Boss::Draw()
 	ImGui::RadioButton("_OnEasing", &onEasing);
 	ImGui::End();
 #endif
-	
+
+	if(drawFlash)
+	{
+		flashTex->DrawSprite("white1x1", { 960,540 }, 0, { 1920,1080 }, { 1,1,1,flashAlpha });
+	}
 	// 定数バッファへデータ転送
 	ConstBuffData* constMap = nullptr;
 	HRESULT result = constBuff->Map(0, nullptr, (void**)&constMap);
@@ -243,15 +345,22 @@ void Boss::Draw()
 
 	CustomDraw(false, true, ALPHA, true);
 
-	for(int i = 0;i<2;i++)
+	if(attackType == Rocket && attack)
 	{
-		if (alerts[i].drawAlert)
-		{
-			alerts[i].alertTex->DrawSprite("alert",alerts[i].pos,0,{1,1},{1,1,1,alerts[i].alpha});
-		}
+		lockOnObj->CustomDraw(true);
+	}
+	if(alert.drawAlert)
+		alert.alertTex->DrawSprite("alert",alert.pos,0,{0.1f,0.1f},{1,1,1,alert.alpha});
+
+	hpTex[1]->SpriteSetTextureRect("bossHp02", 0, 0, 692 * hp / MaxHP, 51);
+
+	for(int i = 0;i<3;i++)
+	{
+		std::string texName = "bossHp0" + std::to_string(i + 1);
+		hpTex[i]->DrawSprite(texName,{614,100},0,{1,1},{1,1,1,1},{0,0});
 	}
 #ifdef _DEBUG
-	hitBox->Draw();
+	//hitBox->Draw();
 #endif
 
 }
@@ -297,8 +406,120 @@ void Boss::OnCollision(const CollisionInfo& info)
 	naObject->SetColor(color);
 	hp -= damage;
 	if (hp <= 0)
-		playBreakAnimation = true;
+	{
+		end = true;
+		drawFlash = true;
+		hp = 0;
+		player->EndFight();
+	}
 	isDamage = true;
+}
+
+void Boss::NextMovePoint()
+{
+	if (moveCounter < 240)
+		return;
+	if(nowState != WAIT)
+		return;
+	int random = rand() % 4;
+	switch (random)
+	{
+	case 0:
+	{
+		BasePos = { 55,11,0 };
+		break;
+	}
+	case 1:
+	{
+		BasePos = { 55,15,0 };
+		break;
+	}
+	case 2:
+	{
+		BasePos = { 45,11,0 };
+		break;
+	}
+	case 3:
+	{
+		BasePos = { 45,15,0 };
+		break;
+	}
+	default:
+		break;
+	}
+	destination = BasePos;
+	toDestinationVel = (destination - position) / 40;
+	nowState = MOVE;
+	attackType = NOAttack;
+	moveCounter = 0;
+}
+
+void Boss::CauseAttack()
+{
+	if (attackCounter < 300)
+		return;
+	while (1)
+	{
+		int random = rand() % 4;
+		if (!selectAttack[random])
+		{
+			switch (random)
+			{
+			case 0:
+			{
+				destination = Vector3{ 70,14,0 };
+				toDestinationVel = (destination - position) / 40;
+				attack = true;
+				nowState = MOVE;
+				attackType = SideRush;
+				attackCounter = 0;
+				break;
+			}
+			case 1:
+			{
+				attack = true;
+				nowState = MOVE;
+				attackType = Rocket;
+				rotVel = 0;
+				attackCounter = 0;
+				break;
+			}
+			case 2:
+			{
+				destination = Vector3{ 50,14,0 };
+				toDestinationVel = (destination - position) / 40;
+				attack = true;
+				nowState = MOVE;
+				attackType = BirthChildren;
+				attackCounter = 0;
+				break;
+			}
+			case 3:
+			{
+				attack = true;
+				nowState = MOVE;
+				attackType = RollingRush;
+				rotVel = 0;
+				attackCounter = 0;
+				break;
+			}
+			default:
+				break;
+			}
+			selectAttack[random] = true;
+
+			if (selectAttack[0] && selectAttack[1] && selectAttack[2] && selectAttack[3])
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					selectAttack[i] = false;
+				}
+			}
+			break;
+		}
+	}
+	attackCounter = 0;
+
 }
 
 void Boss::Move()
@@ -315,7 +536,7 @@ void Boss::Move()
 				//加速度反転
 				aceel.x *= -1;
 				//ランダムで基本位置からどのくらい離れた位置を特定位置にするか決定
-				const float randX = std::rand() % 100 * 0.0001f;
+				const float randX = std::rand() % 100 * 0.00003f;
 				AfterPos.x = BasePos.x - randX;
 			}
 		}
@@ -327,7 +548,7 @@ void Boss::Move()
 				//加速度反転
 				aceel.x *= -1;
 				//ランダムで基本位置からどのくらい離れた位置を特定位置にするか決定
-				const float randX = std::rand() % 100 * 0.0001f;
+				const float randX = std::rand() % 100 * 0.00003f;
 				AfterPos.x = BasePos.x + randX;
 			}
 		}
@@ -339,7 +560,7 @@ void Boss::Move()
 				//加速度反転
 				aceel.y *= -1;
 				//ランダムで基本位置からどのくらい離れた位置を特定位置にするか決定
-				const float randY = std::rand() % 80 * 0.0001f;
+				const float randY = std::rand() % 80 * 0.00003f;
 				AfterPos.y = BasePos.y - randY;
 			}
 		}
@@ -351,7 +572,7 @@ void Boss::Move()
 				//加速度反転
 				aceel.y *= -1;
 				//ランダムで基本位置からどのくらい離れた位置を特定位置にするか決定
-				const float randY = std::rand() % 80 * 0.0001f;
+				const float randY = std::rand() % 80 * 0.00003f;
 				AfterPos.y = BasePos.y + randY;
 			}
 		}
@@ -359,19 +580,19 @@ void Boss::Move()
 		velocity += aceel;
 
 		//速度の最高値を設定
-		if (velocity.x >= abs(0.05f))
+		if (velocity.x >= abs(0.03f))
 		{
 			if (velocity.x > 0)
-				velocity.x = 0.05f;
+				velocity.x = 0.03f;
 			else
-				velocity.x = -0.05f;
+				velocity.x = -0.03f;
 		}
-		if (velocity.y >= abs(0.05f))
+		if (velocity.y >= abs(0.03f))
 		{
 			if (velocity.y > 0)
-				velocity.y = 0.05f;
+				velocity.y = 0.03f;
 			else
-				velocity.y = -0.05f;
+				velocity.y = -0.03f;
 		}
 		position += velocity;
 
@@ -396,14 +617,134 @@ void Boss::Move()
 		}
 		case SideRush:
 		{
+			position += toDestinationVel;
+			if (position.x <= destination.x + 0.01f && position.x >= destination.x - 0.01f)
+			{
+				if (attack)
+				{
+					alert.drawAlert = true;
+					alert.pos = { 1770,250 };
+					nowState = ATTACK;
+				}
+				else
+					nowState = WAIT;
+			}
 			break;
 		}
-		case VerticallyRush:
+		case Rocket:
 		{
+			if (attack)
+			{
+				if (rotVel > RotMaxVel)
+				{
+					rotVel = RotMaxVel;
+					nowState = ATTACK;
+					fallV = -0.25f;
+				}
+				else
+					rotVel += 0.13f;
+				rotation.y += rotVel;
+			}
+			else
+			{
+				position += toDestinationVel;
+				if (position.x <= destination.x + 0.01f && position.x >= destination.x - 0.01f)
+				{
+					nowState = WAIT;
+				}
+			}
 			break;
 		}
-		case WaveRush:
+		case RollingRush:
 		{
+			if (attack)
+			{
+
+				if (rotVel > RotMaxVel)
+				{
+					rotVel = RotMaxVel;
+					nowState = ATTACK;
+					fallV = 0.5f;
+					nowRollingDirection = LEFT;
+				}
+				else
+					rotVel += 0.1f;
+				rotation.z += rotVel;
+
+			}
+			else
+			{
+				if (rotVel < 3.0f)
+				{
+					if (attackCounter == 0)
+					{
+						if (rotation.x > 80 + 0.01f || rotation.x < 80-0.01f)
+						{
+							rotation += slipRotVel;
+						}
+						if (position.y <= 9.0f)
+						{
+							position.y = 9.0f;
+							if (rotation.x <= 80 + 0.01f && rotation.x >= 80 - 0.01f)
+							{
+								attackCounter++;
+								slipRotVel = (Vector3{ 0,0,0 } - rotation) / 30;
+								destination = BasePos;
+								toDestinationVel = (destination - position) / 40;
+							}
+						}
+						else
+						{
+							fallV = max(fallV + fallAcc, fallVYMin);
+							position.y += fallV;
+						}
+					}
+					else if (attackCounter >= 210)
+					{
+						position += toDestinationVel;
+						if (rotation.x > 0.01f || rotation.x < - 0.01f)
+						{
+							rotation += slipRotVel;
+						}
+
+						if (position.x <= destination.x + 0.01f && position.x >= destination.x - 0.01f)
+						{
+							nowState = WAIT;
+							attackCounter = 0;
+						}
+					}
+					else
+						attackCounter++;
+				}
+				else
+				{
+					BoxCollider* boxCollider = new BoxCollider({}, scale * 2);
+					boxCollider->SetAttribute(COLLISION_ATTR_ENEMYS);
+					boxCollider->SetObject(this);
+					boxCollider->Update();
+					//クエリーコールバックの関数オブジェクト
+					BossQueryCallBack callback(boxCollider);
+					CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ALLIES, COLLISION_ATTR_ALLIES, boxCollider);
+
+					RollingMove();
+					rotVel -= 0.1f;
+					if (rotVel < 3.0f)
+					{
+						rotation.z = (int)rotation.z % 360;
+						slipRotVel = (Vector3{ 80,0,0 } - rotation) / 10;
+					}
+					rotation.z += rotVel;
+				}
+			}
+			break;
+		}
+		case NOAttack:
+		{
+			position += toDestinationVel;
+			if (position.x <= destination.x + 0.01f && position.x >= destination.x - 0.01f)
+			{
+				nowState = WAIT;
+			}
 			break;
 		}
 		default:
@@ -425,7 +766,7 @@ void Boss::Attack()
 	{
 	case BirthChildren:
 	{
-		if (attackCounter >= 120)
+		if (attackCounter >= 240)
 		{
 			attackCounter = 0;
 			attack = false;
@@ -436,29 +777,229 @@ void Boss::Attack()
 		else
 			attackCounter++;
 
-		if (attackCounter == 50 || attackCounter == 100)
+		if(attackCounter > 30 && attackCounter <= 50)
+		{
+			float scaleVal = Easing::EaseInOutQuart(0.7f, 0.4f, 20, attackCounter - 30);
+			scale = { scaleVal,scaleVal ,scaleVal };
+		}
+		else if (attackCounter > 50 && attackCounter <= 60)
+		{
+			float scaleVal = Easing::EaseInOutQuart(0.4f, 1.0f, 10, attackCounter - 50);
+			scale = { scaleVal,scaleVal ,scaleVal };
+		}
+		else if (attackCounter > 60 && attackCounter <= 65)
+		{
+			float scaleVal = Easing::EaseInOutQuart(1.0f, 0.7f, 5, attackCounter - 60);
+			scale = { scaleVal,scaleVal ,scaleVal };
+		}
+		if (attackCounter > 150 && attackCounter <= 170)
+		{
+			float scaleVal = Easing::EaseInOutQuart(0.7f, 0.4f, 20, attackCounter - 150);
+			scale = { scaleVal,scaleVal ,scaleVal };
+		}
+		else if (attackCounter > 170 && attackCounter <= 180)
+		{
+			float scaleVal = Easing::EaseInOutQuart(0.4f, 1.0f, 10, attackCounter - 170);
+			scale = { scaleVal,scaleVal ,scaleVal };
+		}
+		else if (attackCounter >180 && attackCounter <= 185)
+		{
+			float scaleVal = Easing::EaseInOutQuart(1.0f, 0.7f, 5, attackCounter - 180);
+			scale = { scaleVal,scaleVal ,scaleVal };
+		}
+
+		if (attackCounter == 60 || attackCounter == 180)
 		{
 			for (int i = 0; i < 2; i++)
 			{
-				Vector3 enemyPosition = position + Vector3{ 0, 2.25f * scale.y, 0 };
+				Vector3 enemyPosition = position ;
 				Vector3 enemyVel = { 0,0.3f,0 };
 				enemyVel.x = rand() % 601 * 0.001f - 0.3f;
 				Enemy* enemy = new Enemy(enemyPosition, enemyVel);
-				ObjectManager::GetInstance()->Add(enemy);
+				ObjectManager::GetInstance()->Add(enemy,false);
 			}
 		}
+		naObject->SetScale(scale);
 		break;
 	}
 	case SideRush:
 	{
+		if (attackCounter >= 120 && attackCounter < 150)
+		{
+			position.x -= 2;
+			BoxCollider* boxCollider = new BoxCollider({}, scale * 2);
+			boxCollider->SetAttribute(COLLISION_ATTR_ENEMYS);
+			boxCollider->SetObject(this);
+			boxCollider->Update();
+			//クエリーコールバックの関数オブジェクト
+			BossQueryCallBack callback(boxCollider);
+			CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ALLIES, COLLISION_ATTR_ALLIES, boxCollider);
+
+			//rotation.z -= rotVel;
+		}
+		else if(attackCounter == 150)
+		{
+			position = {30,10,0};
+			alert.pos = { 100,850 };
+		}
+		else if (attackCounter < 30 || (attackCounter > 60 && attackCounter < 90) || 
+			(attackCounter > 150 && attackCounter < 180) || (attackCounter > 210 && attackCounter < 240))
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				alert.alpha = Easing::EaseInOutQuart(0, 1, 30, attackCounter % 30);
+			}
+		}
+		else if(attackCounter > 90 && attackCounter < 120 || (attackCounter > 30 && attackCounter < 60) || 
+			(attackCounter > 180 && attackCounter < 210) || (attackCounter > 240 && attackCounter < 270))
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				alert.alpha = Easing::EaseInOutQuart(1, 0, 30, attackCounter % 30);
+			}
+		}
+		else if (attackCounter >= 270 && attackCounter < 300)
+		{
+			position.x += 2;
+			BoxCollider* boxCollider = new BoxCollider({}, scale * 2);
+			boxCollider->SetAttribute(COLLISION_ATTR_ENEMYS);
+			boxCollider->SetObject(this);
+			boxCollider->Update();
+			//クエリーコールバックの関数オブジェクト
+			BossQueryCallBack callback(boxCollider);
+			CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ALLIES, COLLISION_ATTR_ALLIES, boxCollider);
+			//rotation.z += rotVel;
+		}
+		if (attackCounter >= 300)
+		{
+			attackCounter = 0;
+			attack = false;
+			nowState = MOVE;
+			destination = BasePos;
+			toDestinationVel = (destination - position) / 40;
+			rotation.z = 0;
+		}
+		attackCounter++;
 		break;
 	}
-	case VerticallyRush:
+	case Rocket:
 	{
+		const float speed = 0.5f;
+		if (attackCounter == 0)
+		{
+			//加速
+			fallV = max(fallV + 0.05f, 0.5f);
+			position.y += fallV;
+			if (position.y - scale.y * 2.25f > 25)
+			{
+				position = { 55,25,20 };
+				attackCounter++;
+				rotation = { 90,0,0 };
+			}
+		}
+		else if (attackCounter <= 90)
+		{
+			destination = player->GetPosition();
+			destination.y += 0.5f;
+			Vector3 dir = Vector3{ -cosf(attackCounter * 3.1415f / 180 * 5),-sinf(attackCounter * 3.1415f / 180 * 5),-0.3f };
+			dir.Normalize();
+			dir *= speed;
+			position += dir;
+			if (attackCounter == 90)
+			{
+				toDestinationVel = (destination - position) / 30;
+			}
+		}
+		else if (attackCounter <= 120)
+		{
+			position += toDestinationVel;
+			if (attackCounter == 120)
+			{
+				BoxCollider* boxCollider = new BoxCollider({}, { scale.x * 2,scale.y,scale.z });
+				boxCollider->SetAttribute(COLLISION_ATTR_ENEMYS);
+				boxCollider->SetObject(this);
+				boxCollider->Update();
+				//クエリーコールバックの関数オブジェクト
+				BossQueryCallBack callback(boxCollider);
+				CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ALLIES, COLLISION_ATTR_ALLIES, boxCollider);
+			}
+		}
+		else
+		{
+			Vector3 dir = Vector3{ 0,2,-1 };
+			dir.Normalize();
+			dir *= speed;
+			position += dir;
+			if (position.y > 25)
+			{
+				attackCounter = 0;
+				attack = false;
+				nowState = MOVE;
+				destination = BasePos;
+				toDestinationVel = (destination - position) / 40;
+				rotation = {};
+				return;
+			}
+		}
+		if (attackCounter != 0)
+		{
+			attackCounter++;
+		}
+		if (attackCounter != 0 && attackCounter <= 120)
+		{
+			lockOnObj->SetPosition(destination);
+			lockOnObj->Update();
+		}
 		break;
 	}
-	case WaveRush:
+	case RollingRush:
 	{
+		if (attackCounter == 0)
+		{
+			BoxCollider* boxCollider = new BoxCollider({}, scale * 2);
+			boxCollider->SetAttribute(COLLISION_ATTR_ENEMYS);
+			boxCollider->SetObject(this);
+			boxCollider->Update();
+			//クエリーコールバックの関数オブジェクト
+			BossQueryCallBack callback(boxCollider);
+			CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ALLIES, COLLISION_ATTR_ALLIES, boxCollider);
+
+			//加速
+			fallV = max(fallV + fallAcc, fallVYMin);
+
+			position.y += fallV;
+			if (position.y - scale.y * 2.25f < 8)
+			{
+				position.y = 8 + scale.y * 2.25f;
+				attackCounter++;
+			}
+		}
+		else if (attackCounter >= 20)
+		{
+			BoxCollider* boxCollider = new BoxCollider({}, scale * 2);
+			boxCollider->SetAttribute(COLLISION_ATTR_ENEMYS);
+			boxCollider->SetObject(this);
+			boxCollider->Update();
+			//クエリーコールバックの関数オブジェクト
+			BossQueryCallBack callback(boxCollider);
+			CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ALLIES, COLLISION_ATTR_ALLIES, boxCollider);
+
+			RollingMove();
+			if (attackCounter >= 440)
+			{
+				attackCounter = 0;
+				attack = false;
+				nowState = MOVE;
+				fallV = 0;
+				return;
+			}
+			attackCounter++;
+		}
+		else
+			attackCounter++;
+			
+		rotation.z += rotVel;
+
 		break;
 	}
 	}
@@ -473,4 +1014,57 @@ void Boss::CreateConstBuff()
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(&constBuff));
+}
+
+void Boss::RollingMove()
+{
+	const float rollingVel = 0.3333f * rotVel / RotMaxVel;
+
+	switch (nowRollingDirection)
+	{
+	case LEFT:
+	{
+		position.x -= rollingVel;
+		if (position.x - scale.y * 2.25f < player->WallLeft)
+		{
+			position.x = player->WallLeft + scale.y * 2.25f;
+			nowRollingDirection = UP;
+		}
+		break;
+	}
+	case RIGHT:
+	{
+		position.x += rollingVel;
+		if (position.x + scale.x * 2.25f > player->WallRight)
+		{
+			position.x = player->WallRight - scale.x * 2.25f;
+			nowRollingDirection = DOWN;
+		}
+
+		break;
+	}
+	case UP:
+	{
+		position.y += rollingVel;
+		if (position.y + scale.y * 2.25f > 20)
+		{
+			position.y = 20 - scale.y * 2.25f;
+			nowRollingDirection = RIGHT;
+		}
+
+		break;
+	}
+	case DOWN:
+	{
+		position.y -= rollingVel;
+		if (position.y - scale.y * 2.25f < 8)
+		{
+			position.y = 8 + scale.y * 2.25f;
+			nowRollingDirection = LEFT;
+		}
+
+		break;
+	}
+	}
+
 }

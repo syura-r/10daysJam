@@ -20,9 +20,12 @@ public:
 
 	static void SetPlayer(Player* playerPtr) { Boss::player = playerPtr; }
 private:
+	void NextMovePoint();
+	void CauseAttack();//攻撃発生処理
 	void Move();
 	void Attack();
 	void CreateConstBuff();
+	void RollingMove();
 	struct ConstBuffData
 	{
 		float _Destruction; //分解度合い
@@ -33,6 +36,15 @@ private:
 		int _OnEasing;//イージングで分解するか
 	};
 
+	//進行方向
+	enum RollingDirection
+	{
+		LEFT,
+		RIGHT,
+		UP,
+		DOWN
+	};
+	RollingDirection nowRollingDirection;
 	//ボスの状態
 	enum State
 	{
@@ -40,18 +52,24 @@ private:
 		MOVE,//攻撃前後の移動
 		ATTACK,//攻撃
 	};
-	
+	Sprite* hpTex[3];
 	// 現在の状態
 	State nowState;
+	//下向き加速
+	const float fallAcc = -0.02f;
+	const float fallVYMin = -0.5f;
+
+	//回転後倒れるときの速度
+	Vector3 slipRotVel = {};
 	
 	//攻撃の種類
 	enum AttackType
 	{
-		VerticallyRush,
-		WaveRush,
+		Rocket,
+		RollingRush,
 		SideRush,
 		BirthChildren,
-		
+		NOAttack,
 	};
 	//今の攻撃の種類
 	AttackType attackType;
@@ -67,7 +85,12 @@ private:
 	Vector3 destination;
 	//攻撃前後で移動する時の速度
 	Vector3 toDestinationVel;
-	
+	//最大回転速度
+	const float RotMaxVel = 20.0f;
+	//回転速度
+	float rotVel;
+	//落下速度
+	float fallV = 0;
 	struct Alert
 	{
 		//警告用のスプライト
@@ -80,10 +103,17 @@ private:
 		//点滅用のカウンター
 		int counter;
 	};
-	Alert alerts[2];
+	Alert alert;
 	
 	//生成位置
 	Vector3 InitPos;
+
+	bool end;
+
+	Sprite* flashTex = nullptr;
+	bool drawFlash;
+	float flashAlpha;
+	int flashCounter;
 	
 	//死亡アニメーションフラグ
 	bool playBreakAnimation = false;
@@ -115,6 +145,15 @@ private:
 	//1角目と2角目のオブジェクト
 	Object* naObject = nullptr;
 	Vector3 naPos;
+
+	//ロケット攻撃時の当たり判定を視覚化するためのオブジェクト
+	Object* lockOnObj = nullptr;
+
+	//待機時に移動するためのタイマー
+	int moveCounter;
+
+	//攻撃を順番はランダムに全通り出すためのフラグ
+	bool selectAttack[4];
 	
 #ifdef _DEBUG
 	Object* hitBox = nullptr;
@@ -127,11 +166,15 @@ private:
 	int  tessellation;//ポリゴン分割度
 	bool  onEasing;//ポリゴン分割度
 
+
+	//bool onGround = false;
+	//XMVECTOR fallV = {};
+
 	//クエリーコールバッククラス
-	class EnemyQueryCallBack :public QueryCallback
+	class BossQueryCallBack :public QueryCallback
 	{
 	public:
-		EnemyQueryCallBack(Box* box) :box(box) {};
+		BossQueryCallBack(Box* box) :box(box) {};
 		//衝突時のコールバック関数
 		bool OnQueryHit(const QueryHit& info)
 		{
@@ -147,10 +190,6 @@ private:
 		//排斥による移動量(累積値)
 		XMVECTOR move = {};
 	};
-
-	bool onGround = false;
-	XMVECTOR fallV = {};
-
 
 private://静的メンバ変数
 	//プレイヤーのポインタ

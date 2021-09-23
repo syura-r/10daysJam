@@ -52,9 +52,9 @@ public://メンバ関数
 	bool Raycast(BaseCollider* collider,const Ray& ray, RaycastHit* hitinfo = nullptr, float maxDistance = D3D12_FLOAT32_MAX);
 	bool Raycast(BaseCollider* collider,const Ray& ray,unsigned short attribute, RaycastHit* hitinfo = nullptr, float maxDistance = D3D12_FLOAT32_MAX);
 	//球による衝突全検索
-	void QuerySphere(const Sphere& sphere, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff, BaseCollider* collider = nullptr);
+	void QuerySphere(const Sphere& sphere, QueryCallback* callback, unsigned short attribute1 = (unsigned short)0xffffffff, unsigned short attribute2 = (unsigned short)0xffffffff, BaseCollider* collider = nullptr);
 	//ボックスによる衝突全検索
-	void QueryBox(const Box& box, QueryCallback* callback, unsigned short attribute = (unsigned short)0xffffffff,BaseCollider * collider = nullptr);
+	void QueryBox(const Box& box, QueryCallback* callback, unsigned short attribute1 = (unsigned short)0xffffffff, unsigned short attribute2 = (unsigned short)0xffffffff,BaseCollider * collider = nullptr);
 
 private:
 	CollisionManager() = default;

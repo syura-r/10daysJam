@@ -1,4 +1,5 @@
 #pragma once
+#include "Boss.h"
 #include "Scene.h"
 #include"LightGroup.h"
 #include"Object.h"
@@ -9,6 +10,7 @@
 #include "GSShaderTestObj.h"
 #include"Grass.h"
 #include "ObjectManager.h"
+#include "Player.h"
 #include "Sprite.h"
 #include "PlayerLifeUI.h"
 #include "SceneChange.h"
@@ -25,6 +27,7 @@ public:
 	void PostDraw()override;
 private:
 	void CreateStage();
+	void CreateEnemies();
 	LightGroup* lightGroup = nullptr;
 	XMFLOAT3 pos = { 1,0,0 };
 	float coloramb[3] = { 1,1,1 };
@@ -44,5 +47,8 @@ private:
 
 	Sprite* bg02[2];
 	Vector2 bg02_position[2];
+
+	Player* player = nullptr;
+	Boss* boss = nullptr;
 };
 

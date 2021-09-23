@@ -34,6 +34,7 @@ private:
 	float positionFactor;//ポジションの変化量
 	float rotationFactor;//回転の変化量
 	int  tessellation;//ポリゴン分割度
+	Object* naObject = nullptr;
 
 	//死亡アニメーションフラグ
 	bool playBreakAnimation = false;

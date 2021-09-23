@@ -104,14 +104,16 @@ void Game::RoadAsset()
 
 		Texture::LoadTexture("line", "Line01.png");
 		Texture::LoadTexture("wind", "Wind01.png");
+
+		Texture::LoadTexture("bossHp01", "Boss_HP_01.png");
+		Texture::LoadTexture("bossHp02", "Boss_HP_03.png");
+		Texture::LoadTexture("bossHp03", "Boss_HP_02.png");
+
 		break;
 	case 2:
 		//Objモデルの読み込み
 		OBJLoader::LoadModelFile("box", "box.obj", false);
 		OBJLoader::LoadModelFile("sphere", "sphere.obj", true);
-		OBJLoader::LoadModelFile("ground", "ground.obj", false);
-		OBJLoader::LoadModelFile("plain", "plain.obj", false);
-		OBJLoader::LoadModelFile("chr_sword", "chr_sword.obj", true);
 		OBJLoader::LoadModelFile("HidariGiri_01", "HidariGiri_01.obj", true);
 		OBJLoader::LoadModelFile("HidariGiri_02", "HidariGiri_02.obj", true);
 		OBJLoader::LoadModelFile("HidariGiri_03", "HidariGiri_03.obj", true);
@@ -123,10 +125,14 @@ void Game::RoadAsset()
 		break;
 	case 3:
 		//FBXファイルの読み込み
-		FBXManager::LoadModelFile("Migi1_1", "Migi_1", true);
+		FBXManager::LoadModelFile("Migi1", "Migi_1", true);
 		//FBXManager::LoadModelFile("Migi1_2", "Migi1_2", true);
 		FBXManager::LoadModelFile("Migi2", "Migi_2", true);
 		FBXManager::LoadModelFile("zan-zo", "zan-zo", true);
+		FBXManager::LoadModelFile("Boss1", "Boss_1", true);
+		FBXManager::LoadModelFile("Boss2", "Boss_2", true); 
+		FBXManager::LoadModelFile("lockOn", "LockOn", true);
+		FBXManager::LoadModelFile("Boomerang", "Boomerang", true);
 
 		//FBXManager::LoadModelFile("HidariGiri_01", "HidariGiri_01", true);
 		//FBXManager::LoadModelFile("HidariGiri_02", "HidariGiri_02", true);

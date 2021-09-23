@@ -98,7 +98,7 @@ void ParticleEmitter::CreateShock(const Vector3& pos)
 
 		particle->parameter.scale = 1.0f;
 		particle->parameter.s_scale = 1.0f;
-		particle->parameter.e_scale = 15.0f;
+		particle->parameter.e_scale = 16.0f;
 		//üŒ`•âŠÔ
 		particle->parameter.scaleVel = (particle->parameter.e_scale - particle->parameter.s_scale) / particle->parameter.num_frame;
 

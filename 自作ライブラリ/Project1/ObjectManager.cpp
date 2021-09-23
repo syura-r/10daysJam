@@ -15,14 +15,19 @@ void ObjectManager::Add(Object* object, bool preDraw)
 
 void ObjectManager::Initialize()
 {
-	auto end_it = objects.end();
-	for (auto it = objects.begin(); it != end_it; ++it)
+	//–³—‚â‚èŽg‚¢•û•Ï‚¦‚é
+	
+	auto end_itr = objects[true].end();
+	for (auto itr = objects[true].begin(); itr != end_itr; ++itr)
 	{
-		auto end_itr = it->second.end();
-		for (auto itr = it->second.begin(); itr != end_itr; ++itr)
-		{
-			(*itr)->Initialize();
-		}
+		(*itr)->Initialize();
+	}
+	auto end_itr2 = objects[false].end();
+	for (auto itr = objects[false].begin(); itr != end_itr2; ++itr)
+	{
+		auto deletePtr = *itr;
+		itr =  objects[false].erase(itr);
+		PtrDelete(deletePtr);
 	}
 }
 
@@ -48,10 +53,14 @@ void ObjectManager::Update()
 
 void ObjectManager::PreDraw()
 {
-	auto end_itr = objects[true].end();
-	for (auto itr =  objects[true].begin(); itr != end_itr; ++itr)
+	auto end_it = objects.end();
+	for (auto it = objects.begin(); it != end_it; ++it)
 	{
-		(*itr)->Draw();
+		auto end_itr = it->second.end();
+		for (auto itr = it->second.begin(); itr != end_itr; ++itr)
+		{
+			(*itr)->Draw();
+		}
 	}
 }
 

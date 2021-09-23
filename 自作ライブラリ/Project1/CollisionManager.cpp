@@ -221,7 +221,7 @@ bool CollisionManager::Raycast(BaseCollider* collider,const Ray & ray, unsigned 
 	return result;
 }
 
-void CollisionManager::QuerySphere(const Sphere & sphere, QueryCallback * callback, unsigned short attribute,BaseCollider* collider)
+void CollisionManager::QuerySphere(const Sphere & sphere, QueryCallback * callback, unsigned short attribute1, unsigned short attribute2,BaseCollider* collider)
 {
 	assert(callback);
 
@@ -232,7 +232,7 @@ void CollisionManager::QuerySphere(const Sphere & sphere, QueryCallback * callba
 	DWORD c;
 	for (c = 0; c < collisionCount; c++) {
 		BaseCollider* col = ColVect[c];
-		if (!(col->attribute & attribute))
+		if (!(col->attribute & attribute1) && !(col->attribute & attribute2))
 			continue;
 		//BaseCollider* col = *it;
 		
@@ -314,7 +314,7 @@ void CollisionManager::QuerySphere(const Sphere & sphere, QueryCallback * callba
 
 }
 
-void CollisionManager::QueryBox(const Box& box, QueryCallback* callback, unsigned short attribute,BaseCollider* collider)
+void CollisionManager::QueryBox(const Box& box, QueryCallback* callback, unsigned short attribute1, unsigned short attribute2,BaseCollider* collider)
 {
 	assert(callback);
 
@@ -322,7 +322,7 @@ void CollisionManager::QueryBox(const Box& box, QueryCallback* callback, unsigne
 	DWORD c;
 	for (c = 0; c < collisionCount; c++) {
 		BaseCollider* col = ColVect[c];
-		if (!(col->attribute & attribute))
+		if (col->attribute != attribute1 && col->attribute != attribute2)
 			continue;
 		
 		//‹…
