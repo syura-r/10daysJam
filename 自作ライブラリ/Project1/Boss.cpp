@@ -245,9 +245,10 @@ void Boss::Update()
 		naObject->Update();
 
 		Object::Update();
+#ifdef _DEBUG
 		hitBox->SetPosition(position);
 		hitBox->Update();
-
+#endif
 	}
 	if (!appear)
 		return;

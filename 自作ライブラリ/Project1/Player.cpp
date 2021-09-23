@@ -445,6 +445,7 @@ void Player::EndFight()
 
 void Player::Draw()
 {
+#ifdef _DEBUG
 	ImGui::Begin("PlayerState");
 	ImGui::Text("onGround : %d\n", onGround);
 	ImGui::Text("position.x : %f\n", position.x);
@@ -453,6 +454,7 @@ void Player::Draw()
 	ImGui::Text("rejectVal.y : %f\n", rejectVal.y);
 
 	ImGui::End();
+#endif
 	if (startFight)
 	{
 		for (int i = 0; i < 4; i++)
