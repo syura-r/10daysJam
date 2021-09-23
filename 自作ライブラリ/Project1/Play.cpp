@@ -93,6 +93,9 @@ void Play::Initialize()
 	objectManager->Initialize();
 	player->Initialize();
 	boss->Initialize();
+
+	isGameOver = false;
+	isGameClear = false;
 	CreateEnemies();
 
 }
