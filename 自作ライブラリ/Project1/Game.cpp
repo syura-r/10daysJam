@@ -107,7 +107,7 @@ void Game::RoadAsset()
 
 		Texture::LoadTexture("bossHp01", "Boss_HP_01.png");
 		Texture::LoadTexture("bossHp02", "Boss_HP_03.png");
-		Texture::LoadTexture("bossHp03", "Boss_HP_02.png");
+		Texture::LoadTexture("bossHp03", "Boss_HP_02.png"); 
 
 		break;
 	case 2:
@@ -133,6 +133,9 @@ void Game::RoadAsset()
 		FBXManager::LoadModelFile("Boss2", "Boss_2", true); 
 		FBXManager::LoadModelFile("lockOn", "LockOn", true);
 		FBXManager::LoadModelFile("Boomerang", "Boomerang", true);
+		FBXManager::LoadModelFile("Lecture_01", "Lecture_01",true);
+		FBXManager::LoadModelFile("Lecture_02", "Lecture_02", true);
+		FBXManager::LoadModelFile("Lecture_03", "Lecture_03", true);
 
 		//FBXManager::LoadModelFile("HidariGiri_01", "HidariGiri_01", true);
 		//FBXManager::LoadModelFile("HidariGiri_02", "HidariGiri_02", true);

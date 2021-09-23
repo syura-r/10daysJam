@@ -208,6 +208,7 @@ void Enemy::Update()
 	}
 	naObject->SetPosition(position);
 	naObject->SetRotation(rotation);
+	naObject->SetColor(color);
 	naObject->Update();
 	Object::Update();
 #ifdef _DEBUG
@@ -289,7 +290,7 @@ void Enemy::OnCollision(const CollisionInfo& info)
 	default:
 		return;
 	}
-	color = { 0.5f,0,0,1 };
+	color = { 1.0f,0,0,1 };
 	hp -= damage;
 	if (hp <= 0)
 	{

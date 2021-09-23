@@ -408,7 +408,7 @@ void Boss::OnCollision(const CollisionInfo& info)
 		return;
 	}
 
-	color = { 0.5f,0,0,1 };
+	color = { 1.0f,0,0,1 };
 	naObject->SetColor(color);
 	hp -= damage;
 	if (hp <= 0)

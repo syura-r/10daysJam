@@ -37,11 +37,25 @@ Play::Play()
 	Enemy::SetPlayer(player);
 	Boss::SetPlayer(player);
 	CreateStage();
-
 	sceneCh = new SceneChange();
 
 	playbg = new PlayBackGround();
 	playbg->SetPlayer(player);
+
+	for(int i = 0;i<3;i++)
+	{
+		lectureTex[i] = new Object();
+		std::string modelName = "Lecture_0" + std::to_string(i + 1);
+		lectureTex[i]->Create(FBXManager::GetModel(modelName));
+		lectureTex[i]->SetScale({3,3,3});
+	}
+	lectureTex[0]->SetPosition({ 5,8,1 });
+	lectureTex[1]->SetPosition({ 15,8,1 });
+	lectureTex[2]->SetPosition({ 25,8,1 });
+	for (int i = 0; i < 3; i++)
+	{
+		lectureTex[i]->Update();
+	}
 }
 
 
@@ -56,6 +70,11 @@ Play::~Play()
 	//PtrDelete(plife);
 	PtrDelete(sceneCh);
 	PtrDelete(playbg);
+	for (int i = 0; i < 3; i++)
+	{
+		PtrDelete(lectureTex[i]);
+	}
+
 }
 
 void Play::Initialize()
@@ -74,6 +93,8 @@ void Play::Initialize()
 	objectManager->Initialize();
 	player->Initialize();
 	boss->Initialize();
+	CreateEnemies();
+
 }
 
 void Play::Update()
@@ -86,7 +107,7 @@ void Play::Update()
 	boss->Update();
 	if(boss->IsDead())
 		IsGameClear();
-
+	
 	collisionManager->CheckAllCollisions();
 
 	//ƒV[ƒ“Ø‚è‘Ö‚¦
@@ -137,7 +158,10 @@ void Play::PreDraw()
 		Object3D::GetLightCamera()->SetLightDir({ lightDir[0],lightDir[1] ,lightDir[2] });
 	}
 
-	playbg->Draw();
+
+
+	playbg->Draw();		
+
 	//objectManager->PostDraw();
 
 }
@@ -145,6 +169,10 @@ void Play::PreDraw()
 void Play::PostDraw()
 {
 	//plife->Draw();
+	lectureTex[0]->CustomDraw(true);
+	lectureTex[1]->CustomDraw(true);
+	lectureTex[2]->CustomDraw(true);
+
 	player->Draw();
 	boss->Draw();
 	sceneCh->Draw({ 0,0,0,1 });
@@ -161,9 +189,9 @@ void Play::CreateStage()
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -198,5 +226,8 @@ void Play::CreateEnemies()
 {
 	Enemy* enemy = new Enemy({ 20,9,0 });
 	objectManager->Add(enemy,false);
-
+	Enemy* enemy2 = new Enemy({ 35,9,0 });
+	objectManager->Add(enemy2, false);
+	Enemy* enemy3 = new Enemy({ 20,14,0 });
+	objectManager->Add(enemy3, false);
 }

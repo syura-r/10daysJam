@@ -51,6 +51,9 @@ private:
 
 	Player* player = nullptr;
 	Boss* boss = nullptr;
+
+	Object* lectureTex[3];
+	
 	static DebugCamera* camera;
 	static bool isGameClear;
 	static bool isGameOver;
