@@ -1,4 +1,6 @@
 #include "SelectUI.h"
+
+#include "Audio.h"
 #include "PtrDelete.h"
 #include "Input.h"
 
@@ -54,11 +56,13 @@ void SelectUI::Update()
 	//è„ëIë
 	if (Input::TriggerKey(DIK_UP) || Input::TriggerKey(DIK_W) || Input::CheckPadLStickUp() || Input::CheckPadButton(XINPUT_GAMEPAD_DPAD_UP))
 	{
+		Audio::PlayWave("select");
 		selectNum = 0;
 	}
 	//â∫ëIë
 	if (Input::TriggerKey(DIK_DOWN) || Input::TriggerKey(DIK_S) || Input::CheckPadLStickDown() || Input::CheckPadButton(XINPUT_GAMEPAD_DPAD_DOWN))
 	{
+		Audio::PlayWave("select");
 		selectNum = 1;
 	}
 

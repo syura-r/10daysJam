@@ -1,5 +1,6 @@
 #include "Enemy.h"
 
+#include "Audio.h"
 #include "BoxCollider.h"
 #include "CollisionAttribute.h"
 #include "FBXManager.h"
@@ -300,6 +301,7 @@ void Enemy::OnCollision(const CollisionInfo& info)
 		Object::Update();
 	}
 	isDamage = true;
+	Audio::PlayWave("hit2", 0.6f);
 }
 
 void Enemy::CreateConstBuff()

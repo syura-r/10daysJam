@@ -1,4 +1,6 @@
 #include "Title.h"
+
+#include "Audio.h"
 #include "PtrDelete.h"
 #include "Easing.h"
 
@@ -53,6 +55,10 @@ Title::~Title()
 
 void Title::Initialize()
 {
+	Audio::StopWave("endingBGM");
+	Audio::PlayWave("titleBGM", 0.4f, true);
+	Audio::StopWave("decision");
+
 	isEnd = false;
 	isAllEnd = false;
 
@@ -105,6 +111,7 @@ void Title::Update()
 		sceneCh->GetToSmallEnd() &&
 		!sceneCh->GetToBig())
 	{
+		Audio::PlayWave("decision", 1, true, 0);
 		if (selectUI->GetSelectNum() == 0)
 		{
 			//‚Í‚¶‚ß‚é‚Ìˆ—
@@ -117,7 +124,6 @@ void Title::Update()
 		}
 	}
 	sceneCh->Update();
-
 	if (sceneCh->GetToBigEnd())
 	{
 		ShutDown();

@@ -79,6 +79,10 @@ Play::~Play()
 
 void Play::Initialize()
 {
+	Audio::StopWave("gameOver");
+	Audio::StopWave("decision");
+	Audio::StopWave("titleBGM");
+	Audio::PlayWave("playBGM", 1.0f, true);
 	isEnd = false;
 	isAllEnd = false;
 
@@ -97,7 +101,6 @@ void Play::Initialize()
 	isGameOver = false;
 	isGameClear = false;
 	CreateEnemies();
-
 }
 
 void Play::Update()

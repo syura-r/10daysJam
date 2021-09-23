@@ -1,4 +1,6 @@
 #include "Ending.h"
+
+#include "Audio.h"
 #include "PtrDelete.h"
 
 Ending::Ending()
@@ -17,6 +19,7 @@ Ending::~Ending()
 
 void Ending::Initialize()
 {
+
 	isEnd = false;
 	isAllEnd = false;
 	sceneCh->Initialize();

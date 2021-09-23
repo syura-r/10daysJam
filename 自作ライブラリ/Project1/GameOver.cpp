@@ -1,4 +1,6 @@
 #include "GameOver.h"
+
+#include "Audio.h"
 #include "PtrDelete.h"
 
 GameOver::GameOver()
@@ -19,6 +21,9 @@ GameOver::~GameOver()
 
 void GameOver::Initialize()
 {
+	Audio::StopWave("playBGM");
+	Audio::StopWave("bossBGM");
+	Audio::PlayWave("gameOver",1,true,1);
 	isEnd = false;
 	isAllEnd = false;
 	sceneCh->Initialize();
@@ -31,6 +36,7 @@ void GameOver::Update()
 		sceneCh->GetToSmallEnd() &&
 		!sceneCh->GetToBig())
 	{
+		Audio::PlayWave("decision", 1, true, 0);
 		if (selectUI->GetSelectNum() == 0)
 		{
 			//‚Í‚¶‚ß‚©‚ç

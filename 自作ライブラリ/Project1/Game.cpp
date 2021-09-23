@@ -160,7 +160,20 @@ void Game::RoadAsset()
 
 		break;
 	case 5:
-
+		Audio::LoadFile("sword1", "1,２段目.wav");
+		Audio::LoadFile("sword2", "3段目、空中,,ブーメラン？.wav");
+		Audio::LoadFile("hit1", "hit.wav");
+		Audio::LoadFile("hit2", "hit2.wav");
+		Audio::LoadFile("playBGM", "WindBGM.wav");
+		Audio::LoadFile("gameOver", "ゲームオーバー.wav");
+		Audio::LoadFile("jump", "ジャンプ？.wav");
+		Audio::LoadFile("titleBGM", "タイトルBGM.wav");
+		Audio::LoadFile("endingBGM", "ドカベン.wav");
+		Audio::LoadFile("bossBGM", "ボス戦BGM.wav");
+		Audio::LoadFile("decision", "決定とか.wav");
+		Audio::LoadFile("slow", "左斬り開始.wav");
+		Audio::LoadFile("finish", "左斬り終わりに使えそう.wav");
+		Audio::LoadFile("select", "選択.wav");
 
 	default:
 		loadAssetFinish = true;

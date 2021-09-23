@@ -1,5 +1,6 @@
 #include"Boss.h"
 
+#include "Audio.h"
 #include "BoxCollider.h"
 #include "CollisionAttribute.h"
 #include "FBXManager.h"
@@ -213,6 +214,8 @@ void Boss::Update()
 				appear = true;
 				player->StartFight();
 				onEasing = false;
+				Audio::StopWave("playBGM");
+				Audio::PlayWave("bossBGM", 0.4f, true);
 			}
 			else
 			{
@@ -421,6 +424,7 @@ void Boss::OnCollision(const CollisionInfo& info)
 	}
 	ParticleEmitter::CreateRiseEffects(effectPos, { 1,0,0 });
 	isDamage = true;
+	Audio::PlayWave("hit2", 0.6f);
 
 }
 
@@ -826,6 +830,7 @@ void Boss::Attack()
 				Vector3 enemyVel = { 0,0.3f,0 };
 				enemyVel.x = rand() % 601 * 0.001f - 0.3f;
 				Enemy* enemy = new Enemy(enemyPosition, enemyVel);
+				enemy->Update();
 				ObjectManager::GetInstance()->Add(enemy,false);
 			}
 		}

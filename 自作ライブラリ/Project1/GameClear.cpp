@@ -1,4 +1,6 @@
 #include "GameClear.h"
+
+#include "Audio.h"
 #include "PtrDelete.h"
 #include "OBJLoader.h"
 
@@ -25,6 +27,9 @@ GameClear::~GameClear()
 
 void GameClear::Initialize()
 {
+	Audio::StopWave("bossBGM");
+	Audio::PlayWave("endingBGM", 0.3f, true, 1);
+
 	isEnd = false;
 	isAllEnd = false;
 	sceneCh->Initialize();
@@ -44,6 +49,7 @@ void GameClear::Update()
 		sceneCh->GetToSmallEnd() &&
 		!sceneCh->GetToBig())
 	{
+		Audio::PlayWave("decision", 1, true, 0);
 		//ƒ^ƒCƒgƒ‹‚É–ß‚é
 		next = SCENE::Title;
 		sceneCh->ChangeStart();

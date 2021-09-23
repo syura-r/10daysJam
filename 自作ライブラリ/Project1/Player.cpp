@@ -1,5 +1,6 @@
 #include"Player.h"
 
+#include "Audio.h"
 #include "BoxCollider.h"
 #include "Collision.h"
 #include"OBJLoader.h"
@@ -159,6 +160,9 @@ void Player::Initialize()
 	endCounter = 0;
 	finish = false;
 	cameramove = true;
+
+	rotation.y = 0;
+	naObject->SetRotation(rotation);
 }
 
 void Player::Update()
@@ -221,7 +225,7 @@ void Player::Update()
 		onGround = false;
 		const float jumpVYFist = 0.5f;//ジャンプ時上向き初速
 		fallV = { 0,jumpVYFist,0,0 };
-
+		Audio::PlayWave("jump");
 		//方向転換アニメーション時以外はアニメーションを再生
 		if (nowAnimationState != Turn && nowAttackState != Boomerang)
 		{
@@ -420,6 +424,7 @@ void Player::OnCollision(const CollisionInfo & info)
 	}
 	damage = true;
 	invCounter = 0;
+	Audio::PlayWave("hit1", 0.6f);
 }
 void Player::EndFight()
 {
@@ -435,6 +440,7 @@ void Player::EndFight()
 	FBXManager::GetModel("SwoedMode_1")->SetAnimationFrame(0, 30);
 	FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(0, 30);
 	FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(0, 30);
+	Audio::PlayWave("slow", 0.6f);
 }
 
 void Player::Draw()
@@ -519,7 +525,7 @@ void Player::Attack()
 					rotation.y = 180;
 				else
 					rotation.y = 0;
-
+				Audio::PlayWave("sword1");
 			}//-------------------------------------------------------------------------------------
 			//----------------------------ジャンプ攻撃の発生処理------------------------------------
 			else
@@ -531,6 +537,7 @@ void Player::Attack()
 				FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(101, 130);
 				FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(101, 130);
 				FBXManager::GetModel("zan-zo")->SetAnimationFrame(105, 130);
+				Audio::PlayWave("sword2");
 
 			}//-------------------------------------------------------------------------------------
 		}
@@ -626,6 +633,7 @@ void Player::Attack()
 						FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(31, 60);
 						FBXManager::GetModel("zan-zo")->SetAnimationFrame(43, 60);
 						meleeAttackStage = 2;
+						Audio::PlayWave("sword1");
 					}
 					else
 					{
@@ -678,6 +686,7 @@ void Player::Attack()
 						FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(61, 100);
 						FBXManager::GetModel("zan-zo")->SetAnimationFrame(70, 100);
 						meleeAttackStage = 3;
+						Audio::PlayWave("sword2");
 					}
 					else
 					{
@@ -754,6 +763,7 @@ void Player::Attack()
 				FBXManager::GetModel("Hidari1")->SetAnimationFrame(200, 210);
 				boomerang = true;
 				boomerangEffect->SetRotation(rotation);
+				Audio::PlayWave("sword2",1.0f);
 			}
 			if (boomerang && boomerangCounter >= BoomerangTime * 4)
 			{
@@ -764,7 +774,6 @@ void Player::Attack()
 				FBXManager::GetModel("Hidari1")->SetAnimationFrame(221, 300);
 				FBXManager::GetModel("Hidari2")->SetAnimationFrame(221, 300);
 				naObject->SetRotation(rotation);
-
 			}
 			break;
 		}//----------------------------------------------------------------------------------------------------------------------
@@ -830,6 +839,7 @@ void Player::Attack()
 					if (nowAnimationTime == drawFrame[i])
 					{
 						drawHidariGiri[i] = true;
+						Audio::PlayWave("hit2", 0.6f);
 					}
 				}
 			}
@@ -838,8 +848,12 @@ void Player::Attack()
 
 			if (!FBXManager::GetModel("SwoedMode_3")->PlayAnimation())
 			{
-				velocity = (Vector3{ 55, 8.45f, 0 } - position) / 30;
-				endCounter++;
+				if (endCounter == 11)
+				{
+					velocity = (Vector3{ 55, 8.45f, 0 } - position) / 30;
+					endCounter++;
+					Audio::PlayWave("finish", 0.6f);
+				}
 			}
 
 			break;
@@ -1068,6 +1082,7 @@ void Player::EndMovie()
 		FBXManager::GetModel("SwoedMode_1")->SetAnimationFrame(131, 240);
 		FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(131, 240);
 		FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(131, 240);
+		endCounter = 11;
 	}
 	itiObject->SetRotation(rotation);
 	noObject->SetRotation(rotation);
@@ -1079,7 +1094,7 @@ void Player::EndMovie()
 	noObject->Update();
 	eObject->Update();
 
-	if (endCounter > 12)
+	if (endCounter >= 12)
 	{
 		if (position.x <= 55 + 0.01f && position.x >= 55 - 0.01f)
 		{
@@ -1088,6 +1103,7 @@ void Player::EndMovie()
 				drawHidariGiri[i] = false;
 			}
 			finish = true;
+			return;
 		}
 
 		position += velocity;
