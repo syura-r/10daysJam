@@ -1,4 +1,5 @@
-#include "Boss.h"
+#include"Boss.h"
+
 #include "BoxCollider.h"
 #include "CollisionAttribute.h"
 #include "FBXManager.h"
@@ -12,7 +13,6 @@
 #include "Enemy.h"
 #include "ObjectManager.h"
 #include "ParticleEmitter.h"
-#include "Play.h"
 #define SIZE  1.0f
 
 Player* Boss::player = nullptr;
@@ -418,11 +418,11 @@ void Boss::OnCollision(const CollisionInfo& info)
 		hp = 0;
 		player->EndFight();
 	}
-		ParticleEmitter::CreateRiseEffects(effectPos, { 1,0,0 });
-		Play::IsGameClear();
-	}
+	ParticleEmitter::CreateRiseEffects(effectPos, { 1,0,0 });
 	isDamage = true;
+
 }
+
 
 void Boss::NextMovePoint()
 {

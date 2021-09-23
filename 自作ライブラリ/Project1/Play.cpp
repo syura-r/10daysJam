@@ -53,7 +53,7 @@ Play::~Play()
 
 	PtrDelete(player);
 	PtrDelete(boss);
-	PtrDelete(plife);
+	//PtrDelete(plife);
 	PtrDelete(sceneCh);
 	PtrDelete(playbg);
 }
@@ -71,7 +71,7 @@ void Play::Initialize()
 	sceneChangeLag = 0;
 
 	playbg->Initialize();
-	bjectManager->Initialize();
+	objectManager->Initialize();
 	player->Initialize();
 	boss->Initialize();
 }
@@ -84,6 +84,9 @@ void Play::Update()
 	objectManager->Update();
 	player->Update();
 	boss->Update();
+	if(boss->IsDead())
+		IsGameClear();
+
 	collisionManager->CheckAllCollisions();
 
 	//ƒV[ƒ“Ø‚è‘Ö‚¦
@@ -141,7 +144,7 @@ void Play::PreDraw()
 
 void Play::PostDraw()
 {
-	plife->Draw();
+	//plife->Draw();
 	player->Draw();
 	boss->Draw();
 	sceneCh->Draw({ 0,0,0,1 });

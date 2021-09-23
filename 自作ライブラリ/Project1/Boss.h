@@ -1,6 +1,4 @@
 #pragma once
-#pragma once
-#include "Boss.h"
 #include "CollisionPrimitive.h"
 #include "Object.h"
 #include "QueryCallback.h"

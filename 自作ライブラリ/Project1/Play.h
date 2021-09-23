@@ -1,5 +1,4 @@
 #pragma once
-#include "Boss.h"
 #include "Scene.h"
 #include"LightGroup.h"
 #include"Object.h"
@@ -15,7 +14,7 @@
 #include "SceneChange.h"
 #include "PlayBackGround.h"
 #include "DebugCamera.h"
-
+class Boss;
 class TouchAbleObject;
 class Play :public Scene
 {
