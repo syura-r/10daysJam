@@ -23,7 +23,7 @@ void GameOver::Initialize()
 {
 	Audio::StopWave("playBGM");
 	Audio::StopWave("bossBGM");
-	Audio::PlayWave("gameOver",1,true,1);
+	Audio::PlayWave("gameOver",0.5f,true,0);
 	isEnd = false;
 	isAllEnd = false;
 	sceneCh->Initialize();
@@ -36,7 +36,7 @@ void GameOver::Update()
 		sceneCh->GetToSmallEnd() &&
 		!sceneCh->GetToBig())
 	{
-		Audio::PlayWave("decision", 1, true, 0);
+		Audio::PlayWave("decision", 0.5f, true, 0);
 		if (selectUI->GetSelectNum() == 0)
 		{
 			//‚Í‚¶‚ß‚©‚ç

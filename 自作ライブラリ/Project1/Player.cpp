@@ -24,6 +24,13 @@ Player::Player()
 	Create(FBXManager::GetModel("Hidari2"));
 	naObject = new Object();
 	naObject->Create(FBXManager::GetModel("Hidari1"));
+	noObject = new Object();
+	noObject->Create(FBXManager::GetModel("SwoedMode_2"));
+	itiObject = new Object();
+	itiObject->Create(FBXManager::GetModel("SwoedMode_1"));
+	eObject = new Object();
+	eObject->Create(FBXManager::GetModel("SwoedMode_3"));
+
 	Initialize();
 
 	BoxCollider* boxCollider = new BoxCollider({ 0,2.25f * scale.y,0,0 }, scale * 2);
@@ -31,18 +38,12 @@ Player::Player()
 	collider->SetAttribute(COLLISION_ATTR_ALLIES);
 	collider->SetMove(true);
 
-	itiObject = new Object();
-	itiObject->Create(FBXManager::GetModel("SwoedMode_1"));
 	itiObject->SetScale(scale);
 	itiObject->SetColor(color);
 	
-	noObject = new Object();
-	noObject->Create(FBXManager::GetModel("SwoedMode_2"));
 	noObject->SetScale(scale);
 	noObject->SetColor(color);
 
-	eObject = new Object();
-	eObject->Create(FBXManager::GetModel("SwoedMode_3"));
 	eObject->SetScale(scale);
 	eObject->SetColor(color);
 
@@ -162,7 +163,22 @@ void Player::Initialize()
 	cameramove = true;
 
 	rotation.y = 0;
+	
 	naObject->SetRotation(rotation);
+	itiObject->SetRotation(rotation);
+	noObject->SetRotation(rotation);
+	eObject->SetRotation(rotation);
+
+	itiObject->SetPosition(position);
+	noObject->SetPosition(position);
+	eObject->SetPosition(position);
+	itiObject->SetColor(color);
+	noObject->SetColor(color);
+	eObject->SetColor(color);
+
+	itiObject->Update();
+	noObject->Update();
+	eObject->Update();
 }
 
 void Player::Update()
@@ -225,7 +241,7 @@ void Player::Update()
 		onGround = false;
 		const float jumpVYFist = 0.5f;//ジャンプ時上向き初速
 		fallV = { 0,jumpVYFist,0,0 };
-		Audio::PlayWave("jump");
+		Audio::PlayWave("jump",0.5f);
 		//方向転換アニメーション時以外はアニメーションを再生
 		if (nowAnimationState != Turn && nowAttackState != Boomerang)
 		{
@@ -424,10 +440,13 @@ void Player::OnCollision(const CollisionInfo & info)
 	}
 	damage = true;
 	invCounter = 0;
-	Audio::PlayWave("hit1", 0.6f);
+	Audio::PlayWave("hit1", 0.3f);
 }
 void Player::EndFight()
 {
+	boomerang = false;
+	attackFrag = false;
+	endCounter = 0;
 	startFight = false;
 	notMove = true;
 	cameramove = false;
@@ -440,7 +459,11 @@ void Player::EndFight()
 	FBXManager::GetModel("SwoedMode_1")->SetAnimationFrame(0, 30);
 	FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(0, 30);
 	FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(0, 30);
-	Audio::PlayWave("slow", 0.6f);
+	Audio::PlayWave("slow", 0.3f);
+	itiObject->SetColor(color);
+	noObject->SetColor(color);
+	eObject->SetColor(color);
+
 }
 
 void Player::Draw()
@@ -465,7 +488,7 @@ void Player::Draw()
 		}
 	}
 	DirectXLib::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	if(nowAnimationState == Attacks && nowAttackState !=Boomerang)
+	if(nowAnimationState == Attacks && nowAttackState != Boomerang)
 	{
 		itiObject->CustomDraw(true);
 		noObject->CustomDraw(true);
@@ -474,8 +497,6 @@ void Player::Draw()
 			zanzoObject->CustomDraw(true);
 		if(nowAttackState == ULT)
 		{
-			//hidariGiri[4]->CustomDraw(false, false);
-
 			for (int i = 0; i < 5; i++)
 			{
 				if (drawHidariGiri[i])
@@ -527,7 +548,7 @@ void Player::Attack()
 					rotation.y = 180;
 				else
 					rotation.y = 0;
-				Audio::PlayWave("sword1");
+				Audio::PlayWave("sword1",0.5f);
 			}//-------------------------------------------------------------------------------------
 			//----------------------------ジャンプ攻撃の発生処理------------------------------------
 			else
@@ -539,7 +560,7 @@ void Player::Attack()
 				FBXManager::GetModel("SwoedMode_2")->SetAnimationFrame(101, 130);
 				FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(101, 130);
 				FBXManager::GetModel("zan-zo")->SetAnimationFrame(105, 130);
-				Audio::PlayWave("sword2");
+				Audio::PlayWave("sword2",0.5f);
 
 			}//-------------------------------------------------------------------------------------
 		}
@@ -581,7 +602,7 @@ void Player::Attack()
 		//	FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(131, 240);
 
 		//}
-		
+
 		//------------------------------------------------------------------------------------------
 	}
 //----------------------------------------------------------------------------------------------------------------------
@@ -635,7 +656,7 @@ void Player::Attack()
 						FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(31, 60);
 						FBXManager::GetModel("zan-zo")->SetAnimationFrame(43, 60);
 						meleeAttackStage = 2;
-						Audio::PlayWave("sword1");
+						Audio::PlayWave("sword1",0.5f);
 					}
 					else
 					{
@@ -688,7 +709,7 @@ void Player::Attack()
 						FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(61, 100);
 						FBXManager::GetModel("zan-zo")->SetAnimationFrame(70, 100);
 						meleeAttackStage = 3;
-						Audio::PlayWave("sword2");
+						Audio::PlayWave("sword2",0.5f);
 					}
 					else
 					{
@@ -765,7 +786,7 @@ void Player::Attack()
 				FBXManager::GetModel("Hidari1")->SetAnimationFrame(200, 210);
 				boomerang = true;
 				boomerangEffect->SetRotation(rotation);
-				Audio::PlayWave("sword2",1.0f);
+				Audio::PlayWave("sword2",0.5f);
 			}
 			if (boomerang && boomerangCounter >= BoomerangTime * 4)
 			{
@@ -822,27 +843,20 @@ void Player::Attack()
 		case ULT://-------------------------------------------------左斬り-------------------------------------------------------
 		{
 			auto nowAnimationTime = FBXManager::GetModel("SwoedMode_3")->GetCurrentAnimationTime();
-			FbxTime beginTime;
-			FbxTime endTime;
-			beginTime.SetTime(0, 0, 0, 141, 0, FbxTime::EMode::eFrames60);
-			endTime.SetTime(0, 0, 0, 221, 0, FbxTime::EMode::eFrames60);
 
-			if (nowAnimationTime >= beginTime && nowAnimationTime <= endTime)
+			for (int i = 0; i < 5; i++)
 			{
-				for (int i = 0; i < 5; i++)
-				{
-					hidariGiri[i]->SetRotation(rotation);
-					float offset = 0.7f;
-					if (!moveRight)
-						offset *= -1;
-					hidariGiri[i]->SetPosition(position + Vector3{ offset, 2.25f * scale.y, 0.02f - i * 0.01f });
-					hidariGiri[i]->Update();
+				hidariGiri[i]->SetRotation(rotation);
+				float offset = 0.7f;
+				if (!moveRight)
+					offset *= -1;
+				hidariGiri[i]->SetPosition(position + Vector3{ offset, 2.25f * scale.y, 0.02f - i * 0.01f });
+				hidariGiri[i]->Update();
 
-					if (nowAnimationTime == drawFrame[i])
-					{
-						drawHidariGiri[i] = true;
-						Audio::PlayWave("hit2", 0.6f);
-					}
+				if (nowAnimationTime == drawFrame[i])
+				{
+					drawHidariGiri[i] = true;
+					Audio::PlayWave("hit2", 0.3f);
 				}
 			}
 			FBXManager::GetModel("SwoedMode_1")->PlayAnimation();
@@ -852,9 +866,11 @@ void Player::Attack()
 			{
 				if (endCounter == 11)
 				{
+					attackFrag = false;
+					nowAnimationState = Wait;
 					velocity = (Vector3{ 55, 8.45f, 0 } - position) / 30;
 					endCounter++;
-					Audio::PlayWave("finish", 0.6f);
+					Audio::PlayWave("finish", 0.3f);
 				}
 			}
 
@@ -1061,6 +1077,15 @@ void Player::Move()
 
 void Player::EndMovie()
 {
+	itiObject->SetRotation(rotation);
+	noObject->SetRotation(rotation);
+	eObject->SetRotation(rotation);
+	itiObject->SetPosition(position);
+	noObject->SetPosition(position);
+	eObject->SetPosition(position);
+	itiObject->Update();
+	noObject->Update();
+	eObject->Update();
 
 	if (endCounter == 0&&(position.x > 49 + 0.1f || position.x < 49 - 0.1f))
 	{
@@ -1074,8 +1099,6 @@ void Player::EndMovie()
 		return;
 	}
 	
-	if (endCounter < 11)
-		endCounter++;
 	if (endCounter == 10)
 	{
 		nowAttackState = ULT;
@@ -1086,15 +1109,8 @@ void Player::EndMovie()
 		FBXManager::GetModel("SwoedMode_3")->SetAnimationFrame(131, 240);
 		endCounter = 11;
 	}
-	itiObject->SetRotation(rotation);
-	noObject->SetRotation(rotation);
-	eObject->SetRotation(rotation);
-	itiObject->SetPosition(position);
-	noObject->SetPosition(position);
-	eObject->SetPosition(position);
-	itiObject->Update();
-	noObject->Update();
-	eObject->Update();
+	if (endCounter < 11)
+		endCounter++;
 
 	if (endCounter >= 12)
 	{

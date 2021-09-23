@@ -87,7 +87,7 @@ void Audio::PlayWave(const std::string& keyName, const float& soundVol, bool loo
 		delete[] soundFiles[keyName].buff;
 		return;
 	}
-	pSourceVoice->SetVolume(soundVol);
+	pSourceVoice->SetVolume(soundVol * 0.5f);
 	//再生する波形データの設定
 	XAUDIO2_BUFFER buf{};
 	buf.pAudioData = (BYTE*)soundFiles[keyName].buff;

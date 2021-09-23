@@ -80,7 +80,8 @@ void Boss::Initialize()
 	tessellation = 1;
 	color = { 0,0,0,1 };
 	scale = { 0.7f,0.7f,0.7f };
-
+	rotation = {};
+	naObject->SetRotation(rotation);
 	hp = MaxHP;
 	damageCounter = 0;
 	naPos = position;
@@ -114,6 +115,7 @@ void Boss::Initialize()
 	flashAlpha = 0;
 	flashCounter = 0;
 	dead = false;
+	playBreakAnimation = false;
 }
 
 void Boss::Update()
@@ -215,7 +217,7 @@ void Boss::Update()
 				player->StartFight();
 				onEasing = false;
 				Audio::StopWave("playBGM");
-				Audio::PlayWave("bossBGM", 0.4f, true);
+				Audio::PlayWave("bossBGM", 0.2f, true);
 			}
 			else
 			{
@@ -425,7 +427,7 @@ void Boss::OnCollision(const CollisionInfo& info)
 	}
 	ParticleEmitter::CreateRiseEffects(effectPos, { 1,0,0 });
 	isDamage = true;
-	Audio::PlayWave("hit2", 0.6f);
+	Audio::PlayWave("hit2", 0.3f);
 
 }
 
@@ -850,7 +852,6 @@ void Boss::Attack()
 			//クエリーコールバックの関数オブジェクト
 			BossQueryCallBack callback(boxCollider);
 			CollisionManager::GetInstance()->QueryBox(*boxCollider, &callback, COLLISION_ATTR_ALLIES, COLLISION_ATTR_ALLIES, boxCollider);
-
 			//rotation.z -= rotVel;
 		}
 		else if(attackCounter == 150)

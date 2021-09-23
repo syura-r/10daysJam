@@ -56,7 +56,7 @@ Title::~Title()
 void Title::Initialize()
 {
 	Audio::StopWave("endingBGM");
-	Audio::PlayWave("titleBGM", 0.4f, true);
+	Audio::PlayWave("titleBGM", 0.2f, true);
 	Audio::StopWave("decision");
 
 	isEnd = false;
@@ -111,7 +111,7 @@ void Title::Update()
 		sceneCh->GetToSmallEnd() &&
 		!sceneCh->GetToBig())
 	{
-		Audio::PlayWave("decision", 1, true, 0);
+		Audio::PlayWave("decision", 0.5f, true, 0);
 		if (selectUI->GetSelectNum() == 0)
 		{
 			//‚Í‚¶‚ß‚é‚Ìˆ—

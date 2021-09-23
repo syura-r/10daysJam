@@ -82,7 +82,7 @@ void Play::Initialize()
 	Audio::StopWave("gameOver");
 	Audio::StopWave("decision");
 	Audio::StopWave("titleBGM");
-	Audio::PlayWave("playBGM", 1.0f, true);
+	Audio::PlayWave("playBGM", 0.5f, true);
 	isEnd = false;
 	isAllEnd = false;
 
@@ -153,6 +153,7 @@ void Play::Update()
 
 void Play::PreDraw()
 {
+#ifdef _DEBUG
 	if (!Object3D::GetDrawShadow())
 	{
 		ImGui::Begin("Light");
@@ -163,7 +164,7 @@ void Play::PreDraw()
 		ImGui::End();
 		Object3D::GetLightCamera()->SetLightDir({ lightDir[0],lightDir[1] ,lightDir[2] });
 	}
-
+#endif
 
 
 	playbg->Draw();		

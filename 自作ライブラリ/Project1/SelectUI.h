@@ -51,6 +51,7 @@ private:
 
 	//‘I‘ğ”Ô†
 	int selectNum;
+	int preSelectNum;
 	//‘I‘ğ€–Ú
 	Select* select1;
 	Select* select2;

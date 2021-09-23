@@ -301,7 +301,7 @@ void Enemy::OnCollision(const CollisionInfo& info)
 		Object::Update();
 	}
 	isDamage = true;
-	Audio::PlayWave("hit2", 0.6f);
+	Audio::PlayWave("hit2", 0.3f);
 }
 
 void Enemy::CreateConstBuff()

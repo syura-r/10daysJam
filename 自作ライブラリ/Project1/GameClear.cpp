@@ -28,7 +28,7 @@ GameClear::~GameClear()
 void GameClear::Initialize()
 {
 	Audio::StopWave("bossBGM");
-	Audio::PlayWave("endingBGM", 0.3f, true, 1);
+	Audio::PlayWave("endingBGM", 0.15f, true, 0);
 
 	isEnd = false;
 	isAllEnd = false;
@@ -49,7 +49,7 @@ void GameClear::Update()
 		sceneCh->GetToSmallEnd() &&
 		!sceneCh->GetToBig())
 	{
-		Audio::PlayWave("decision", 1, true, 0);
+		Audio::PlayWave("decision", 0.5f, true, 0);
 		//ƒ^ƒCƒgƒ‹‚É–ß‚é
 		next = SCENE::Title;
 		sceneCh->ChangeStart();

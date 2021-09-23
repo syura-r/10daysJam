@@ -24,6 +24,7 @@ void SelectUI::Initialize(State state)
 {
 	selectNum = 0;
 	SetState(state);
+	preSelectNum = 0;
 }
 
 void SelectUI::Update()
@@ -33,7 +34,7 @@ void SelectUI::Update()
 	XMFLOAT2 notSelectScale = { 0.8f,0.8f };
 	XMFLOAT4 selectColor = { 1,1,1,1 };
 	XMFLOAT4 notSelectColor = { 0.5f,0.5f,0.5f,1.0f };
-
+	preSelectNum = selectNum;
 	if (selectNum == 0)
 	{
 		//ëÂÇ´Ç≥
@@ -56,13 +57,11 @@ void SelectUI::Update()
 	//è„ëIë
 	if (Input::TriggerKey(DIK_UP) || Input::TriggerKey(DIK_W) || Input::CheckPadLStickUp() || Input::CheckPadButton(XINPUT_GAMEPAD_DPAD_UP))
 	{
-		Audio::PlayWave("select");
 		selectNum = 0;
 	}
 	//â∫ëIë
 	if (Input::TriggerKey(DIK_DOWN) || Input::TriggerKey(DIK_S) || Input::CheckPadLStickDown() || Input::CheckPadButton(XINPUT_GAMEPAD_DPAD_DOWN))
 	{
-		Audio::PlayWave("select");
 		selectNum = 1;
 	}
 
@@ -70,6 +69,11 @@ void SelectUI::Update()
 	if (state == State::gameclear)
 	{
 		selectNum = 0;
+	}
+
+	if(selectNum != preSelectNum)
+	{
+		Audio::PlayWave("select",0.5f);
 	}
 }
 

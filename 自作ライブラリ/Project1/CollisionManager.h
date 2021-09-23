@@ -17,27 +17,7 @@ public://ƒƒ“ƒoŠÖ”
 
 	inline void RemoveCollider(BaseCollider* collider)
 	{
-		auto end_it = spSOFTAry.end();
-		for (auto it = spSOFTAry.begin(); it != end_it; ++it)
-		{
-			if ((*it)->pObject == collider)
-			{
-				(*it)->Remove();
-			}
-		}
-
-		//for(auto it = colliders.begin();it != colliders.end();)
-		//{
-		//	if (*it == collider)
-		//	{
-		//		it = colliders.erase(it);
-		//	}
-		//	else
-		//	{
-		//		++it;
-		//	}
-		//}
-		//colliders.remove(collider);
+		colliders.remove(collider);
 	}
 
 	void CheckAllCollisions();
@@ -61,10 +41,7 @@ private:
 	CollisionManager(const CollisionManager&) = default;
 	~CollisionManager() = default;
 	CollisionManager& operator=(const CollisionManager&) = default;
-	//std::vector<BaseCollider*> colliders;
-	Tree::CLiner4TreeManager<BaseCollider> L4Tree;
-	std::vector<BaseCollider*> ColVect;	// Õ“Ë‘ÎÛƒŠƒXƒg
-	std::vector < SmartPtr<Tree::TreeObject<BaseCollider>>> spSOFTAry;
+	std::forward_list<BaseCollider*> colliders;
 
 
 
