@@ -267,7 +267,7 @@ void Enemy::OnCollision(const CollisionInfo& info)
 	case Player::Boomerang:
 	{
 		invTime = 25;
-		damage = 35;
+		damage = 50;
 		ParticleEmitter::CreateSlashEffects(effectPos, std::rand() % 180, { 0.5f,0.5f,1 });
 		break;
 	}
@@ -291,7 +291,7 @@ void Enemy::OnCollision(const CollisionInfo& info)
 	default:
 		return;
 	}
-	color = { 1.0f,0,0,1 };
+	color = { 0.6f,0,0,1 };
 	hp -= damage;
 	if (hp <= 0)
 	{

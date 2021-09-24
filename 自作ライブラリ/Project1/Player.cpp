@@ -184,13 +184,15 @@ void Player::Initialize()
 void Player::Update()
 {
 	
-	Move();
-	Attack();
 	if(end)
 	{
 		EndMovie();
+		Attack();
 		return;
 	}
+	Move();
+	Attack();
+
 //-----------------------------ダメージ処理-----------------------------------------
 	if(damage)
 	{
@@ -444,6 +446,7 @@ void Player::OnCollision(const CollisionInfo & info)
 }
 void Player::EndFight()
 {
+	waitFight = true;
 	drawZanzoFrag = false;
 	boomerang = false;
 	attackFrag = false;
@@ -895,7 +898,7 @@ void Player::Attack()
 				{
 					attackFrag = false;
 					nowAnimationState = Wait;
-					velocity = (Vector3{ 55, 8.45f, 0 } - position) / 30;
+					velocity = (Vector3{ 55, 8.45f, 0 } - position) / 30.0f;
 					endCounter++;
 					Audio::PlayWave("finish", 0.3f);
 				}
@@ -1066,7 +1069,7 @@ void Player::Move()
 //------------------------------------------------------------------------------------------------
 
 //--------------------------------ボス戦前の自動演出----------------------------------------------
-	if (notMove && !startFight && !waitFight)
+	if (notMove && !startFight && !waitFight &&!end)
 	{
 		if (position.x >= WallLeft + (WallRight - WallLeft) / 2)
 		{
@@ -1114,7 +1117,7 @@ void Player::EndMovie()
 	noObject->Update();
 	eObject->Update();
 
-	if (endCounter == 0&&(position.x > 49 + 0.1f || position.x < 49 - 0.1f))
+	if (position.y < 14.7f && endCounter == 0)
 	{
 		position += velocity;
 		naObject->SetPosition(position);
@@ -1141,7 +1144,7 @@ void Player::EndMovie()
 
 	if (endCounter >= 12)
 	{
-		if (position.x <= 55 + 0.01f && position.x >= 55 - 0.01f)
+		if (position.y <= 8.45f)
 		{
 			for (int i = 0; i < 5; i++)
 			{

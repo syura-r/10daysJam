@@ -47,7 +47,7 @@ public:
 		rotation.y = 0;
 		naObject->SetRotation(rotation);
 		position = { 45,8.45f,0 };
-		velocity = (Vector3{ 49,14.7f,0 } - position) / 30.0f;
+		velocity = Vector3{ 4, 6.25f, 0 } / 30.0f;
 	}
 	inline void End()
 	{

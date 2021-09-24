@@ -396,14 +396,14 @@ void Boss::OnCollision(const CollisionInfo& info)
 	case Player::Boomerang:
 	{
 		invTime = 15;
-		damage = 25;
+		damage = 30;
 		ParticleEmitter::CreateSlashEffects(effectPos, std::rand() % 180, { 0.5f,0.5f,1 });
 		break;
 	}
 	case Player::MeleeAttack:
 	{
 		invTime = 13;
-		damage = 50;
+		damage = 55;
 		ParticleEmitter::CreateSlashEffects(effectPos, std::rand() % 180, { 0.5f,0.5f,1 });
 		break;
 	}
@@ -425,7 +425,7 @@ void Boss::OnCollision(const CollisionInfo& info)
 		return;
 	}
 
-	color = { 1.0f,0,0,1 };
+	color = { 0.6f,0,0,1 };
 	naObject->SetColor(color);
 	hp -= damage;
 	if (hp <= 0)
@@ -622,6 +622,23 @@ void Boss::Move()
 				velocity.y = -0.03f;
 		}
 		position += velocity;
+			
+		if (position.x - scale.y * 2.25f < player->WallLeft)
+		{
+			position.x = player->WallLeft + scale.y * 2.25f;
+		}
+		if (position.x + scale.x * 2.25f > player->WallRight)
+		{
+			position.x = player->WallRight - scale.x * 2.25f;
+		}
+		if (position.y + scale.y * 2.25f > 20)
+		{
+			position.y = 20 - scale.y * 2.25f;
+		}
+		if (position.y - scale.y * 2.25f < 8)
+		{
+			position.y = 8 + scale.y * 2.25f;
+		}
 
 		break;
 	}
