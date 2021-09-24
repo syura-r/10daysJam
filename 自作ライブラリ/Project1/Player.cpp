@@ -479,6 +479,30 @@ void Player::Draw()
 
 	ImGui::End();
 #endif
+
+	if(end)
+	{
+		if (endCounter >= 11)
+		{
+			itiObject->CustomDraw(true);
+			noObject->CustomDraw(true);
+			eObject->CustomDraw(true);
+			for (int i = 0; i < 5; i++)
+			{
+				if (drawHidariGiri[i])
+					hidariGiri[i]->CustomDraw(false, false);
+			}
+		}
+		else
+		{
+			CustomDraw(true);
+			naObject->CustomDraw(true);
+		}
+
+
+		return;
+	}
+	
 	if (startFight)
 	{
 		for (int i = 0; i < 4; i++)

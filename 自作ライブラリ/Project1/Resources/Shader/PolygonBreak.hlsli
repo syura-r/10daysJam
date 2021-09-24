@@ -15,7 +15,7 @@ cbuffer cbuff1 : register(b1)
     float m_alpha : packoffset(c2.w); // アルファ
 }
 
-cbuffer cbuff3 : register(b4)
+cbuffer cbuff3 : register(b2)
 {
     //float4 Status;
 	
@@ -86,14 +86,6 @@ struct CircleShadow
     uint active;
 
 };
-cbuffer cbuff2 : register(b2)
-{
-    float3 ambientColor;
-    DirLight dirLights[DIRLIGHT_NUM];
-    PointLight pointLights[POINTLIGHT_NUM];
-    SpotLight spotLights[SPOTLIGHT_NUM];
-    CircleShadow circleShadows[CIRCLESHADOW_NUM];
-}
 
 // 頂点シェーダーからピクセルシェーダーへのやり取りに使用する構造体
 struct VSOutput

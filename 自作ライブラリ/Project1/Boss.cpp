@@ -357,11 +357,11 @@ void Boss::Draw()
 	{
 		// パイプラインステートの設定
 		PipelineState::SetPipeline("PolygonBreak");
-		DirectXLib::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(5, constBuff->GetGPUVirtualAddress());
+		DirectXLib::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, constBuff->GetGPUVirtualAddress());
 	}
-	naObject->CustomDraw(false, true, ALPHA, true);
+	naObject->CustomDraw(false, false, ALPHA, true);
 
-	CustomDraw(false, true, ALPHA, true);
+	CustomDraw(false, false, ALPHA, true);
 
 	if(attackType == Rocket && attack && nowState == ATTACK)
 	{

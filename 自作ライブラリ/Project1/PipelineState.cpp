@@ -1104,9 +1104,6 @@ void PipelineState::CreatePipeline(const std::string& keyName, const ShaderType 
 		//4”Ô–Ú
 		param.InitAsConstantBufferView(3, 0, D3D12_SHADER_VISIBILITY_ALL); //Ží—Þ
 		rootparams.push_back(param);
-		//5”Ô–Ú
-		param.InitAsConstantBufferView(4, 0, D3D12_SHADER_VISIBILITY_ALL); //Ží—Þ
-		rootparams.push_back(param);
 
 		rootSignatureDesc.Init_1_0(rootparams.size(), rootparams.data(), 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 

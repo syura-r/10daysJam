@@ -245,10 +245,10 @@ void Enemy::Draw()
 	{
 		// パイプラインステートの設定
 		PipelineState::SetPipeline("PolygonBreak");
-		DirectXLib::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(5, constBuff->GetGPUVirtualAddress());
+		DirectXLib::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, constBuff->GetGPUVirtualAddress());
 	}
-	CustomDraw(false, true, ALPHA, true);
-	naObject->CustomDraw(false, true, ALPHA, true);
+	CustomDraw(false, false, ALPHA, true);
+	naObject->CustomDraw(false, false, ALPHA, true);
 #ifdef _DEBUG
 	//hitBox->Draw();
 #endif
